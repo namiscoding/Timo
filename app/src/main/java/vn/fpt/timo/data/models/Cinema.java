@@ -1,4 +1,4 @@
-package vn.fpt.timo.models;
+package vn.fpt.timo.data.models;
 
 public class Cinema {
     private String name;
