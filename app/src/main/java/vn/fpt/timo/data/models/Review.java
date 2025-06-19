@@ -1,74 +1,36 @@
 package vn.fpt.timo.data.models;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.ServerTimestamp;
+
 import java.util.Date;
-
+/**
+ * Model cho sub-collection: /films/{filmId}/reviews
+ * Lưu ý: ID của document này sẽ là userId
+ */
 public class Review {
-    private String userId;
-    private String filmId;
-    private long stars;
+    @DocumentId
+    private String id;
+
+    private double stars;
     private String comment;
-    private Date createdAt;
-    private String userName;
-    private String userPhotoUrl;
+    private String userDisplayName;
 
-    public Review() {
-        this.stars = 0;
-    }
+    @ServerTimestamp
+    private Timestamp createdAt;
 
-    public Review(String userId, String filmId, long stars, String comment, String userName, String userPhotoUrl) {
-        this.userId = userId;
-        this.filmId = filmId;
-        this.stars = stars;
-        this.comment = comment;
-        this.userName = userName;
-        this.userPhotoUrl = userPhotoUrl;
-    }
+    public Review() {}
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getFilmId() {
-        return filmId;
-    }
-
-    public void setFilmId(String filmId) {
-        this.filmId = filmId;
-    }
-
-    public long getStars() {
-        return stars;
-    }
-
-    public void setStars(long stars) {
-        this.stars = stars;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUserPhotoUrl() {
-        return userPhotoUrl;
-    }
-
-    public void setUserPhotoUrl(String userPhotoUrl) {
-        this.userPhotoUrl = userPhotoUrl;
-    }
+    // Getters and Setters...
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public double getStars() { return stars; }
+    public void setStars(double stars) { this.stars = stars; }
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
+    public String getUserDisplayName() { return userDisplayName; }
+    public void setUserDisplayName(String userDisplayName) { this.userDisplayName = userDisplayName; }
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
 }
