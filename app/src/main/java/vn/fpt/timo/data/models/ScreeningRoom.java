@@ -1,39 +1,27 @@
 package vn.fpt.timo.data.models;
 
+import com.google.firebase.firestore.DocumentId;
+
+/**
+ * Model cho sub-collection: /cinemas/{cinemaId}/screening_rooms
+ */
 public class ScreeningRoom {
+    @DocumentId
+    private String id;
+
     private String name;
-    private long layoutRows;
-    private long layoutCols;
+    private String type;
+    private long totalSeats;
 
-    public ScreeningRoom(String name, long layoutRows, long layoutCols) {
-        this.name = name;
-        this.layoutRows = layoutRows;
-        this.layoutCols = layoutCols;
-    }
+    public ScreeningRoom() {}
 
-    public ScreeningRoom(){}
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public long getLayoutRows() {
-        return layoutRows;
-    }
-
-    public void setLayoutRows(long layoutRows) {
-        this.layoutRows = layoutRows;
-    }
-
-    public long getLayoutCols() {
-        return layoutCols;
-    }
-
-    public void setLayoutCols(long layoutCols) {
-        this.layoutCols = layoutCols;
-    }
+    // Getters and Setters...
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public long getTotalSeats() { return totalSeats; }
+    public void setTotalSeats(long totalSeats) { this.totalSeats = totalSeats; }
 }
