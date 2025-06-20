@@ -11,7 +11,7 @@ public class Cinema {
     private String address;
     private String city;
     private GeoPoint location;
-
+    private boolean isActive;
     public Cinema() {}
 
     // Getters and Setters...
@@ -25,4 +25,6 @@ public class Cinema {
     public void setCity(String city) { this.city = city; }
     public GeoPoint getLocation() { return location; }
     public void setLocation(GeoPoint location) { this.location = location; }
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
 }
