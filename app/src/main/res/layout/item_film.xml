@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- item_film.xml -->
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="horizontal">
+
+        <!-- Poster Image -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            android:layout_marginEnd="16dp">
+
+            <ImageView
+                android:id="@+id/imgPoster"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="#F5F5F5"
+                android:src="@drawable/ic_movie" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Film Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tên phim"
+                android:textSize="18sp"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Director -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_person"
+                    android:layout_marginEnd="6dp"
+                    android:layout_gravity="center_vertical"
+                    app:tint="#666666" />
+
+                <TextView
+                    android:id="@+id/tvDirector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Đạo diễn"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:fontFamily="sans-serif"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+
+            </LinearLayout>
+
+            <!-- Duration & Rating -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginEnd="16dp">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_schedule"
+                        android:layout_marginEnd="4dp"
+                        android:layout_gravity="center_vertical"
+                        app:tint="#666666" />
+
+                    <TextView
+                        android:id="@+id/tvDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="120 phút"
+                        android:textSize="12sp"
+                        android:textColor="#666666"
+                        android:fontFamily="sans-serif" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_star"
+                        android:layout_marginEnd="4dp"
+                        android:layout_gravity="center_vertical"
+                        app:tint="#FFC107" />
+
+                    <TextView
+                        android:id="@+id/tvRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="4.5"
+                        android:textSize="12sp"
+                        android:textColor="#666666"
+                        android:fontFamily="sans-serif" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Sửa"
+                    android:textSize="12sp"
+                    android:textColor="#DC3545"
+                    android:backgroundTint="@android:color/transparent"
+                    android:layout_marginEnd="8dp"
+                    app:strokeColor="#DC3545"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="6dp"
+                    app:rippleColor="#DC354533"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Xóa"
+                    android:textSize="12sp"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#DC3545"
+                    app:cornerRadius="6dp"
+                    app:rippleColor="#FFFFFF33"
+                    style="@style/Widget.MaterialComponents.Button" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
