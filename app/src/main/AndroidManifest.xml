@@ -13,48 +13,42 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Timo">
-        <activity
-            android:name=".ui.activity.MovieManagementActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.CreateShowtimeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.FilmSelectionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.ManagerHomePageActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.activity.RoomManagementActivity"
+        <!-- Không có LAUNCHER activity -->
+
+        <!-- Manager Activities -->
+        <activity android:name=".ui.activity.MovieManagementActivity" android:exported="false" />
+        <activity android:name=".ui.activity.CreateShowtimeActivity" android:exported="false" />
+        <activity android:name=".ui.activity.FilmSelectionActivity" android:exported="false" />
+        <activity android:name=".ui.activity.ManagerHomePageActivity" android:exported="false" />
+        <activity android:name=".ui.activity.RoomManagementActivity"
             android:exported="false"
             android:parentActivityName=".ui.activity.ManagerHomePageActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="vn.fpt.timo.ui.activity.ManagerHomePageActivity" />
         </activity>
-        <activity
-            android:name=".ui.activity.AddEditRoomActivity"
+        <activity android:name=".ui.activity.AddEditRoomActivity"
             android:exported="false"
             android:parentActivityName=".ui.activity.RoomManagementActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
         </activity>
-        <activity
-            android:name=".ui.activity.SeatMapActivity"
+        <activity android:name=".ui.activity.SeatMapActivity"
             android:exported="false"
             android:parentActivityName=".ui.activity.RoomManagementActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
         </activity>
+
+        <!-- User-Facing Activities -->
+        <activity android:name=".ui.activity.find_All_Movie" android:exported="false" />
+        <activity android:name=".ui.activity.IntroActivity" android:exported="false" />
+        <activity android:name=".ui.activity.HomeScreenActivity" android:exported="false" />
+        <activity android:name=".ui.activity.FilmDetailActivity" android:exported="false" />
+
     </application>
 
 </manifest>
