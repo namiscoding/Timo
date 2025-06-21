@@ -12,8 +12,16 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Timo"
-        tools:targetApi="31">
+        android:theme="@style/Theme.Timo">
+        <activity
+            android:name=".ui.activity.MovieManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.CreateShowtimeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.FilmSelectionActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.activity.find_All_Movie"
             android:exported="false" />
@@ -25,6 +33,30 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.RoomManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activity.ManagerHomePageActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="vn.fpt.timo.ui.activity.ManagerHomePageActivity" />
+        </activity>
+        <activity
+            android:name=".ui.activity.AddEditRoomActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activity.RoomManagementActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
+        </activity>
+        <activity
+            android:name=".ui.activity.SeatMapActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activity.RoomManagementActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
         </activity>
         <activity
             android:name=".ui.activity.HomeScreenActivity"
