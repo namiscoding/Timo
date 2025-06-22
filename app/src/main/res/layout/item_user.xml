@@ -5,7 +5,7 @@
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="#FFFFFF">
+    app:cardBackgroundColor="#181A20">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:background="#F5F5F5"
+                android:background="#DCDCDC"
                 android:src="@drawable/ic_person" />
 
         </androidx.cardview.widget.CardView>
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:text="user@example.com"
                 android:textSize="16sp"
-                android:textColor="#333333"
+                android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
@@ -66,7 +66,7 @@
                     android:src="@drawable/ic_role"
                     android:layout_marginEnd="6dp"
                     android:layout_gravity="center_vertical"
-                    app:tint="#666666" />
+                    app:tint="#FFFFFF" />
 
                 <TextView
                     android:id="@+id/tvRole"
@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:text="Vai trò"
                     android:textSize="14sp"
-                    android:textColor="#666666"
+                    android:textColor="#FFFFFF"
                     android:fontFamily="sans-serif"
                     android:maxLines="1"
                     android:ellipsize="end" />
@@ -95,7 +95,7 @@
                     android:src="@drawable/ic_location"
                     android:layout_marginEnd="6dp"
                     android:layout_gravity="center_vertical"
-                    app:tint="#666666" />
+                    app:tint="#FFFFFF" />
 
                 <TextView
                     android:id="@+id/tvCinema"
@@ -103,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:text="Rạp được gán (nếu có)"
                     android:textSize="12sp"
-                    android:textColor="#666666"
+                    android:textColor="#FFFFFF"
                     android:fontFamily="sans-serif"
                     android:maxLines="1"
                     android:ellipsize="end" />
@@ -123,10 +123,10 @@
                     android:layout_height="36dp"
                     android:text="Sửa"
                     android:textSize="12sp"
-                    android:textColor="#DC3545"
+                    android:textColor="#FC3323"
                     android:backgroundTint="@android:color/transparent"
                     android:layout_marginEnd="8dp"
-                    app:strokeColor="#DC3545"
+                    app:strokeColor="#FC3323"
                     app:strokeWidth="1dp"
                     app:cornerRadius="6dp"
                     app:rippleColor="#DC354533"
@@ -139,7 +139,7 @@
                     android:text="Xóa"
                     android:textSize="12sp"
                     android:textColor="#FFFFFF"
-                    android:backgroundTint="#DC3545"
+                    android:backgroundTint="#FC3323"
                     app:cornerRadius="6dp"
                     app:rippleColor="#FFFFFF33"
                     style="@style/Widget.MaterialComponents.Button" />

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -111,13 +110,10 @@ public class AddEditCinemaDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View customView = getLayoutInflater().inflate(R.layout.dialog_custom_alert, null);
 
-        ImageView iconView = customView.findViewById(R.id.icon);
         TextView titleView = customView.findViewById(R.id.title);
         TextView messageView = customView.findViewById(R.id.message);
         Button okButton = customView.findViewById(R.id.btnOk);
 
-        iconView.setImageResource(R.drawable.ic_warning);
-        iconView.setColorFilter(ContextCompat.getColor(getContext(), R.color.warning_yellow));
         titleView.setText("Cảnh báo");
         titleView.setTextColor(ContextCompat.getColor(getContext(), R.color.warning_yellow));
         messageView.setText(message);
@@ -136,13 +132,10 @@ public class AddEditCinemaDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View customView = getLayoutInflater().inflate(R.layout.dialog_custom_alert, null);
 
-        ImageView iconView = customView.findViewById(R.id.icon);
         TextView titleView = customView.findViewById(R.id.title);
         TextView messageView = customView.findViewById(R.id.message);
         Button okButton = customView.findViewById(R.id.btnOk);
 
-        iconView.setImageResource(R.drawable.ic_success);
-        iconView.setColorFilter(ContextCompat.getColor(getContext(), R.color.success_green));
         titleView.setText("Thành công");
         titleView.setTextColor(ContextCompat.getColor(getContext(), R.color.success_green));
         messageView.setText(message);

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:padding="32dp"
     android:gravity="center"
-    android:background="#FFFFFF"
+    android:background="#181A20"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="Admin Panel"
         android:textSize="28sp"
-        android:textColor="#333333"
+        android:textColor="#FFFFFF"
         android:textStyle="bold"
         android:layout_marginBottom="8dp"
         android:fontFamily="sans-serif-medium" />
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:text="Quản lý hệ thống"
         android:textSize="16sp"
-        android:textColor="#666666"
+        android:textColor="#FFFFFF"
         android:layout_marginBottom="48dp"
         android:fontFamily="sans-serif" />
 
@@ -45,7 +45,7 @@
             android:text="Quản lý tài khoản"
             android:textSize="16sp"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#DC3545"
+            android:backgroundTint="#FC3323"
             android:layout_marginBottom="16dp"
             android:fontFamily="sans-serif-medium"
             android:drawableLeft="@drawable/ic_account_circle"
@@ -64,7 +64,7 @@
             android:text="Quản lý phim"
             android:textSize="16sp"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#DC3545"
+            android:backgroundTint="#FC3323"
             android:layout_marginBottom="16dp"
             android:fontFamily="sans-serif-medium"
             android:drawableLeft="@drawable/ic_movie"
@@ -83,7 +83,7 @@
             android:text="Quản lý rạp chiếu"
             android:textSize="16sp"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#DC3545"
+            android:backgroundTint="#FC3323"
             android:fontFamily="sans-serif-medium"
             android:drawableLeft="@drawable/ic_local_movies"
             android:drawablePadding="12dp"
@@ -99,7 +99,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cinema Management System v1.0"
+        android:text="Timo Management System v1.0"
         android:textSize="12sp"
         android:textColor="#999999"
         android:layout_marginTop="32dp"

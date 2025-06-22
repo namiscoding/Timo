@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,9 +42,6 @@ public class CinemaAdapter extends RecyclerView.Adapter<CinemaAdapter.CinemaView
         Cinema cinema = cinemas.get(position);
         holder.name.setText(cinema.getName());
         holder.address.setText(cinema.getAddress());
-        Glide.with(holder.itemView.getContext())
-                .load(R.drawable.ic_image_placeholder) // Placeholder, không có logoUrl
-                .into(holder.posterImage);
         holder.city.setText(cinema.getCity() != null ? cinema.getCity() : "Chưa có");
         holder.status.setText(cinema.isActive() ? "Hoạt động" : "Vô hiệu hóa");
 
@@ -58,13 +54,11 @@ public class CinemaAdapter extends RecyclerView.Adapter<CinemaAdapter.CinemaView
     public int getItemCount() { return cinemas.size(); }
 
     static class CinemaViewHolder extends RecyclerView.ViewHolder {
-        ImageView posterImage;
         TextView name, address, city, status;
         Button editBtn, toggleStatusBtn;
 
         CinemaViewHolder(View view) {
             super(view);
-            posterImage = view.findViewById(R.id.imgPoster);
             name = view.findViewById(R.id.tvName);
             address = view.findViewById(R.id.tvAddress);
             city = view.findViewById(R.id.tvCity);
