@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -29,7 +28,7 @@ import java.util.Date;
 
 import vn.fpt.timo.R;
 import vn.fpt.timo.data.models.Film;
-import vn.fpt.timo.viewmodel.ManageFilmsViewModel;
+import vn.fpt.timo.viewmodel.admin.ManageFilmsViewModel;
 
 public class AddEditFilmDialog extends DialogFragment {
     private EditText etTitle, etDirector;

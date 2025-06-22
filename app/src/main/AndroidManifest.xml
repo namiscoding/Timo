@@ -21,6 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.activity.admin.ManageFilmsFragmentActivity" />
+        <activity android:name=".ui.activity.admin.ManageCinemasFragmentActivity" />
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package vn.fpt.timo.viewmodel;
+package vn.fpt.timo.viewmodel.admin;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

@@ -1,4 +1,4 @@
-package vn.fpt.timo.ui.fragment;
+package vn.fpt.timo.ui.fragment.admin;
 
 import android.app.AlertDialog;
 import android.content.res.ColorStateList;
@@ -27,80 +27,75 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vn.fpt.timo.R;
-import vn.fpt.timo.data.models.Film;
-import vn.fpt.timo.ui.adapter.FilmAdapter;
-import vn.fpt.timo.ui.dialog.AddEditFilmDialog;
-import vn.fpt.timo.viewmodel.ManageFilmsViewModel;
+import vn.fpt.timo.data.models.Cinema;
+import vn.fpt.timo.ui.adapter.CinemaAdapter;
+import vn.fpt.timo.ui.dialog.AddEditCinemaDialog;
+import vn.fpt.timo.viewmodel.admin.ManageCinemasViewModel;
 
-public class ManageFilmsFragment extends Fragment {
-    private ManageFilmsViewModel viewModel;
-    private FilmAdapter adapter;
-    private List<Film> allFilms = new ArrayList<>();
+public class ManageCinemasFragment extends Fragment {
+    private ManageCinemasViewModel viewModel;
+    private CinemaAdapter adapter;
+    private List<Cinema> allCinemas = new ArrayList<>();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_manage_films, container, false);
+        return inflater.inflate(R.layout.fragment_manage_cinemas, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        viewModel = new ViewModelProvider(this).get(ManageFilmsViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ManageCinemasViewModel.class);
 
-        RecyclerView rv = view.findViewById(R.id.rvFilms);
+        RecyclerView rv = view.findViewById(R.id.rvCinemas);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new FilmAdapter(new ArrayList<>(), new FilmAdapter.FilmActionListener() {
+        adapter = new CinemaAdapter(new ArrayList<>(), new CinemaAdapter.CinemaActionListener() {
             @Override
-            public void onEdit(Film film) {
-                AddEditFilmDialog.show(requireActivity(), film, viewModel);
+            public void onEdit(Cinema cinema) {
+                AddEditCinemaDialog.show(requireActivity(), cinema, viewModel);
             }
 
             @Override
-            public void onDelete(Film film) {
-                viewModel.deleteFilm(film.getId());
-                showSuccess("Xóa thành công");
+            public void onToggleStatus(Cinema cinema) {
+                viewModel.toggleCinemaStatus(cinema.getId(), !cinema.isActive());
+                showSuccess(cinema.isActive() ? "Vô hiệu hóa thành công" : "Kích hoạt thành công");
             }
         });
         rv.setAdapter(adapter);
 
-        viewModel.getFilms().observe(getViewLifecycleOwner(), films -> {
-            allFilms.clear();
-            allFilms.addAll(films); // giữ danh sách gốc
-
-            adapter.updateData(films);
+        viewModel.getCinemas().observe(getViewLifecycleOwner(), cinemas -> {
+            allCinemas.clear();
+            allCinemas.addAll(cinemas);
+            adapter.updateData(cinemas);
         });
 
+        view.findViewById(R.id.btnAddCinema).setOnClickListener(v -> AddEditCinemaDialog.show(requireActivity(), null, viewModel));
+        viewModel.loadCinemas();
 
-        view.findViewById(R.id.btnAddFilm).setOnClickListener(v -> AddEditFilmDialog.show(requireActivity(), null, viewModel));
-        viewModel.loadFilms();
-        EditText etSearch = view.findViewById(R.id.etSearch);
+        EditText etSearch = view.findViewById(R.id.etSearchCinema);
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterFilms(s.toString());
+                filterCinemas(s.toString());
             }
-
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
-
     }
 
-    private void filterFilms(String query) {
-        List<Film> filteredList = new ArrayList<>();
-        for (Film film : allFilms) {
-            if (film.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    film.getDirector().toLowerCase().contains(query.toLowerCase())) {
-                filteredList.add(film);
+    private void filterCinemas(String query) {
+        List<Cinema> filteredList = new ArrayList<>();
+        for (Cinema cinema : allCinemas) {
+            if (cinema.getName().toLowerCase().contains(query.toLowerCase()) ||
+                    cinema.getAddress().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(cinema);
             }
         }
         adapter.updateData(filteredList);
     }
+
     private void showSuccess(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View customView = getLayoutInflater().inflate(R.layout.dialog_custom_alert, null);
@@ -110,22 +105,18 @@ public class ManageFilmsFragment extends Fragment {
         TextView messageView = customView.findViewById(R.id.message);
         Button okButton = customView.findViewById(R.id.btnOk);
 
-        // Set success icon (màu xanh lá)
         iconView.setImageResource(R.drawable.ic_success);
         iconView.setColorFilter(ContextCompat.getColor(getContext(), R.color.success_green));
-
         titleView.setText("Thành công");
         titleView.setTextColor(ContextCompat.getColor(getContext(), R.color.success_green));
         messageView.setText(message);
 
-        // Nút đỏ
         okButton.setBackgroundTintList(ColorStateList.valueOf(
                 ContextCompat.getColor(getContext(), R.color.button_red)));
         okButton.setTextColor(Color.WHITE);
 
         AlertDialog dialog = builder.setView(customView).create();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-
         okButton.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }

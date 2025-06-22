@@ -7,7 +7,6 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import vn.fpt.timo.R;
-import vn.fpt.timo.ui.fragment.ManageFilmsFragment;
 //import vn.fpt.timo.ui.film.ManageFilmsFragmentActivity;
 //import vn.fpt.timo.ui.account.ManageAccountsActivity;
 //import vn.fpt.timo.ui.cinema.ManageCinemasActivity;
@@ -30,8 +29,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ManageFilmsFragmentActivity.class))
         );
 
-//        btnManageCinemas.setOnClickListener(v ->
-//                startActivity(new Intent(this, ManageCinemasActivity.class))
-//        );
+        btnManageCinemas.setOnClickListener(v ->
+                startActivity(new Intent(this, ManageCinemasFragmentActivity.class))
+        );
     }
 }
