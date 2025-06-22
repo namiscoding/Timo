@@ -6,4 +6,5 @@
     <color name="warning_yellow">#FF9800</color>
     <color name="error_red">#F44336</color>
     <color name="success_green">#4CAF50</color>
+    <color name="gray">#7C7C7C</color>
 </resources>

@@ -24,6 +24,7 @@
 
         <activity android:name=".ui.activity.admin.ManageFilmsFragmentActivity" />
         <activity android:name=".ui.activity.admin.ManageCinemasFragmentActivity" />
+        <activity android:name=".ui.activity.admin.ManageUserFragmentActivity" />
     </application>
 
 </manifest>

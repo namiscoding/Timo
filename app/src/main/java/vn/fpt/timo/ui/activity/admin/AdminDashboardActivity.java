@@ -20,11 +20,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
         Button btnManageAccounts = findViewById(R.id.btnManageAccounts);
         Button btnManageFilms = findViewById(R.id.btnManageFilms);
         Button btnManageCinemas = findViewById(R.id.btnManageCinemas);
-//
-//        btnManageAccounts.setOnClickListener(v ->
-//                startActivity(new Intent(this, ManageFilmsFragment.class))
-//        );
-//
+
+        btnManageAccounts.setOnClickListener(v ->
+                startActivity(new Intent(this, ManageUserFragmentActivity.class))
+        );
+
         btnManageFilms.setOnClickListener(v ->
                 startActivity(new Intent(this, ManageFilmsFragmentActivity.class))
         );
