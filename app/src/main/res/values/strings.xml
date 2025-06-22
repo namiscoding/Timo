@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Timo</string>
+    <string-array name="film_status_options">
+        <item>Đang chiếu</item>
+        <item>Ngừng chiếu</item>
+        <item>Sắp chiếu</item>
+    </string-array>
 </resources>

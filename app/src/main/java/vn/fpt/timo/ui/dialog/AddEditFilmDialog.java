@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.AutoCompleteTextView;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +39,8 @@ public class AddEditFilmDialog extends DialogFragment {
     private Uri imageUri;
     private ManageFilmsViewModel viewModel;
     private EditText etDescription, etPosterUrl, etTrailerUrl, etDuration, etReleaseDate, etActors,
-            etAgeRating, etStatus, etAverageStars, etGenres;
+            etAgeRating, etStatus, etGenres;
+    private AutoCompleteTextView actStatus;
 
     public static void show(FragmentActivity activity, Film film, ManageFilmsViewModel vm) {
         AddEditFilmDialog dialog = new AddEditFilmDialog();
@@ -64,31 +67,31 @@ public class AddEditFilmDialog extends DialogFragment {
         etReleaseDate = view.findViewById(R.id.etReleaseDate);
         etActors = view.findViewById(R.id.etActors);
         etAgeRating = view.findViewById(R.id.etAgeRating);
-        etStatus = view.findViewById(R.id.etStatus);
-        etAverageStars = view.findViewById(R.id.etAverageStars);
+        actStatus = view.findViewById(R.id.actStatus);
         etGenres = view.findViewById(R.id.etGenres);
         imgPreview = view.findViewById(R.id.imgPreview);
         Button btnSave = view.findViewById(R.id.btnSave);
         Button btnCancel = view.findViewById(R.id.btnCancel);
 
-        etAverageStars.setEnabled(false); // Không cho chỉnh sửa sao trung bình
-
+        // Setup status dropdown
+        String[] statusOptions = {"Ngưng chiếu", "Đang chiếu", "Sắp chiếu"};
+        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, statusOptions);
+        actStatus.setAdapter(statusAdapter);
 
         if (film != null) {
             if (film.getPosterImageUrl() != null) {
                 Glide.with(this).load(film.getPosterImageUrl()).into(imgPreview);
             }
             etTitle.setText(film.getTitle());
-            etDirector.setText(film.getDirector());
-            etDescription.setText(film.getDescription());
+            etDirector.setText(film.getDirector() != null ? film.getDirector() : "");
+            etDescription.setText(film.getDescription() != null ? film.getDescription() : "");
             etPosterUrl.setText(film.getPosterImageUrl());
             etTrailerUrl.setText(film.getTrailerUrl());
             etDuration.setText(String.valueOf(film.getDurationMinutes()));
             etReleaseDate.setText(film.getReleaseDate() != null ? new SimpleDateFormat("yyyy-MM-dd").format(film.getReleaseDate().toDate()) : "");
             etActors.setText(String.join(", ", film.getActors()));
             etAgeRating.setText(film.getAgeRating());
-            etStatus.setText(film.getStatus());
-            etAverageStars.setText(String.valueOf(film.getAverageStars()));
+            actStatus.setText(film.getStatus(), false);
             etGenres.setText(String.join(", ", film.getGenres()));
         } else film = new Film();
 
@@ -120,7 +123,7 @@ public class AddEditFilmDialog extends DialogFragment {
 
             film.setActors(Arrays.asList(etActors.getText().toString().split("\\s*,\\s*")));
             film.setAgeRating(etAgeRating.getText().toString().trim());
-            film.setStatus(etStatus.getText().toString().trim());
+            film.setStatus(actStatus.getText().toString().trim());
             film.setGenres(Arrays.asList(etGenres.getText().toString().split("\\s*,\\s*")));
 
             viewModel.addOrUpdateFilm(film);

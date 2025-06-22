@@ -284,24 +284,27 @@
             android:orientation="horizontal"
             android:layout_marginBottom="16dp">
 
+            <!-- MODIFIED: Status Spinner -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilStatus"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 app:boxStrokeColor="#DC3545"
                 app:hintTextColor="#DC3545"
-                app:boxBackgroundMode="outline"
                 app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
+                app:boxCornerRadiusBottomEnd="8dp"
+                android:hint="Trạng thái">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStatus"
+                <AutoCompleteTextView
+                    android:id="@+id/actStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Trạng thái"
+                    android:inputType="none"
                     android:textSize="16sp"
                     android:textColor="#212121"
                     android:textColorHint="#757575"
@@ -309,31 +312,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                app:boxStrokeColor="#DC3545"
-                app:hintTextColor="#DC3545"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etAverageStars"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Điểm trung bình"
-                    android:inputType="numberDecimal"
-                    android:textSize="16sp"
-                    android:textColor="#212121"
-                    android:textColorHint="#757575"
-                    android:fontFamily="sans-serif" />
-
-            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
