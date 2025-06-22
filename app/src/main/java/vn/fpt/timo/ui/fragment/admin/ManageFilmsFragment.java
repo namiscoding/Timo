@@ -57,8 +57,23 @@ public class ManageFilmsFragment extends Fragment {
 
             @Override
             public void onDelete(Film film) {
-                viewModel.deleteFilm(film.getId());
-                showSuccess("Xóa thành công");
+                // Show confirmation dialog before deleting
+                View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm, null);
+                AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                        .setView(dialogView)
+                        .setCancelable(false)
+                        .create();
+                TextView messageView = dialogView.findViewById(R.id.message);
+                messageView.setText("Bạn có chắc muốn xóa phim này?");
+                Button btnOk = dialogView.findViewById(R.id.btnOk);
+                Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+                btnOk.setOnClickListener(v2 -> {
+                    viewModel.deleteFilm(film.getId());
+                    showSuccess("Xóa thành công");
+                    dialog.dismiss();
+                });
+                btnCancel.setOnClickListener(v2 -> dialog.dismiss());
+                dialog.show();
             }
         });
         rv.setAdapter(adapter);

@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;
+import android.app.DatePickerDialog;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +27,9 @@ import com.google.firebase.Timestamp;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import vn.fpt.timo.R;
 import vn.fpt.timo.data.models.Film;
@@ -65,6 +68,15 @@ public class AddEditFilmDialog extends DialogFragment {
         etTrailerUrl = view.findViewById(R.id.etTrailerUrl);
         etDuration = view.findViewById(R.id.etDuration);
         etReleaseDate = view.findViewById(R.id.etReleaseDate);
+        etReleaseDate.setFocusable(false);
+        etReleaseDate.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view1, year, month, dayOfMonth) -> {
+                String dateStr = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                etReleaseDate.setText(dateStr);
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.show();
+        });
         etActors = view.findViewById(R.id.etActors);
         etAgeRating = view.findViewById(R.id.etAgeRating);
         actStatus = view.findViewById(R.id.actStatus);
@@ -119,7 +131,8 @@ public class AddEditFilmDialog extends DialogFragment {
             }
 
             try {
-                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(etReleaseDate.getText().toString().trim());
+                String dateStr = etReleaseDate.getText().toString().trim();
+                Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dateStr);
                 film.setReleaseDate(new Timestamp(date));
             } catch (Exception e) {
                 showWarning("Ngày phát hành không hợp lệ. Định dạng đúng là yyyy-MM-dd");
