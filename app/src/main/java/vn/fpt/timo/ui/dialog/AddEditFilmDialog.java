@@ -39,8 +39,8 @@ public class AddEditFilmDialog extends DialogFragment {
     private Uri imageUri;
     private ManageFilmsViewModel viewModel;
     private EditText etDescription, etPosterUrl, etTrailerUrl, etDuration, etReleaseDate, etActors,
-            etAgeRating, etStatus, etGenres;
-    private AutoCompleteTextView actStatus;
+            etAgeRating, etStatus;
+    private AutoCompleteTextView actStatus, actvGenres;
 
     public static void show(FragmentActivity activity, Film film, ManageFilmsViewModel vm) {
         AddEditFilmDialog dialog = new AddEditFilmDialog();
@@ -68,10 +68,15 @@ public class AddEditFilmDialog extends DialogFragment {
         etActors = view.findViewById(R.id.etActors);
         etAgeRating = view.findViewById(R.id.etAgeRating);
         actStatus = view.findViewById(R.id.actStatus);
-        etGenres = view.findViewById(R.id.etGenres);
+        actvGenres = view.findViewById(R.id.actvGenres); // Use dropdown for genres
         imgPreview = view.findViewById(R.id.imgPreview);
         Button btnSave = view.findViewById(R.id.btnSave);
         Button btnCancel = view.findViewById(R.id.btnCancel);
+
+        // Setup genres dropdown
+        String[] genresOptions = {"Hành động", "Hài", "Tình cảm", "Kinh dị", "Hoạt hình", "Phiêu lưu", "Tâm lý", "Khoa học viễn tưởng", "Tài liệu", "Âm nhạc", "Thể thao", "Gia đình"};
+        ArrayAdapter<String> genresAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, genresOptions);
+        actvGenres.setAdapter(genresAdapter);
 
         // Setup status dropdown
         String[] statusOptions = {"Ngưng chiếu", "Đang chiếu", "Sắp chiếu"};
@@ -92,7 +97,7 @@ public class AddEditFilmDialog extends DialogFragment {
             etActors.setText(String.join(", ", film.getActors()));
             etAgeRating.setText(film.getAgeRating());
             actStatus.setText(film.getStatus(), false);
-            etGenres.setText(String.join(", ", film.getGenres()));
+            actvGenres.setText(film.getGenres() != null && !film.getGenres().isEmpty() ? film.getGenres().get(0) : "", false);
         } else film = new Film();
 
         btnCancel.setOnClickListener(v -> dismiss());
@@ -124,7 +129,7 @@ public class AddEditFilmDialog extends DialogFragment {
             film.setActors(Arrays.asList(etActors.getText().toString().split("\\s*,\\s*")));
             film.setAgeRating(etAgeRating.getText().toString().trim());
             film.setStatus(actStatus.getText().toString().trim());
-            film.setGenres(Arrays.asList(etGenres.getText().toString().split("\\s*,\\s*")));
+            film.setGenres(Arrays.asList(actvGenres.getText().toString().split("\\s*,\\s*")));
 
             viewModel.addOrUpdateFilm(film);
             showSuccess("Lưu thành công!");
