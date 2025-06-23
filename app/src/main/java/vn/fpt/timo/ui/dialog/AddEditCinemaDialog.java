@@ -50,8 +50,13 @@ public class AddEditCinemaDialog extends DialogFragment {
         etLongitude = view.findViewById(R.id.etLongitude);
         Button btnSave = view.findViewById(R.id.btnSave);
         Button btnCancel = view.findViewById(R.id.btnCancel);
+        TextView tvDialogTitle = view.findViewById(R.id.tvDialogTitle);
 
-        if (cinema != null) {
+        if (cinema == null) {
+            tvDialogTitle.setText("Thêm rạp mới");
+            cinema = new Cinema(); // Initialize here for a new cinema
+        } else {
+            tvDialogTitle.setText("Chỉnh sửa rạp");
             etName.setText(cinema.getName());
             etAddress.setText(cinema.getAddress());
             etCity.setText(cinema.getCity());
@@ -59,8 +64,6 @@ public class AddEditCinemaDialog extends DialogFragment {
                 etLatitude.setText(String.valueOf(cinema.getLocation().getLatitude()));
                 etLongitude.setText(String.valueOf(cinema.getLocation().getLongitude()));
             }
-        } else {
-            cinema = new Cinema();
         }
 
         btnCancel.setOnClickListener(v -> dismiss());

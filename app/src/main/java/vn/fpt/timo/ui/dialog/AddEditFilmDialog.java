@@ -88,6 +88,12 @@ public class AddEditFilmDialog extends DialogFragment {
         imgPreview = view.findViewById(R.id.imgPreview);
         Button btnSave = view.findViewById(R.id.btnSave);
         Button btnCancel = view.findViewById(R.id.btnCancel);
+        TextView tvDialogTitle = view.findViewById(R.id.tvDialogTitle);
+        if (film == null) {
+            tvDialogTitle.setText("Thêm phim mới");
+        } else {
+            tvDialogTitle.setText("Chỉnh sửa phim");
+        }
 
         // Setup genres dropdown
         FirebaseFirestore db = FirebaseFirestore.getInstance();
