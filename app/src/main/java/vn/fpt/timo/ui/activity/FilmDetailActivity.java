@@ -1,9 +1,11 @@
 package vn.fpt.timo.ui.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,7 +34,8 @@ import java.util.Locale;
 public class FilmDetailActivity extends AppCompatActivity {
 
     // Corrected TextView and ImageView variable names and added missing ones
-    private TextView titleTxt, movieRateTxt, movieTimeTxt, imdbTxt, summaryTitleTxt, movieSummeryTxt, castTitleTxt;
+    private Button buyTicketBtn;
+    private TextView directorTxt, titleTxt, movieRateTxt, movieTimeTxt, ageRating, summaryTitleTxt, movieSummeryTxt, castTitleTxt;
     private String filmId;
     private ImageView filmPic, backBtn, favBtn, ratingStar1; // Corrected names to match XML
 
@@ -56,7 +59,7 @@ public class FilmDetailActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.parseColor("#FF000000"));
 
         filmService = new FilmService();
-
+        buyTicketBtn = findViewById(R.id.buyTicketBtn);
         // Initialize UI components by finding them by their IDs from activity_film_detail.xml
         filmPic = findViewById(R.id.filmPic);
         backBtn = findViewById(R.id.backBtn);
@@ -66,11 +69,11 @@ public class FilmDetailActivity extends AppCompatActivity {
         titleTxt = findViewById(R.id.titleTxt);
         movieRateTxt = findViewById(R.id.movieRateTxt); // For the actual rating value
         movieTimeTxt = findViewById(R.id.movieTimeTxt);
-        imdbTxt = findViewById(R.id.imdbTxt); // For the "IMDB" label
+        ageRating = findViewById(R.id.ageRating); // For the "IMDB" label
         summaryTitleTxt = findViewById(R.id.summaryTitleTxt); // For the "Summary" title
         movieSummeryTxt = findViewById(R.id.movieSummeryTxt); // For the summary content
         castTitleTxt = findViewById(R.id.castTitleTxt); // For the "Cast" title
-
+        directorTxt = findViewById(R.id.directorTxt);
         // Initialize RecyclerViews and their adapters
         genreView = findViewById(R.id.genreView);
         castListView = findViewById(R.id.castListView);
@@ -103,6 +106,7 @@ public class FilmDetailActivity extends AppCompatActivity {
         // Check if filmId is available and load details
         if (filmId != null) {
             loadFilmDetails(filmId);
+
         } else {
             Toast.makeText(this, "Không có ID phim được cung cấp!", Toast.LENGTH_SHORT).show();
             finish();
@@ -123,29 +127,33 @@ public class FilmDetailActivity extends AppCompatActivity {
                         if (film != null) {
                             titleTxt.setText(film.getTitle());
                             // Use film.getRating() for movieRateTxt, formatted to one decimal place
-                            if ( film.getAverageStars() > 0) {
+                            if (film.getAverageStars() > 0) {
                                 movieRateTxt.setText(String.format(Locale.getDefault(), "%.1f", film.getAverageStars()));
                             } else {
                                 movieRateTxt.setText("N/A");
                             }
 
                             // Convert durationMinutes to String and append " min"
-                            movieTimeTxt.setText( film.getDurationMinutes() > 0 ? film.getDurationMinutes() + " min" : "N/A");
+                            movieTimeTxt.setText(film.getDurationMinutes() > 0 ? film.getDurationMinutes() + " min" : "N/A");
                             // Set summary text
                             movieSummeryTxt.setText(film.getDescription() != null ? film.getDescription() : "No summary available.");
-
+                            ageRating.setText(film.getAgeRating() != null ? film.getAgeRating() : "N/A");
                             // Update Genre RecyclerView with film genres
                             if (film.getGenres() != null && !film.getGenres().isEmpty()) {
                                 genreAdapter.updateList(film.getGenres());
                             } else {
                                 genreAdapter.updateList(new ArrayList<>());
                             }
-
+                            directorTxt.setText(film.getDirector());
                             // Update Cast RecyclerView with film actors
                             if (film.getActors() != null && !film.getActors().isEmpty()) {
                                 castAdapter.updateList(film.getActors());
                             } else {
                                 castAdapter.updateList(new ArrayList<>());
+                            }
+                            if (film.getStatus().equalsIgnoreCase("coming_soon")) {
+
+                                buyTicketBtn.setVisibility(View.GONE);
                             }
 
                             // Load main poster image using Glide
@@ -197,5 +205,10 @@ public class FilmDetailActivity extends AppCompatActivity {
         if (scrollView != null) {
             scrollView.setVisibility(View.VISIBLE); // Show main content
         }
+    }
+    public void onStartButtonClick2(View view) {
+        Intent intenTextview6 = new Intent(FilmDetailActivity.this, ChooseCinemaActivity.class);
+        startActivity(intenTextview6);
+
     }
 }

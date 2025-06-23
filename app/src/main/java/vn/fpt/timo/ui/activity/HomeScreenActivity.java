@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -21,7 +23,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +41,7 @@ public class HomeScreenActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     private FilmService filmService;
     private EditText searchquery;
-    private TextView filmsDisplayTextView; // This TextView is for "Hello Pitter Jackson", not film list display.
+    private TextView filmsDisplayTextView;
 
     private FilmAdapter nowPlayingAdapter;
     private FilmAdapter comingSoonAdapter;
@@ -50,78 +51,94 @@ public class HomeScreenActivity extends AppCompatActivity {
     private ProgressBar progressBarSlider;
     private ProgressBar progressBarTopMovies;
     private ProgressBar progressBarUpcoming;
+    private TextView seeAllTopMovies;
+    private TextView seeAllUpcomingMovies;
 
     private static final String TAG = "HomeScreenActivity";
-    // This SimpleDateFormat and CURRENT_DATE are kept for potential future date-based logic,
-    // but the current film filtering is based on "status" field.
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private final Date CURRENT_DATE = new Date();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Set status bar color for consistent theme
         getWindow().setStatusBarColor(Color.parseColor("#FF000000"));
         setContentView(R.layout.activity_home);
-        searchquery = findViewById(R.id.searchquery);
-        // Initialize UI components by their IDs from activity_home.xml
+
+        // Initialize UI components
         bottomNavigation = findViewById(R.id.bottom_navigation_bar);
         nowPlayingRecyclerView = findViewById(R.id.recyclerViewTopMovies);
         comingSoonRecyclerView = findViewById(R.id.recyclerViewUpcomming);
-        filmsDisplayTextView = findViewById(R.id.textView3); // TextView showing "Hello Pitter Jackson"
+        filmsDisplayTextView = findViewById(R.id.textView3);
+        searchquery = findViewById(R.id.searchquery); // Assuming this is your search EditText
+
         viewPager2 = findViewById(R.id.viewPager2);
         progressBarSlider = findViewById(R.id.progressBarSlider);
-        // Initialize progress bars
+
+
         progressBarTopMovies = findViewById(R.id.progressBarTopMovies);
         progressBarUpcoming = findViewById(R.id.progressBarupcomming);
 
-        // Initialize FilmService to interact with Firestore
         filmService = new FilmService();
 
-        if (!searchquery.getText().toString().isEmpty()) {
-            Intent intent = new Intent(HomeScreenActivity.this, find_All_Movie.class);
-            intent.putExtra("searchQuery", searchquery.getText().toString());
-            startActivity(intent);
-        }
+        // Set OnClickListener for "See all Top Movies" TextView
 
-        // Initialize FilmAdapters with empty lists. Data will be populated asynchronously.
+
+        // Use setOnEditorActionListener for EditText submit events
+        searchquery.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    actionId == EditorInfo.IME_ACTION_DONE ||
+                    (event != null && event.getAction() == KeyEvent.ACTION_DOWN &&
+                            event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                String query = searchquery.getText().toString().trim();
+                if (!query.isEmpty()) {
+                    Log.d(TAG, "Search query submitted: " + query + ". Launching findAllActivity.");
+                    Intent intent = new Intent(HomeScreenActivity.this, vn.fpt.timo.ui.activity.findAllActivity.class);
+                    intent.putExtra("searchQuery", query);
+                    startActivity(intent); // Using Activity's context directly
+                } else {
+                    Toast.makeText(HomeScreenActivity.this, "Vui lòng nhập truy vấn tìm kiếm.", Toast.LENGTH_SHORT).show();
+                }
+                return true; // Consume the event
+            }
+            return false; // Let other listeners handle the event
+        });
+
+
         nowPlayingAdapter = new FilmAdapter(new ArrayList<>());
         comingSoonAdapter = new FilmAdapter(new ArrayList<>());
         sliderAdapter = new FilmSliderAdapter(new ArrayList<>());
-        // Set up "Top Movies" (Now Playing) RecyclerView
+
         nowPlayingRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         nowPlayingRecyclerView.setAdapter(nowPlayingAdapter);
-        // Set an item click listener for "Now Playing" films
         nowPlayingAdapter.setOnItemClickListener(film -> {
             Toast.makeText(HomeScreenActivity.this, "Now Playing: " + film.getTitle(), Toast.LENGTH_SHORT).show();
-
         });
-
 
         viewPager2.setAdapter(sliderAdapter);
         viewPager2.setClipToPadding(false);
         viewPager2.setClipChildren(false);
         viewPager2.setOffscreenPageLimit(3);
-        comingSoonRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
         viewPager2.setPageTransformer((page, position) -> {
-            float offset = position * -(0.2f); // Adjust this value for different parallax effect
-            page.setTranslationX(offset * page.getWidth());
+            float offset = position * -40;
+            page.setTranslationX(offset);
+            float scaleFactor = 0.85f + (1 - Math.abs(position)) * 0.15f;
+            page.setScaleX(scaleFactor);
+            page.setScaleY(scaleFactor);
+            page.setAlpha(0.5f + (1 - Math.abs(position)) * 0.5f);
         });
 
         sliderAdapter.setOnItemClickListener(film -> {
             Toast.makeText(HomeScreenActivity.this, "Slider Clicked: " + film.getTitle(), Toast.LENGTH_SHORT).show();
-
         });
 
+        comingSoonRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         comingSoonRecyclerView.setAdapter(comingSoonAdapter);
-        // Set an item click listener for "Coming Soon" films
         comingSoonAdapter.setOnItemClickListener(film -> {
             Toast.makeText(HomeScreenActivity.this, "Coming Soon: " + film.getTitle(), Toast.LENGTH_SHORT).show();
         });
-        // Fetch film data from Firestore
+
         fetchFilms();
 
-        // Set up the listener for BottomNavigationView item selections
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -145,48 +162,44 @@ public class HomeScreenActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Fetches all films from Firestore using FilmService and categorizes them
-     * into "Screening" (Now Playing) and "Stop" (Coming Soon) based on their status.
-     */
     private void fetchFilms() {
-        showProgressBars(); // Show loading indicators before starting fetch
-
-        filmService.getAllScreening() // Calls the FilmService method returning CompletableFuture
+        showProgressBars();
+        filmService.getAllScreening()
                 .thenAccept(films -> {
-                    // This block executes on a background thread when the films are successfully fetched.
-                    // Ensure UI updates are posted back to the main thread.
                     runOnUiThread(() -> {
-                        hideProgressBars(); // Hide loading indicators
+                        hideProgressBars();
 
                         List<Film> nowPlayingFilms = new ArrayList<>();
                         List<Film> comingSoonFilms = new ArrayList<>();
 
-                        // Categorize films based on their 'status' field
                         for (Film film : films) {
                             if ("Screening".equalsIgnoreCase(film.getStatus())) {
                                 nowPlayingFilms.add(film);
                             } else if ("coming_soon".equalsIgnoreCase(film.getStatus())) {
                                 comingSoonFilms.add(film);
                             }
-                            // Optionally handle other statuses if they exist
                         }
 
-
-                        // Update the RecyclerView adapters with the categorized film lists
                         nowPlayingAdapter.updateMovies(nowPlayingFilms);
                         comingSoonAdapter.updateMovies(comingSoonFilms);
 
+                        // CORRECTED: Select top 3 highest averageStars from screening films for slider
                         List<Film> sliderFilms = nowPlayingFilms.stream()
-                                .limit(5) // Limit the number of films in the slider
+                                .sorted(Comparator.comparing(Film::getAverageStars, Comparator.nullsLast(Comparator.reverseOrder()))) // Sort by averageStars descending
+                                .limit(3) // Take top 3
                                 .collect(Collectors.toList());
-                        sliderAdapter.updateFilms(sliderFilms); // Update the slider adapter with data
+                        sliderAdapter.updateFilms(sliderFilms);
+
+                        if (!sliderFilms.isEmpty()) {
+                            int initialPosition = (Integer.MAX_VALUE / 2) - ((Integer.MAX_VALUE / 2) % sliderFilms.size());
+                            viewPager2.setCurrentItem(initialPosition, false);
+                        }
 
                         Log.d(TAG, "Total films fetched: " + films.size());
                         Log.d(TAG, "Now Playing (Screening): " + nowPlayingFilms.size() + " films.");
                         Log.d(TAG, "Coming Soon (Stop): " + comingSoonFilms.size() + " films.");
+                        Log.d(TAG, "Slider films updated: " + sliderFilms.size() + " films.");
 
-                        // Provide feedback if no films are found in a category
                         if (nowPlayingFilms.isEmpty()) {
                             Toast.makeText(HomeScreenActivity.this, "No 'Now Playing' films found.", Toast.LENGTH_SHORT).show();
                         }
@@ -196,38 +209,36 @@ public class HomeScreenActivity extends AppCompatActivity {
                     });
                 })
                 .exceptionally(e -> {
-                    // This block executes if an error occurs during film fetching.
-                    // Ensure UI updates are posted back to the main thread.
                     runOnUiThread(() -> {
-                        hideProgressBars(); // Hide loading indicators
+                        hideProgressBars();
                         Toast.makeText(HomeScreenActivity.this, "Failed to load films: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         Log.e(TAG, "Error fetching films: " + e.getMessage(), e);
                     });
-                    return null; // Return null to indicate the exception was handled
+                    return null;
                 });
     }
 
-    /**
-     * Shows the progress bars and hides the RecyclerViews to indicate loading.
-     */
     private void showProgressBars() {
         progressBarTopMovies.setVisibility(View.VISIBLE);
         progressBarUpcoming.setVisibility(View.VISIBLE);
         progressBarSlider.setVisibility(View.VISIBLE);
         nowPlayingRecyclerView.setVisibility(View.GONE);
         comingSoonRecyclerView.setVisibility(View.GONE);
-        viewPager2.setVisibility(View.GONE); // Hide ViewPager2
+        viewPager2.setVisibility(View.GONE);
     }
 
-    /**
-     * Hides the progress bars and shows the RecyclerViews after data loading.
-     */
     private void hideProgressBars() {
         progressBarTopMovies.setVisibility(View.GONE);
         progressBarUpcoming.setVisibility(View.GONE);
         progressBarSlider.setVisibility(View.GONE);
         nowPlayingRecyclerView.setVisibility(View.VISIBLE);
         comingSoonRecyclerView.setVisibility(View.VISIBLE);
-        viewPager2.setVisibility(View.VISIBLE); // Show ViewPager2
+        viewPager2.setVisibility(View.VISIBLE);
+    }
+
+    public void onStartButtonClick(View view) {
+        Intent intenTextview6 = new Intent(HomeScreenActivity.this, findAllActivity.class);
+        startActivity(intenTextview6);
+
     }
 }

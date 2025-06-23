@@ -6,9 +6,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import vn.fpt.timo.data.models.Showtime;
 
 public class ShowtimeRepository {
@@ -31,7 +33,6 @@ public class ShowtimeRepository {
                 .orderBy("showTime")
                 .get();
     }
-
     // ========== PHƯƠNG THỨC ĐÃ SỬA LẠI LOGIC ==========
     public void createShowtime(Showtime newShowtime, ShowtimeCallback callback) {
         // 1. TRUY VẤN KIỂM TRA TRƯỚC
@@ -61,7 +62,6 @@ public class ShowtimeRepository {
                     callback.onFailure("Không thể kiểm tra lịch chiếu: " + e.getMessage());
                 });
     }
-
     // Interface callback để trả kết quả về cho ViewModel
     public interface ShowtimeCallback {
         void onSuccess();

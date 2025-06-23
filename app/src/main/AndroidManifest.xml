@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Timo">
         <activity
+            android:name=".ui.activity.IntroActivity"
+            android:exported="true">
+        </activity> <!-- Manager Activities -->
+        <activity
+            android:name=".ui.activity.ChooseCinemaActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.MovieManagementActivity"
             android:exported="false" />
         <activity
@@ -23,38 +32,8 @@
             android:name=".ui.activity.FilmSelectionActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.find_All_Movie"
+            android:name=".ui.activity.ManagerHomePageActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.activity.IntroActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-        android:theme="@style/Theme.Timo">
-
-        <!-- Không có LAUNCHER activity -->
-
-        <!-- Manager Activities -->
-        <activity android:name=".ui.activity.MovieManagementActivity" android:exported="false" />
-        <activity android:name=".ui.activity.CreateShowtimeActivity" android:exported="false" />
-        <activity android:name=".ui.activity.FilmSelectionActivity" android:exported="false" />
-        <activity android:name=".ui.activity.ManagerHomePageActivity" android:exported="false" />
-        <activity android:name=".ui.activity.RoomManagementActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.ManagerHomePageActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="vn.fpt.timo.ui.activity.ManagerHomePageActivity" />
-        </activity>
-        <activity android:name=".ui.activity.AddEditRoomActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.RoomManagementActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".ui.activity.RoomManagementActivity"
             android:exported="false"
@@ -78,21 +57,16 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
-        </activity>
-        <activity android:name=".ui.activity.SeatMapActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.RoomManagementActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
-        </activity>
-
-        <!-- User-Facing Activities -->
-        <activity android:name=".ui.activity.find_All_Movie" android:exported="false" />
-        <activity android:name=".ui.activity.IntroActivity" android:exported="false" />
-        <activity android:name=".ui.activity.HomeScreenActivity" android:exported="false" />
-        <activity android:name=".ui.activity.FilmDetailActivity" android:exported="false" />
-
+        </activity> <!-- User-Facing Activities -->
+        <activity
+            android:name=".ui.activity.findAllActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.HomeScreenActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.FilmDetailActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
