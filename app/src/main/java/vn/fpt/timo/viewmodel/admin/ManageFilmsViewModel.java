@@ -7,10 +7,10 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 
 import vn.fpt.timo.data.models.Film;
-import vn.fpt.timo.data.repositories.FilmRepository;
+import vn.fpt.timo.data.repositories.AdminManageFilmRepository;
 
 public class ManageFilmsViewModel extends ViewModel {
-    private final FilmRepository repository = new FilmRepository();
+    private final AdminManageFilmRepository repository = new AdminManageFilmRepository();
     private final MutableLiveData<List<Film>> films = new MutableLiveData<>();
 
     public LiveData<List<Film>> getFilms() { return films; }

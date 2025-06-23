@@ -22,9 +22,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ManageUserFragmentActivity.class))
         );
 
-//        btnManageFilms.setOnClickListener(v ->
-//                startActivity(new Intent(this, ManageFilmsFragmentActivity.class))
-//        );
+        btnManageFilms.setOnClickListener(v ->
+                startActivity(new Intent(this, ManageFilmsFragmentActivity.class))
+        );
 
         btnManageCinemas.setOnClickListener(v ->
                 startActivity(new Intent(this, ManageCinemasFragmentActivity.class))
