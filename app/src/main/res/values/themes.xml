@@ -1,10 +1,63 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- Base theme -->
     <style name="Base.Theme.Timo" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="android:windowBackground">@color/background_dark</item>
+        <!-- Add more base styles as needed -->
     </style>
 
-    <style name="Theme.Timo" parent="Base.Theme.Timo" />
+    <!-- Default App Theme -->
+    <style name="Theme.Timo" parent="Base.Theme.Timo">
+        <!-- Customize your default theme here -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    </style>
+
+    <!-- Manager Theme -->
+    <style name="Theme.Timo.Manager" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/cinemax_dark_gray</item>
+        <item name="colorPrimaryVariant">@color/cinemax_black</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/cinemax_red</item>
+        <item name="colorSecondaryVariant">@color/cinemax_red</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <item name="android:windowBackground">@color/cinemax_black</item>
+        <item name="android:colorBackground">@color/cinemax_black</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/cinemax_light_gray</item>
+
+        <item name="android:buttonStyle">@style/Cinemax.Button</item>
+        <item name="editTextStyle">@style/Cinemax.EditText</item>
+        <item name="spinnerStyle">@style/Cinemax.Spinner</item>
+    </style>
+
+    <!-- Reusable button style -->
+    <style name="Cinemax.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/cinemax_red</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Reusable EditText style -->
+    <style name="Cinemax.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/bg_edittext_themed</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/cinemax_light_gray</item>
+    </style>
+
+    <!-- Reusable Spinner style -->
+    <style name="Cinemax.Spinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@drawable/bg_spinner_themed</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <!-- Optional Project-specific Theme -->
+    <style name="Theme.Project2002" parent="Base.Theme.Timo">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+    </style>
+
 </resources>
