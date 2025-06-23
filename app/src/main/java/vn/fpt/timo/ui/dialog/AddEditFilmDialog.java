@@ -97,7 +97,7 @@ public class AddEditFilmDialog extends DialogFragment {
 
         // Setup genres dropdown
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Genres")
+        db.collection("genres")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<String> genresList = new ArrayList<>();
