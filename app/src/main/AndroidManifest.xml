@@ -14,7 +14,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Timo">
+        android:theme="@style/Theme.Timo"
+        tools:targetApi="31">
         <activity
             android:name=".ui.activity.IntroActivity"
             android:exported="true">
@@ -34,6 +35,17 @@
         <activity
             android:name=".ui.activity.ManagerHomePageActivity"
             android:exported="false" />
+        <!-- Admin Activities -->
+        <activity android:name=".ui.activity.admin.AdminDashboardActivity" android:exported="true" />
+        <activity android:name=".ui.activity.admin.ManageFilmsFragmentActivity" android:exported="false" />
+        <activity android:name=".ui.activity.admin.ManageCinemasFragmentActivity" android:exported="false" />
+        <activity android:name=".ui.activity.admin.ManageUserFragmentActivity" android:exported="false" />
+
+        <!-- Manager Activities -->
+        <activity android:name=".ui.activity.MovieManagementActivity" android:exported="false" />
+        <activity android:name=".ui.activity.CreateShowtimeActivity" android:exported="false" />
+        <activity android:name=".ui.activity.FilmSelectionActivity" android:exported="false" />
+        <activity android:name=".ui.activity.ManagerHomePageActivity" android:exported="false" />
         <activity
             android:name=".ui.activity.RoomManagementActivity"
             android:exported="false"
