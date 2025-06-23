@@ -5,16 +5,4 @@
         <item>Ngừng chiếu</item>
         <item>Sắp chiếu</item>
     </string-array>
-    <string-array name="genre_options">
-        <item>Hành động</item>
-        <item>Hài hước</item>
-        <item>Kinh dị</item>
-        <item>Tình cảm</item>
-        <item>Phiêu lưu</item>
-        <item>Khoa học viễn tưởng</item>
-        <item>Hoạt hình</item>
-        <item>Tội phạm</item>
-        <item>Tài liệu</item>
-        <item>Chiến tranh</item>
-    </string-array>
 </resources>

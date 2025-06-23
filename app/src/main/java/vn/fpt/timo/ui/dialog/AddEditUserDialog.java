@@ -58,20 +58,33 @@ public class AddEditUserDialog {
 
         viewModel.loadAllCinemas(cinemaList -> {
             cinemas.clear();
-            cinemas.addAll(cinemaList);
             cinemaNames.clear();
+            // Add 'Not assigned' option
+            cinemaNames.add("Chưa phân công");
+            Cinema notAssignedCinema = new Cinema();
+            notAssignedCinema.setId(null);
+            notAssignedCinema.setName("Chưa phân công");
+            cinemas.add(0, notAssignedCinema);
             for (Cinema c : cinemaList) {
+                cinemas.add(c);
                 cinemaNames.add(c.getName());
             }
             cinemaAdapter.notifyDataSetChanged();
 
             if (existingUser != null && existingUser.getAssignedCinemaId() != null) {
-                for (int i = 0; i < cinemas.size(); i++) {
+                boolean found = false;
+                for (int i = 1; i < cinemas.size(); i++) { // Start from 1 to skip 'Not assigned'
                     if (cinemas.get(i).getId().equals(existingUser.getAssignedCinemaId())) {
                         spnCinema.setSelection(i);
+                        found = true;
                         break;
                     }
                 }
+                if (!found) {
+                    spnCinema.setSelection(0); // Not assigned
+                }
+            } else {
+                spnCinema.setSelection(0); // Not assigned by default
             }
         });
 
@@ -144,8 +157,12 @@ public class AddEditUserDialog {
 
             // Validate cinema if role is manager
             if (role.equals("manager")) {
-                if (spnCinema.getSelectedItemPosition() >= 0 && spnCinema.getSelectedItemPosition() < cinemas.size()) {
+                if (spnCinema.getSelectedItemPosition() > 0 && spnCinema.getSelectedItemPosition() < cinemas.size()) {
+                    // If not 'Not assigned', get the cinema id
                     cinemaId = cinemas.get(spnCinema.getSelectedItemPosition()).getId();
+                } else {
+                    // 'Not assigned' selected
+                    cinemaId = null;
                 }
                 // KHÔNG ép phải chọn rạp
             }

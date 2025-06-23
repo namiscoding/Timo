@@ -24,11 +24,15 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import vn.fpt.timo.R;
@@ -86,9 +90,24 @@ public class AddEditFilmDialog extends DialogFragment {
         Button btnCancel = view.findViewById(R.id.btnCancel);
 
         // Setup genres dropdown
-        String[] genresOptions = {"Hành động", "Hài", "Tình cảm", "Kinh dị", "Hoạt hình", "Phiêu lưu", "Tâm lý", "Khoa học viễn tưởng", "Tài liệu", "Âm nhạc", "Thể thao", "Gia đình"};
-        ArrayAdapter<String> genresAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, genresOptions);
-        actvGenres.setAdapter(genresAdapter);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Genres")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<String> genresList = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String genreName = doc.getString("name");
+                        if (genreName != null) {
+                            genresList.add(genreName);
+                        }
+                    }
+                    ArrayAdapter<String> genresAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, genresList);
+                    actvGenres.setAdapter(genresAdapter);
+                })
+                .addOnFailureListener(e -> {
+                    showError("Không thể tải thể loại từ Firebase: " + e.getMessage());
+                });
+
 
         // Setup status dropdown
         String[] statusOptions = {"Ngưng chiếu", "Đang chiếu", "Sắp chiếu"};
