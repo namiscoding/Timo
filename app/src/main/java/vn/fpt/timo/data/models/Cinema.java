@@ -3,6 +3,10 @@ package vn.fpt.timo.data.models;
 import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.List;
+
+//import vn.fpt.timo.adapters.TimeSlotAdapter;
+
 public class Cinema {
     @DocumentId
     private String id;
@@ -12,6 +16,9 @@ public class Cinema {
     private String city;
     private GeoPoint location;
     private boolean isActive;
+    private transient double distance;
+    private boolean isExpanded = false; // NEW: for UI expansion state
+//    private transient List<TimeSlotAdapter.DisplayTimeSlot> timeSlots; // NEW: Sử dụng DisplayTimeSlot từ TimeSlotAdapter // NEW: for displaying available showtime slots
     public Cinema() {}
 
     // Getters and Setters...
@@ -27,4 +34,10 @@ public class Cinema {
     public void setLocation(GeoPoint location) { this.location = location; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
+
+    public double getDistance() { return distance; }
+    public void setDistance(double distance) { this.distance = distance; }
+//    public List<TimeSlotAdapter.DisplayTimeSlot> getTimeSlots() { return timeSlots; }
+//    public void setTimeSlots(List<TimeSlotAdapter.DisplayTimeSlot> timeSlots) { this.timeSlots = timeSlots; }
+
 }
