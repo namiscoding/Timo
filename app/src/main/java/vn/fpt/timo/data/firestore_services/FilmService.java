@@ -1,136 +1,130 @@
 package vn.fpt.timo.data.firestore_services;
 
-import static android.content.ContentValues.TAG;
-
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture; // Make sure this import is correct
+import java.util.concurrent.CompletableFuture;
 
 import vn.fpt.timo.data.models.Film;
+import vn.fpt.timo.utils.DataCallback;
 
 public class FilmService {
+    private static final String TAG = "FilmService";
     private final FirebaseFirestore db;
+    private final CollectionReference filmsRef;
 
     public FilmService() {
         db = FirebaseFirestore.getInstance();
+        filmsRef = db.collection("Film");
     }
 
-    /**
-     * Fetches all film documents from the "Film" collection in Firestore.
-     * This method now returns a CompletableFuture, which will complete with a list of Film objects
-     * or an exception if the fetch fails.
-     * The filtering by "status" (Screening/Stop) is now handled by the calling Activity/Fragment.
-     */
-    public CompletableFuture<List<Film>> getAllScreening() { // Method name could be more general like "getAllFilms"
-        CompletableFuture<List<Film>> futureFilms = new CompletableFuture<>();
-        CollectionReference filmsRef = db.collection("Film");
-
-        // Fetch all documents. No status filtering done here, it's done client-side.
-        filmsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    List<Film> films = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        // Attempt to convert document to Film object. Ensure Film POJO has matching fields.
-                        Film film = document.toObject(Film.class);
-                        film.setId(document.getId());
-                        // Manual mapping for robustness or if Film.class doesn't perfectly match all fields
-                        // This ensures you get all expected data, even if toObject() misses some.
-                        film.setTitle(document.getString("title"));
-                        film.setDescription(document.getString("description"));
-                        film.setDirector(document.getString("director"));
-                        if (document.getLong("durationMinutes") != null) {
-                            film.setDurationMinutes(document.getLong("durationMinutes").intValue());
-                        } else {
-                            film.setDurationMinutes(0); // Default or handle cases where durationMinutes is missing
-
-                        }
-                        film.setGenres(document.get("genres") != null ? (List<String>) document.get("genres") : new ArrayList<>());
-                        film.setPosterImageUrl(document.getString("posterImageUrl"));
-                        film.setReleaseDate(document.getTimestamp("releaseDate")); // getTimestamp for Firebase Timestamp
-                        film.setStatus(document.getString("status"));
-                        film.setTrailerUrl(document.getString("trailerUrl"));
-
-                        films.add(film);
-                    }
-                    futureFilms.complete(films); // Complete the Future with the list of films
-                } else {
-                    // Log the error and complete the Future exceptionally
-                    Log.w(TAG, "Error getting documents from Film collection.", task.getException());
-                    futureFilms.completeExceptionally(task.getException());
+    // --- Version from feature/admin-manage-account: callback-based fetch ---
+    public void getAllFilms(DataCallback<List<Film>> callback) {
+        filmsRef.get().addOnSuccessListener(snapshot -> {
+            List<Film> list = new ArrayList<>();
+            for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                Film film = doc.toObject(Film.class);
+                if (film != null) {
+                    film.setId(doc.getId());
+                    list.add(film);
                 }
+            }
+            callback.onData(list);
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Failed to get all films", e);
+            callback.onData(new ArrayList<>()); // or use a different error callback
+        });
+    }
+
+    public void addOrUpdateFilm(Film film, Runnable onComplete) {
+        if (film.getId() == null || film.getId().isEmpty()) {
+            filmsRef.add(film).addOnSuccessListener(doc -> onComplete.run());
+        } else {
+            filmsRef.document(film.getId()).set(film).addOnSuccessListener(aVoid -> onComplete.run());
+        }
+    }
+
+    public void deleteFilm(String id, Runnable onComplete) {
+        filmsRef.document(id).delete().addOnSuccessListener(aVoid -> onComplete.run());
+    }
+
+    // --- Version from develop: CompletableFuture-based fetch ---
+    public CompletableFuture<List<Film>> getAllScreening() {
+        CompletableFuture<List<Film>> futureFilms = new CompletableFuture<>();
+
+        filmsRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Film> films = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Film film = parseFilmFromDocument(document);
+                    films.add(film);
+                }
+                futureFilms.complete(films);
+            } else {
+                Log.w(TAG, "Error getting documents from Film collection.", task.getException());
+                futureFilms.completeExceptionally(task.getException());
             }
         });
 
-        return futureFilms; // Return the Future immediately
+        return futureFilms;
     }
 
     public CompletableFuture<Film> getFilmById(String filmId) {
         CompletableFuture<Film> future = new CompletableFuture<>();
-        DocumentReference filmDocRef = db.collection("Film").document(filmId);
-        // Assuming 'id' is a field within your Firestore documents.
-        // If the document ID itself is the film ID, use filmsCollection.document(filmId).get()
-        filmDocRef
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            // There should only be one document with a specific ID
+        DocumentReference filmDocRef = filmsRef.document(filmId);
 
-                            try {
-                                Film film = document.toObject(Film.class);
-                                film.setId(document.getId());
-                                film.setTitle(document.getString("title"));
-                                film.setDescription(document.getString("description"));
-                                film.setDirector(document.getString("director"));
-                                if (document.getLong("durationMinutes") != null) {
-                                    film.setDurationMinutes(document.getLong("durationMinutes").intValue());
-                                } else {
-                                    film.setDurationMinutes(0); // Default or handle cases where durationMinutes is missing
-
-                                }
-                                film.setGenres(document.get("actor") != null ? (List<String>) document.get("actor") : new ArrayList<>());
-                                film.setGenres(document.get("genres") != null ? (List<String>) document.get("genres") : new ArrayList<>());
-                                film.setPosterImageUrl(document.getString("posterImageUrl"));
-                                film.setReleaseDate(document.getTimestamp("releaseDate")); // getTimestamp for Firebase Timestamp
-                                film.setStatus(document.getString("status"));
-                                film.setTrailerUrl(document.getString("trailerUrl"));
-
-
-                                future.complete(film);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error parsing document to Film for ID: " + filmId, e);
-                                future.completeExceptionally(e);
-                            }
-                        } else {
-                            Log.d(TAG, "No film found with ID: " + filmId);
-                            future.complete(null); // Complete with null if no film is found
-                        }
-                    } else {
-                        Log.e(TAG, "Error getting film with ID: " + filmId, task.getException());
-                        future.completeExceptionally(task.getException()); // Complete with exception on failure
+        filmDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null && document.exists()) {
+                    try {
+                        Film film = parseFilmFromDocument(document);
+                        future.complete(film);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing film with ID: " + filmId, e);
+                        future.completeExceptionally(e);
                     }
-                });
+                } else {
+                    Log.d(TAG, "No film found with ID: " + filmId);
+                    future.complete(null);
+                }
+            } else {
+                Log.e(TAG, "Error getting film with ID: " + filmId, task.getException());
+                future.completeExceptionally(task.getException());
+            }
+        });
+
         return future;
     }
 
+    // --- Utility method to safely parse film from a document ---
+    private Film parseFilmFromDocument(DocumentSnapshot document) {
+        Film film = document.toObject(Film.class);
+        if (film == null) film = new Film();
+
+        film.setId(document.getId());
+        film.setTitle(document.getString("title"));
+        film.setDescription(document.getString("description"));
+        film.setDirector(document.getString("director"));
+        film.setDurationMinutes(document.getLong("durationMinutes") != null ?
+                document.getLong("durationMinutes").intValue() : 0);
+        film.setGenres(document.get("genres") != null ? (List<String>) document.get("genres") : new ArrayList<>());
+        film.setPosterImageUrl(document.getString("posterImageUrl"));
+        film.setReleaseDate(document.getTimestamp("releaseDate"));
+        film.setStatus(document.getString("status"));
+        film.setTrailerUrl(document.getString("trailerUrl"));
+
+        return film;
+    }
 }

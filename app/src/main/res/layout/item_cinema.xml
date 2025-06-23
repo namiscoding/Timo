@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- item_film.xml -->
+<!-- item_cinema.xml -->
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -15,37 +15,19 @@
         android:padding="16dp"
         android:orientation="horizontal">
 
-        <!-- Poster Image -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="80dp"
-            android:layout_height="120dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp"
-            android:layout_marginEnd="16dp">
-
-            <ImageView
-                android:id="@+id/imgPoster"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:background="#FC3323"
-                android:src="@drawable/ic_movie" />
-
-        </androidx.cardview.widget.CardView>
-
-        <!-- Film Info -->
+        <!-- Cinema Info -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- Title -->
+            <!-- Name -->
             <TextView
-                android:id="@+id/tvTitle"
+                android:id="@+id/tvName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tên phim"
+                android:text="Tên rạp"
                 android:textSize="18sp"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
@@ -54,7 +36,7 @@
                 android:ellipsize="end"
                 android:layout_marginBottom="4dp" />
 
-            <!-- Director -->
+            <!-- Address -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,10 +52,10 @@
                     app:tint="#FFFFFF" />
 
                 <TextView
-                    android:id="@+id/tvDirector"
+                    android:id="@+id/tvAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Đạo diễn"
+                    android:text="Địa chỉ"
                     android:textSize="14sp"
                     android:textColor="#FFFFFF"
                     android:fontFamily="sans-serif"
@@ -82,7 +64,7 @@
 
             </LinearLayout>
 
-            <!-- Duration & Rating -->
+            <!-- City & Status -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -104,10 +86,10 @@
                         app:tint="#FFFFFF" />
 
                     <TextView
-                        android:id="@+id/tvDuration"
+                        android:id="@+id/tvCity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="120 phút"
+                        android:text="Thành phố"
                         android:textSize="12sp"
                         android:textColor="#FFFFFF"
                         android:fontFamily="sans-serif" />
@@ -128,10 +110,10 @@
                         app:tint="#FFC107" />
 
                     <TextView
-                        android:id="@+id/tvRating"
+                        android:id="@+id/tvStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="4.5"
+                        android:text="Hoạt động"
                         android:textSize="12sp"
                         android:textColor="#FFFFFF"
                         android:fontFamily="sans-serif" />
@@ -163,10 +145,10 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDelete"
+                    android:id="@+id/btnToggleStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
-                    android:text="Xóa"
+                    android:text="Vô hiệu hóa"
                     android:textSize="12sp"
                     android:textColor="#FFFFFF"
                     android:backgroundTint="#FC3323"

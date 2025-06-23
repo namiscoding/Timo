@@ -2,11 +2,11 @@ package vn.fpt.timo.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log; // Import Log for error logging
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button; // Correctly import Button
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,135 +16,148 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import vn.fpt.timo.R;
-import vn.fpt.timo.data.models.Film;
-import vn.fpt.timo.ui.activity.FilmDetailActivity; // Assuming FilmDetailActivity exists
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.FilmViewHolder> {
-    private List<Film> movies; // List to hold film data
-    private Context context; // Context for Glide and other operations
-    private OnItemClickListener onItemClickListener; // Listener for item click events
+import vn.fpt.timo.R;
+import vn.fpt.timo.data.models.Film;
+import vn.fpt.timo.ui.activity.FilmDetailActivity;
 
-    // Constructor to initialize the adapter with a list of films
-    public FilmAdapter(List<Film> movies) {
-        // Ensure the list is never null
-        this.movies = movies != null ? movies : new ArrayList<>();
+public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.FilmViewHolder> {
+
+    // Cho admin: hành động Edit/Delete
+    public interface FilmActionListener {
+        void onEdit(Film film);
+        void onDelete(Film film);
     }
 
-    // Setter for the item click listener
+    // Cho user: click item (xem chi tiết phim)
+    public interface OnItemClickListener {
+        void onItemClick(Film film);
+    }
+
+    private final List<Film> films;
+    private final boolean isAdminView;
+    private final FilmActionListener actionListener;
+    private OnItemClickListener itemClickListener;
+    private Context context;
+
+    // --- Constructor cho admin ---
+    public FilmAdapter(List<Film> films, FilmActionListener listener) {
+        this.films = films != null ? films : new ArrayList<>();
+        this.actionListener = listener;
+        this.isAdminView = true;
+    }
+
+    // --- Constructor cho user ---
+    public FilmAdapter(List<Film> films) {
+        this.films = films != null ? films : new ArrayList<>();
+        this.actionListener = null;
+        this.isAdminView = false;
+    }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
-        this.onItemClickListener = listener;
+        this.itemClickListener = listener;
+    }
+
+    public void updateData(List<Film> newData) {
+        films.clear();
+        films.addAll(newData);
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public FilmViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        context = parent.getContext(); // Get context from parent ViewGroup
-        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_film, parent, false);
-        return new FilmViewHolder(inflate); // Return a new ViewHolder instance
+        context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.item_film, parent, false);
+        return new FilmViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FilmViewHolder holder, int position) {
-        Film movie = movies.get(position); // Get the Film object at the current position
-        holder.bind(movie); // CORRECTED: Call bind with only Film object
+        holder.bind(films.get(position));
     }
 
     @Override
     public int getItemCount() {
-        // Return the number of items in the list, or 0 if the list is null/empty
-        return movies != null ? movies.size() : 0;
+        return films.size();
     }
 
-    /**
-     * Updates the adapter's data set with new films and notifies the RecyclerView to refresh.
-     *
-     * @param newMovies The new list of Film objects.
-     */
-    public void updateMovies(List<Film> newMovies) {
-        this.movies = newMovies != null ? newMovies : new ArrayList<>(); // Update list, ensure not null
-        notifyDataSetChanged(); // Notify adapter that data has changed, triggering a re-render
-    }
-
-    // Interface for click events on RecyclerView items
-    public interface OnItemClickListener {
-        void onItemClick(Film film);
-    }
-
-    // ViewHolder class to hold and manage views for a single list item
     class FilmViewHolder extends RecyclerView.ViewHolder {
-        private ImageView posterImageView;
-        private TextView titleTextView;
-        private Button buttonBuyNow; // CORRECTED: Reference to Button instead of TextView for description
+        ImageView posterImage;
+        TextView title, director, star, duration;
+        Button editBtn, deleteBtn, buttonBuyNow;
 
         public FilmViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Find views by their IDs within the item layout
-            posterImageView = itemView.findViewById(R.id.imageViewPoster);
-            titleTextView = itemView.findViewById(R.id.textViewTitle);
-            buttonBuyNow = itemView.findViewById(R.id.buttonBuyNow); // CORRECTED: Find the Button by its ID
 
-            // Set OnClickListener for the entire card (itemView)
-            // This listener is set ONCE in the constructor.
-            itemView.setOnClickListener(v -> {
-                // Check if a listener is set and the position is valid
-                if (onItemClickListener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    // Invoke the onItemClick method of the listener with the clicked Film object
-                    onItemClickListener.onItemClick(movies.get(getAdapterPosition()));
-                }
-            });
-            posterImageView.setOnClickListener(v -> {
+            posterImage = itemView.findViewById(R.id.imgPoster); // or imageViewPoster
+            title = itemView.findViewById(R.id.tvTitle);         // or textViewTitle
+            director = itemView.findViewById(R.id.tvDirector);   // optional in user view
+            star = itemView.findViewById(R.id.tvRating);         // optional
+            duration = itemView.findViewById(R.id.tvDuration);   // optional
 
-
-            });
-            // Set OnClickListener specifically for the "Book Now" / "View Details" button
-            // This listener is also set ONCE in the constructor.
-            buttonBuyNow.setOnClickListener(v -> {
-                Film clickedFilm = movies.get(getAdapterPosition());
-                Intent intent = new Intent(itemView.getContext(), FilmDetailActivity.class);
-                // Pass the film ID or relevant data to FilmDetailActivity
-                if (clickedFilm.getId() != null) {
-
-                    intent.putExtra("filmId", clickedFilm.getId());
-                    System.out.println(clickedFilm.getId());// CORRECTED: Correct way to get and pass ID
-                } else {
-                    // Use Log.e for errors, Toast for user feedback
-                    Log.e("FilmAdapter", "Film ID is null for film: " + clickedFilm.getTitle());
-                    Toast.makeText(itemView.getContext(), "Film details not available.", Toast.LENGTH_SHORT).show();
-                    return; // Prevent starting activity if ID is null
-                }
-                itemView.getContext().startActivity(intent); // Start the activity
-
-            });
+            editBtn = itemView.findViewById(R.id.btnEdit);       // only in admin view
+            deleteBtn = itemView.findViewById(R.id.btnDelete);   // only in admin view
+            buttonBuyNow = itemView.findViewById(R.id.buttonBuyNow); // only in user view
         }
 
-        /**
-         * Binds Film data to the views in the ViewHolder.
-         * This method is called by onBindViewHolder for each item to be displayed or recycled.
-         *
-         * @param film The Film object containing data to be displayed.
-         */
-        public void bind(Film film) { // CORRECTED: Removed FilmViewHolder holder parameter
-            titleTextView.setText(film.getTitle());
+        public void bind(Film film) {
+            title.setText(film.getTitle());
 
-            // Dynamically set button text based on film status
-            if ("Screening".equalsIgnoreCase(film.getStatus())) {
-                buttonBuyNow.setText("Book Now");
-            } else if ("upcoming".equalsIgnoreCase(film.getStatus())) {
-                buttonBuyNow.setText("View Details");
-            } else {
-                buttonBuyNow.setText("Info"); // Default text for other statuses
-            }
-
-            // Load poster image using Glide
+            // --- Load ảnh ---
             Glide.with(context)
                     .load(film.getPosterImageUrl())
                     .placeholder(R.drawable.ic_launcher_background)
                     .error(R.drawable.ic_launcher_background)
-                    .into(posterImageView);
+                    .into(posterImage);
+
+            if (isAdminView) {
+                // --- Hiển thị dữ liệu phụ ---
+                if (director != null) director.setText(film.getDirector());
+                if (duration != null) duration.setText((film.getDurationMinutes() != null ? film.getDurationMinutes() : 0) + " phút");
+                if (star != null) star.setText(String.format("%.1f", film.getAverageStars() != null ? film.getAverageStars() : 0.0));
+
+                // --- Gắn sự kiện ---
+                editBtn.setVisibility(View.VISIBLE);
+                deleteBtn.setVisibility(View.VISIBLE);
+                if (editBtn != null) editBtn.setOnClickListener(v -> actionListener.onEdit(film));
+                if (deleteBtn != null) deleteBtn.setOnClickListener(v -> actionListener.onDelete(film));
+                if (buttonBuyNow != null) buttonBuyNow.setVisibility(View.GONE);
+            } else {
+                // --- User view ---
+                if (director != null) director.setVisibility(View.GONE);
+                if (duration != null) duration.setVisibility(View.GONE);
+                if (star != null) star.setVisibility(View.GONE);
+                if (editBtn != null) editBtn.setVisibility(View.GONE);
+                if (deleteBtn != null) deleteBtn.setVisibility(View.GONE);
+
+                if (buttonBuyNow != null) {
+                    buttonBuyNow.setVisibility(View.VISIBLE);
+                    buttonBuyNow.setText(
+                            "screening".equalsIgnoreCase(film.getStatus()) ? "Book Now" :
+                            "upcoming".equalsIgnoreCase(film.getStatus()) ? "View Details" : "Info");
+
+                    buttonBuyNow.setOnClickListener(v -> {
+                        if (film.getId() != null) {
+                            Intent intent = new Intent(itemView.getContext(), FilmDetailActivity.class);
+                            intent.putExtra("filmId", film.getId());
+                            itemView.getContext().startActivity(intent);
+                        } else {
+                            Log.e("FilmAdapter", "Film ID is null for film: " + film.getTitle());
+                            Toast.makeText(itemView.getContext(), "Film details not available.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                // Cả itemView cũng được gắn listener riêng
+                itemView.setOnClickListener(v -> {
+                    if (itemClickListener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        itemClickListener.onItemClick(film);
+                    }
+                });
+            }
         }
     }
 }
