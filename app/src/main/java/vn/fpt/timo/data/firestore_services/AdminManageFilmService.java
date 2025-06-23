@@ -2,15 +2,11 @@ package vn.fpt.timo.data.firestore_services;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +15,12 @@ import java.util.concurrent.CompletableFuture;
 import vn.fpt.timo.data.models.Film;
 import vn.fpt.timo.utils.DataCallback;
 
-public class FilmService {
+public class AdminManageFilmService {
     private static final String TAG = "FilmService";
     private final FirebaseFirestore db;
     private final CollectionReference filmsRef;
 
-    public FilmService() {
+    public AdminManageFilmService() {
         db = FirebaseFirestore.getInstance();
         filmsRef = db.collection("Film");
     }

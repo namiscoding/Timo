@@ -11,25 +11,23 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import vn.fpt.timo.data.firestore_services.FilmService;
+import vn.fpt.timo.data.firestore_services.AdminManageFilmService;
 import vn.fpt.timo.data.models.Film;
-import vn.fpt.timo.utils.DataCallback;
 
 public class FilmRepository {
 
     private static final String TAG = "TIMO_DEBUG";
     private final FirebaseFirestore db;
     private final CollectionReference filmCollection;
-    private final FilmService filmService;
+    private final AdminManageFilmService adminManageFilmService;
 
     public FilmRepository() {
         this.db = FirebaseFirestore.getInstance();
         this.filmCollection = db.collection("Film");
-        this.filmService = new FilmService();
+        this.adminManageFilmService = new AdminManageFilmService();
         Log.d(TAG, "FilmRepository initialized with collection: Film");
     }
 
@@ -121,11 +119,11 @@ public class FilmRepository {
 
     // --- 5. Thêm, cập nhật, xóa (từ FilmService) ---
     public void addOrUpdateFilm(Film film, Runnable onComplete) {
-        filmService.addOrUpdateFilm(film, onComplete);
+        adminManageFilmService.addOrUpdateFilm(film, onComplete);
     }
 
     public void deleteFilm(String id, Runnable onComplete) {
-        filmService.deleteFilm(id, onComplete);
+        adminManageFilmService.deleteFilm(id, onComplete);
     }
 
     // --- Interfaces dùng cho async callback ---

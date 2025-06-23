@@ -25,7 +25,7 @@ import java.util.Map;
 import vn.fpt.timo.R;
 import vn.fpt.timo.data.models.Cinema;
 import vn.fpt.timo.data.models.User;
-import vn.fpt.timo.data.repositories.CinemaRepository;
+import vn.fpt.timo.data.repositories.AdminManageCinemaRepository;
 import vn.fpt.timo.ui.adapter.UserAdapter;
 import vn.fpt.timo.ui.dialog.AddEditUserDialog;
 import vn.fpt.timo.viewmodel.admin.ManageUsersViewModel;
@@ -97,7 +97,7 @@ public class ManageUsersFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     private void loadCinemas() {
-        CinemaRepository cinemaRepo = new CinemaRepository();
+        AdminManageCinemaRepository cinemaRepo = new AdminManageCinemaRepository();
         cinemaRepo.getAllCinemas(cinemas -> {
             cinemaIdToName.clear();
             for (Cinema cinema : cinemas) {

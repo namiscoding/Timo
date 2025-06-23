@@ -27,13 +27,13 @@ import java.util.List;
 
 import vn.fpt.timo.R;
 import vn.fpt.timo.data.models.Cinema;
-import vn.fpt.timo.ui.adapter.CinemaAdapter;
+import vn.fpt.timo.ui.adapter.AdminManageCinemaAdapter;
 import vn.fpt.timo.ui.dialog.AddEditCinemaDialog;
 import vn.fpt.timo.viewmodel.admin.ManageCinemasViewModel;
 
 public class ManageCinemasFragment extends Fragment {
     private ManageCinemasViewModel viewModel;
-    private CinemaAdapter adapter;
+    private AdminManageCinemaAdapter adapter;
     private List<Cinema> allCinemas = new ArrayList<>();
 
     @Nullable
@@ -48,7 +48,7 @@ public class ManageCinemasFragment extends Fragment {
 
         RecyclerView rv = view.findViewById(R.id.rvCinemas);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new CinemaAdapter(new ArrayList<>(), new CinemaAdapter.CinemaActionListener() {
+        adapter = new AdminManageCinemaAdapter(new ArrayList<>(), new AdminManageCinemaAdapter.CinemaActionListener() {
             @Override
             public void onEdit(Cinema cinema) {
                 AddEditCinemaDialog.show(requireActivity(), cinema, viewModel);

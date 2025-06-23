@@ -9,12 +9,12 @@ import java.util.function.Consumer;
 
 import vn.fpt.timo.data.models.Cinema;
 import vn.fpt.timo.data.models.User;
-import vn.fpt.timo.data.repositories.CinemaRepository;
+import vn.fpt.timo.data.repositories.AdminManageCinemaRepository;
 import vn.fpt.timo.data.repositories.UserRepository;
 
 public class ManageUsersViewModel extends ViewModel {
     private final UserRepository repository = new UserRepository();
-    private final CinemaRepository cinemaRepository = new CinemaRepository();
+    private final AdminManageCinemaRepository adminManageCinemaRepository = new AdminManageCinemaRepository();
     private final MutableLiveData<List<User>> users = new MutableLiveData<>();
 
     public LiveData<List<User>> getUsers() {
@@ -33,6 +33,6 @@ public class ManageUsersViewModel extends ViewModel {
         repository.deleteUser(userId, this::loadUsers);
     }
     public void loadAllCinemas(Consumer<List<Cinema>> callback) {
-        cinemaRepository.getAllCinemas(callback);
+        adminManageCinemaRepository.getAllCinemas(callback);
     }
 }

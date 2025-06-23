@@ -9,12 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import vn.fpt.timo.data.firestore_services.CinemaService;
+import vn.fpt.timo.data.firestore_services.AdminManageCinemaService;
 import vn.fpt.timo.data.models.Cinema;
-import vn.fpt.timo.utils.DataCallback;
 
-public class CinemaRepository {
-    private final CinemaService cinemaService = new CinemaService();
+public class AdminManageCinemaRepository {
+    private final AdminManageCinemaService adminManageCinemaService = new AdminManageCinemaService();
 
     public void getAllCinemas(Consumer<List<Cinema>> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -39,7 +38,7 @@ public class CinemaRepository {
     }
 
     public void addOrUpdateCinema(Cinema cinema, Runnable onComplete) {
-        cinemaService.addOrUpdateCinema(cinema, onComplete);
+        adminManageCinemaService.addOrUpdateCinema(cinema, onComplete);
     }
 
     public void toggleCinemaStatus(String id, boolean newStatus, Runnable onComplete) {

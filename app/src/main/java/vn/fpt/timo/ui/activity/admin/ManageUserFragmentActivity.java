@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import vn.fpt.timo.R;
-import vn.fpt.timo.ui.fragment.admin.ManageFilmsFragment;
+//import vn.fpt.timo.ui.fragment.admin.ManageFilmsFragment;
 import vn.fpt.timo.ui.fragment.admin.ManageUsersFragment;
 
 public class ManageUserFragmentActivity extends AppCompatActivity {
