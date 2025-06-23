@@ -131,19 +131,28 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Genres -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thể loại *"
+            android:textSize="16sp"
+            android:textColor="#757575"
+            android:layout_marginBottom="4dp"
+            android:fontFamily="sans-serif" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilGenres"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxStrokeColor="#FC3323"
-            app:hintTextColor="#FC3323"
+            app:boxBackgroundMode="outline"
             app:boxCornerRadiusTopStart="8dp"
             app:boxCornerRadiusTopEnd="8dp"
             app:boxCornerRadiusBottomStart="8dp"
             app:boxCornerRadiusBottomEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:hint="Thể loại *">
+            app:hintEnabled="false">
 
             <AutoCompleteTextView
                 android:id="@+id/actvGenres"
@@ -152,8 +161,9 @@
                 android:inputType="none"
                 android:textSize="16sp"
                 android:textColor="#FFFFFF"
-                android:textColorHint="#FFFFFF"
-                android:fontFamily="sans-serif" />
+                android:textColorHint="#757575"
+                android:fontFamily="sans-serif"
+                android:hint="Chọn thể loại" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
