@@ -17,15 +17,18 @@
         android:theme="@style/Theme.Timo"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activity.IntroActivity"
-            android:exported="true">
-        </activity> <!-- Manager Activities -->
-        <activity
-            android:name=".ui.activity.ChooseCinemaActivity"
+            android:name=".ui.activity.ChooseCinemaForBookingActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.activity.findAllFilmCustomerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.IntroActivity"
+            android:exported="true" /> <!-- Manager Activities -->
+
         <activity
             android:name=".ui.activity.MovieManagementActivity"
-            android:exported="false" />
+            android:exported="false" /> <!-- Manager Activities -->
         <activity
             android:name=".ui.activity.CreateShowtimeActivity"
             android:exported="false" />
@@ -34,18 +37,19 @@
             android:exported="false" />
         <activity
             android:name=".ui.activity.ManagerHomePageActivity"
+            android:exported="false" /> <!-- Admin Activities -->
+        <activity
+            android:name=".ui.activity.admin.AdminDashboardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.activity.admin.ManageFilmsFragmentActivity"
             android:exported="false" />
-        <!-- Admin Activities -->
-        <activity android:name=".ui.activity.admin.AdminDashboardActivity" android:exported="true" />
-        <activity android:name=".ui.activity.admin.ManageFilmsFragmentActivity" android:exported="false" />
-        <activity android:name=".ui.activity.admin.ManageCinemasFragmentActivity" android:exported="false" />
-        <activity android:name=".ui.activity.admin.ManageUserFragmentActivity" android:exported="false" />
-
-        <!-- Manager Activities -->
-        <activity android:name=".ui.activity.MovieManagementActivity" android:exported="false" />
-        <activity android:name=".ui.activity.CreateShowtimeActivity" android:exported="false" />
-        <activity android:name=".ui.activity.FilmSelectionActivity" android:exported="false" />
-        <activity android:name=".ui.activity.ManagerHomePageActivity" android:exported="false" />
+        <activity
+            android:name=".ui.activity.admin.ManageCinemasFragmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.admin.ManageUserFragmentActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.activity.RoomManagementActivity"
             android:exported="false"
@@ -71,13 +75,10 @@
                 android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
         </activity> <!-- User-Facing Activities -->
         <activity
-            android:name=".ui.activity.findAllActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.activity.HomeScreenActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.FilmDetailActivity"
+            android:name=".ui.activity.customerfilmDetailActivity"
             android:exported="false" />
     </application>
 
