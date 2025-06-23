@@ -27,6 +27,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -36,8 +39,24 @@ dependencies {
     implementation libs.activity
     implementation libs.constraintlayout
     implementation libs.firebase.firestore
+    implementation libs.firebase.auth
+    implementation libs.credentials
+    implementation libs.credentials.play.services.auth
+    implementation libs.googleid
+    implementation libs.annotation
+    implementation libs.lifecycle.livedata.ktx
+    implementation libs.lifecycle.viewmodel.ktx
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
     implementation platform('com.google.firebase:firebase-bom:33.15.0')
+
+    // Firebase Authentication
+    implementation 'com.google.firebase:firebase-auth:22.0.0' // Kiểm tra phiên bản mới nhất trên Firebase Docs
+
+    // Google Sign-In
+    implementation 'com.google.android.gms:play-services-auth:20.7.0' // Kiểm tra phiên bản mới nhất trên Google Developers
+
+    // Material Components (nếu bạn dùng MaterialButton)
+    implementation 'com.google.android.material:material:1.12.0' // Đảm bảo bạn đã có cái này nếu dùng MaterialButton
 }

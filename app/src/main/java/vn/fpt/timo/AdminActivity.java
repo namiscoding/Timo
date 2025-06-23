@@ -6,14 +6,18 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseUser;
 
 import vn.fpt.timo.viewmodel.AuthViewModel;
 
-public class MainActivity extends AppCompatActivity {
+public class AdminActivity extends AppCompatActivity {
 
     private TextView tvWelcomeMessage;
     private Button btnLogout;
@@ -23,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_admin);
 
         tvWelcomeMessage = findViewById(R.id.tvWelcomeMessage);
         btnLogout = findViewById(R.id.btnLogout);
@@ -33,11 +37,11 @@ public class MainActivity extends AppCompatActivity {
         // Hiển thị tên người dùng nếu có
         FirebaseUser currentUser = authViewModel.getCurrentUser();
         if (currentUser != null) {
-            String welcomeText = "Welcome, " + (currentUser.getDisplayName() != null ? currentUser.getDisplayName() : currentUser.getEmail()) + "!";
+            String welcomeText = "Welcome, Admin " + (currentUser.getDisplayName() != null ? currentUser.getDisplayName() : currentUser.getEmail()) + "!";
             tvWelcomeMessage.setText(welcomeText);
         } else {
             // Nếu không có người dùng, chuyển về màn hình Login
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            startActivity(new Intent(AdminActivity.this, LoginActivity.class));
             finish();
             return;
         }
@@ -47,19 +51,15 @@ public class MainActivity extends AppCompatActivity {
             authViewModel.logout();
         });
 
-        // Quan sát trạng thái người dùng (để biết khi nào đăng xuất)
         authViewModel.getFirebaseUserLiveData().observe(this, firebaseUser -> {
             if (firebaseUser == null) {
-                // Người dùng đã đăng xuất
-                Toast.makeText(MainActivity.this, "Logged out successfully.", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(MainActivity.this, AuthOptionsActivity.class));
-                finish(); // Đóng HomeActivity
+                Toast.makeText(AdminActivity.this, "Logged out successfully.", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(AdminActivity.this, AuthOptionsActivity.class));
+                finish();
             }
         });
 
-        // Có thể quan sát cả resultMessageLiveData để hiển thị Toast cho việc logout thành công
         authViewModel.getResultMessageLiveData().observe(this, message -> {
-
         });
     }
 }
