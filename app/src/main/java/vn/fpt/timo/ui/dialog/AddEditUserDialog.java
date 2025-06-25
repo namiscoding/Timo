@@ -15,7 +15,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast; // Keep if you decide to use Toast for errors, otherwise remove
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;

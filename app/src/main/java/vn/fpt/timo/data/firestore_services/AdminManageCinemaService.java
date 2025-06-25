@@ -7,7 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-import vn.fpt.timo.data.models.Cinema;
+import vn.fpt.data.models.Cinema;
 import vn.fpt.timo.utils.DataCallback;
 
 public class AdminManageCinemaService {

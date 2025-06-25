@@ -13,8 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-
 import vn.fpt.timo.R;
 import vn.fpt.timo.data.models.Seat;
 import vn.fpt.timo.ui.adapter.SeatAdapter;
