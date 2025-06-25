@@ -289,6 +289,14 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Status & Rating Row -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trạng thái *"
+            android:textSize="16sp"
+            android:textColor="#757575"
+            android:layout_marginBottom="4dp"
+            android:fontFamily="sans-serif" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
