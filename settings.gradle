@@ -21,3 +21,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Timo"
 include ':app'
+include ':data'
+include ':feature_admin'
+include ':feature_manager'
+include ':feature_auth'
+include ':feature_customer'
