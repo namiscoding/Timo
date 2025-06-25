@@ -14,16 +14,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Timo">
         <activity
-            android:name=".ui.activity.MovieManagementActivity"
+            android:name=".ui.activity.manager.ScheduleViewActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.CreateShowtimeActivity"
+            android:name=".ui.activity.manager.MovieManagementActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.FilmSelectionActivity"
+            android:name=".ui.activity.manager.CreateShowtimeActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activity.ManagerHomePageActivity"
+            android:name=".ui.activity.manager.FilmSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.manager.ManagerHomePageActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,28 +35,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.RoomManagementActivity"
+            android:name=".ui.activity.manager.RoomManagementActivity"
             android:exported="false"
-            android:parentActivityName=".ui.activity.ManagerHomePageActivity">
+            android:parentActivityName=".ui.activity.manager.ManagerHomePageActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="vn.fpt.timo.ui.activity.ManagerHomePageActivity" />
+                android:value="vn.fpt.timo.ui.activity.manager.ManagerHomePageActivity" />
         </activity>
         <activity
-            android:name=".ui.activity.AddEditRoomActivity"
+            android:name=".ui.activity.manager.AddEditRoomActivity"
             android:exported="false"
-            android:parentActivityName=".ui.activity.RoomManagementActivity">
+            android:parentActivityName=".ui.activity.manager.RoomManagementActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
+                android:value="vn.fpt.timo.ui.activity.manager.RoomManagementActivity" />
         </activity>
         <activity
-            android:name=".ui.activity.SeatMapActivity"
+            android:name=".ui.activity.manager.SeatMapActivity"
             android:exported="false"
-            android:parentActivityName=".ui.activity.RoomManagementActivity">
+            android:parentActivityName=".ui.activity.manager.RoomManagementActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
+                android:value="vn.fpt.timo.ui.activity.manager.RoomManagementActivity" />
         </activity>
     </application>
 

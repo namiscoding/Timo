@@ -1,9 +1,8 @@
-package vn.fpt.timo.ui.activity;
+package vn.fpt.timo.ui.activity.manager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -146,7 +145,6 @@ public class RoomManagementActivity extends AppCompatActivity implements RoomAda
         intent.putExtra("roomId", room.getId());
         intent.putExtra("roomName", room.getName());
         intent.putExtra("roomType", room.getType());
-        // ĐẢM BẢO room.getRows() và room.getColumns() có giá trị đúng
         intent.putExtra("rows", room.getRows());
         intent.putExtra("columns", room.getColumns());
         startActivity(intent);

@@ -96,28 +96,35 @@ public class FilmRepository {
 
     // Thêm phương thức này vào bên trong lớp FilmRepository
 
-    public void getFilmsByGenre(String genre, OnFilmFetchedListener listener) {
+    // Thay thế hàm getFilmsByGenre cũ bằng hàm getFilms mới này
+    public void getFilms(String genre, String status, OnFilmFetchedListener listener) {
+        Log.d(TAG, "getFilms called with Genre: " + genre + ", Status: " + status);
         Query query = filmCollection;
 
+        // 1. Thêm điều kiện lọc theo Thể loại (nếu có)
         if (genre != null && !genre.equalsIgnoreCase("All")) {
             query = query.whereArrayContains("genres", genre);
         }
 
-        query.orderBy("status").orderBy("releaseDate", Query.Direction.DESCENDING);
+        // 2. Thêm điều kiện lọc theo Trạng thái (nếu có)
+        if (status != null && !status.equalsIgnoreCase("All")) {
+            query = query.whereEqualTo("status", status);
+        }
 
-        query.get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        // Thêm một dòng log để chúng ta biết kết quả
-                        Log.d("FilmRepository", "Query success, found " + task.getResult().size() + " films.");
+        // 3. Luôn sắp xếp để kết quả có thứ tự
+        query = query.orderBy("releaseDate", Query.Direction.DESCENDING);
 
-                        List<Film> filmList = task.getResult().toObjects(Film.class);
-                        listener.onSuccess(filmList);
-                    } else {
-                        Log.e("FilmRepository", "Query failed: ", task.getException());
-                        listener.onFailure(task.getException().getMessage());
-                    }
-                });
+        // 4. Thực thi truy vấn
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                Log.d(TAG, "Query success, found " + task.getResult().size() + " films.");
+                List<Film> filmList = task.getResult().toObjects(Film.class);
+                listener.onSuccess(filmList);
+            } else {
+                Log.e(TAG, "Query failed: ", task.getException());
+                listener.onFailure(task.getException().getMessage());
+            }
+        });
     }
 
 

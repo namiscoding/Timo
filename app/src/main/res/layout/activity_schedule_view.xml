@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cinemax_black"
-    tools:context=".ui.activity.manager.MovieManagementActivity">
+    tools:context=".ui.activity.manager.ScheduleViewActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -18,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Quản Lý Phim"
+            app:title="Xem Lịch Chiếu"
             app:titleTextColor="@color/white" />
 
         <HorizontalScrollView
@@ -26,30 +26,16 @@
             android:layout_height="wrap_content"
             android:scrollbars="none">
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupGenres"
+            <LinearLayout
+                android:id="@+id/dateButtonContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:paddingStart="12dp"
+                android:paddingTop="8dp"
                 android:paddingEnd="12dp"
-                app:singleLine="true"
-                app:singleSelection="true"/>
-        </HorizontalScrollView>
+                android:paddingBottom="8dp" />
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:paddingBottom="8dp">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                app:singleLine="true"
-                app:singleSelection="true"/>
         </HorizontalScrollView>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -60,19 +46,31 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvMovies"
+            android:id="@+id/rvSchedule"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingTop="8dp" />
+            android:padding="8dp"
+            tools:listitem="@layout/item_film_schedule" />
+
+        <TextView
+            android:id="@+id/tvNoShowtimes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Không có suất chiếu nào trong ngày này."
+            android:textColor="@color/cinemax_light_gray"
+            android:textSize="16sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:visibility="gone" />
+
     </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

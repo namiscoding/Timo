@@ -1,9 +1,8 @@
-package vn.fpt.timo.ui.activity;
+package vn.fpt.timo.ui.activity.manager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,8 +10,6 @@ import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
-import com.google.firebase.FirebaseApp;
 
 import vn.fpt.timo.R;
 
@@ -44,10 +41,7 @@ public class ManagerHomePageActivity extends AppCompatActivity {
             }
         });
 
-        // Sửa lại sự kiện onClickListener của cardManageMovies
-
         cardManageMovies.setOnClickListener(v -> {
-            // Intent to MovieManagementActivity
             Intent intent = new Intent(ManagerHomePageActivity.this, MovieManagementActivity.class);
             startActivity(intent);
         });

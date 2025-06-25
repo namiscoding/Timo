@@ -1,4 +1,4 @@
-package vn.fpt.timo.ui.activity;
+package vn.fpt.timo.ui.activity.manager;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,12 +12,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Arrays;
@@ -121,31 +117,25 @@ public class AddEditRoomActivity extends AppCompatActivity {
     }
 
     private void observeViewModel() {
-        // Observer cho trạng thái loading
         roomViewModel.getIsLoading().observe(this, isLoading -> {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             btnSaveRoom.setEnabled(!isLoading);
         });
 
-        // Observer cho thông báo lỗi
         roomViewModel.getErrorMessage().observe(this, errorMessage -> {
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + errorMessage, Toast.LENGTH_LONG).show();
             }
         });
 
-        // Observer cho sự kiện thành công (ĐÂY LÀ PHẦN SỬA LỖI)
         roomViewModel.getOperationSuccess().observe(this, isSuccess -> {
             if (isSuccess) {
-                // Hiển thị thông báo
                 Toast.makeText(this,
                         roomIdToEdit != null ? "Cập nhật thành công!" : "Thêm phòng thành công!",
                         Toast.LENGTH_SHORT).show();
 
-                // Báo cho ViewModel là đã xử lý xong sự kiện này
                 roomViewModel.onOperationSuccessHandled();
 
-                // Đóng màn hình và quay về
                 finish();
             }
         });
@@ -160,12 +150,11 @@ public class AddEditRoomActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
-    // HÀM MỚI ĐỂ CÀI ĐẶT DỮ LIỆU CHO SPINNER
     private void setupRoomTypeSpinner() {
         List<String> roomTypes = Arrays.asList("2D", "3D", "IMAX", "VIP", "4DX", "ScreenX");
-        // Sử dụng layout custom của chúng ta
+
         roomTypeAdapter = new ArrayAdapter<>(this, R.layout.spinner_item_custom, roomTypes);
-        // Sử dụng layout custom cho danh sách thả xuống
+
         roomTypeAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_custom);
         spinnerRoomType.setAdapter(roomTypeAdapter);
     }
@@ -175,7 +164,7 @@ public class AddEditRoomActivity extends AppCompatActivity {
         etRows.setText(String.valueOf(getIntent().getIntExtra("rows", 0)));
         etColumns.setText(String.valueOf(getIntent().getIntExtra("columns", 0)));
 
-        // Chọn đúng loại phòng trong spinner khi sửa
+
         String roomTypeToSelect = getIntent().getStringExtra("roomType");
         if (roomTypeToSelect != null) {
             int spinnerPosition = roomTypeAdapter.getPosition(roomTypeToSelect);
@@ -187,7 +176,7 @@ public class AddEditRoomActivity extends AppCompatActivity {
 
     private void saveRoom() {
         String name = etRoomName.getText().toString().trim();
-        // 4. Lấy dữ liệu từ Spinner khi lưu
+
         String type = spinnerRoomType.getSelectedItem().toString();
         String rowsStr = etRows.getText().toString().trim();
         String columnsStr = etColumns.getText().toString().trim();
@@ -210,13 +199,12 @@ public class AddEditRoomActivity extends AppCompatActivity {
             return;
         }
 
-        // Tạo đối tượng room với thông tin chính xác
+
         ScreeningRoom room = new ScreeningRoom();
         room.setName(name);
         room.setType(type);
         room.setRows(rows);
         room.setColumns(columns);
-        // room.calculateTotalSeats(); // Hàm này sẽ được gọi bên trong setRows/setColumns
 
         if (roomIdToEdit != null && !roomIdToEdit.isEmpty()) {
             room.setId(roomIdToEdit);

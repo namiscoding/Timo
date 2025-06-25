@@ -1,6 +1,4 @@
-package vn.fpt.timo.ui.viewmodel;
-
-import android.util.Log;
+package vn.fpt.timo.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -10,8 +8,12 @@ import vn.fpt.timo.data.models.Film;
 import vn.fpt.timo.data.repositories.FilmRepository;
 
 public class MovieManagementViewModel extends ViewModel {
-    private static final String TAG = "TIMO_DEBUG";
+
     private final FilmRepository filmRepository;
+
+    // Biến để lưu trạng thái filter hiện tại
+    private String currentGenre = "All";
+    private String currentStatus = "All";
 
     private final MutableLiveData<List<Film>> _films = new MutableLiveData<>();
     public LiveData<List<Film>> films = _films;
@@ -23,26 +25,34 @@ public class MovieManagementViewModel extends ViewModel {
     public LiveData<String> error = _error;
 
     public MovieManagementViewModel() {
-        super();
-        Log.d(TAG, "MovieManagementViewModel: ViewModel CREATED.");
         filmRepository = new FilmRepository();
-        loadFilms("All"); // Tải tất cả phim khi ViewModel được tạo lần đầu
+        triggerFilmLoad(); // Tải lần đầu với filter mặc định
     }
 
-    public void loadFilms(String genre) {
-        Log.d(TAG, "MovieManagementViewModel: loadFilms called with genre: " + genre);
+    // Activity sẽ gọi hàm này khi người dùng chọn một thể loại mới
+    public void setGenreFilter(String genre) {
+        this.currentGenre = genre;
+        triggerFilmLoad();
+    }
+
+    // Activity sẽ gọi hàm này khi người dùng chọn một trạng thái mới
+    public void setStatusFilter(String status) {
+        this.currentStatus = status;
+        triggerFilmLoad();
+    }
+
+    // Hàm private để thực hiện việc tải phim
+    private void triggerFilmLoad() {
         _isLoading.setValue(true);
-        filmRepository.getFilmsByGenre(genre, new FilmRepository.OnFilmFetchedListener() {
+        filmRepository.getFilms(currentGenre, currentStatus, new FilmRepository.OnFilmFetchedListener() {
             @Override
             public void onSuccess(List<Film> filmList) {
-                Log.d(TAG, "MovieManagementViewModel: onSuccess received " + filmList.size() + " films from repository.");
                 _films.setValue(filmList);
                 _isLoading.setValue(false);
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e(TAG, "MovieManagementViewModel: onFailure received error: " + errorMessage);
                 _error.setValue(errorMessage);
                 _isLoading.setValue(false);
             }

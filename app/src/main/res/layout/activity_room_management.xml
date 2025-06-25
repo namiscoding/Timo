@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".ui.activity.RoomManagementActivity">
+    tools:context=".ui.activity.manager.RoomManagementActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarRoomManagement"

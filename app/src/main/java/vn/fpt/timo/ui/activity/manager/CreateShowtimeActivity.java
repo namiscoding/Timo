@@ -1,4 +1,4 @@
-package vn.fpt.timo.ui.activity;
+package vn.fpt.timo.ui.activity.manager;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -20,7 +20,6 @@ import com.google.firebase.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;

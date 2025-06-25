@@ -88,4 +88,20 @@ public class ShowtimeRepository {
         calendar.set(Calendar.MILLISECOND, 999);
         return calendar.getTime();
     }
+
+    // Thêm phương thức này vào bên trong lớp ShowtimeRepository
+
+    public Task<QuerySnapshot> getShowtimesForDate(Date date) {
+        Date startOfDay = getStartOfDay(date);
+        Date endOfDay = getEndOfDay(date);
+
+        // Lấy tất cả suất chiếu trong khoảng thời gian từ đầu ngày đến cuối ngày
+        // và sắp xếp theo giờ bắt đầu
+        return showtimeCollection
+                .whereGreaterThanOrEqualTo("showTime", new Timestamp(startOfDay))
+                .whereLessThanOrEqualTo("showTime", new Timestamp(endOfDay))
+                .orderBy("showTime")
+                .get();
+    }
+
 }

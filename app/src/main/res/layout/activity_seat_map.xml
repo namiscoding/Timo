@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#121212"
-    tools:context=".ui.activity.SeatMapActivity">
+    tools:context=".ui.activity.manager.SeatMapActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"

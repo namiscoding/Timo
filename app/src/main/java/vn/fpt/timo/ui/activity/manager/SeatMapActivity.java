@@ -1,4 +1,4 @@
-package vn.fpt.timo.ui.activity;
+package vn.fpt.timo.ui.activity.manager;
 
 import android.os.Bundle;
 import android.view.View;
@@ -12,8 +12,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
 
 import vn.fpt.timo.R;
 import vn.fpt.timo.data.models.Seat;
