@@ -16,6 +16,8 @@ public class CinemaCustomerService {
         db = FirebaseFirestore.getInstance();
     }
 
+
+
     public CompletableFuture<List<Cinema>> getAllCinemas() {
         CompletableFuture<List<Cinema>> future = new CompletableFuture<>();
         db.collection("cinemas") // Assuming your collection is named "cinemas"
@@ -40,5 +42,4 @@ public class CinemaCustomerService {
         return future;
     }
 
-    // You can add more methods here, e.g., getCinemaById, addCinema, updateCinema, etc.
 }

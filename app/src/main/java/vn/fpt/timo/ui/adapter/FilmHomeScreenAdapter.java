@@ -131,9 +131,9 @@ public class FilmHomeScreenAdapter extends RecyclerView.Adapter<FilmHomeScreenAd
             titleTextView.setText(film.getTitle());
 
             // Dynamically set button text based on film status
-            if ("Screening".equalsIgnoreCase(film.getStatus())) {
+            if ("Đang chiếu".equalsIgnoreCase(film.getStatus())) {
                 buttonBuyNow.setText("Book Now");
-            } else if ("upcoming".equalsIgnoreCase(film.getStatus())) {
+            } else if ("Sắp chiếu".equalsIgnoreCase(film.getStatus())) {
                 buttonBuyNow.setText("View Details");
             } else {
                 buttonBuyNow.setText("Info"); // Default text for other statuses

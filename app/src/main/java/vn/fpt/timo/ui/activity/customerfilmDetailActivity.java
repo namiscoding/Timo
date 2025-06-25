@@ -131,6 +131,10 @@ public class customerfilmDetailActivity extends AppCompatActivity {
                             } else {
                                 movieRateTxt.setText("N/A");
                             }
+                          if (film.getStatus().equalsIgnoreCase("Sắp chiếu")){
+
+                              buyTicketBtn.setVisibility(View.GONE);
+                          }
 
                             // Convert durationMinutes to String and append " min"
                             movieTimeTxt.setText(film.getDurationMinutes() > 0 ? film.getDurationMinutes() + " min" : "N/A");

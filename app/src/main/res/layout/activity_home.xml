@@ -86,20 +86,17 @@
                 android:textColorHint="@color/white" />
 
             <!-- ViewPager2 Section (Movie Slider) -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="40dp"
+                android:paddingEnd="40dp" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
                 android:layout_marginTop="16dp">
-
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/viewPager2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingStart="40dp"
-                    android:paddingEnd="40dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ProgressBar
                     android:id="@+id/progressBarSlider"
@@ -171,7 +168,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:itemCount="3"
-                    tools:listitem="@layout/item_film" />
+                    tools:listitem="@layout/item_film_homescreen" />
 
                 <ProgressBar
                     android:id="@+id/progressBarTopMovies"
@@ -225,7 +222,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:itemCount="3"
-                tools:listitem="@layout/item_film" />
+                tools:listitem="@layout/item_film_homescreen" />
 
                 <ProgressBar
                     android:id="@+id/progressBarupcomming"

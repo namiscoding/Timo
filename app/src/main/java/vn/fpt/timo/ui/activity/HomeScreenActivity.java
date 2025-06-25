@@ -173,9 +173,9 @@ public class HomeScreenActivity extends AppCompatActivity {
                         List<Film> comingSoonFilms = new ArrayList<>();
 
                         for (Film film : films) {
-                            if ("screening".equalsIgnoreCase(film.getStatus())) {
+                            if ("Đang chiếu".equalsIgnoreCase(film.getStatus())) {
                                 nowPlayingFilms.add(film);
-                            } else if ("coming_soon".equalsIgnoreCase(film.getStatus())) {
+                            } else if ("Sắp chiếu".equalsIgnoreCase(film.getStatus())) {
                                 comingSoonFilms.add(film);
                             }
                         }

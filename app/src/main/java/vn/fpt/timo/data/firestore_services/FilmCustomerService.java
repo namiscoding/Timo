@@ -110,7 +110,7 @@ public class FilmCustomerService {
                                 film.setReleaseDate(document.getTimestamp("releaseDate")); // getTimestamp for Firebase Timestamp
                                 film.setStatus(document.getString("status"));
                                 film.setTrailerUrl(document.getString("trailerUrl"));
-
+filmDocRef.collection("cinemas").get();
 
                                 future.complete(film);
                             } catch (Exception e) {

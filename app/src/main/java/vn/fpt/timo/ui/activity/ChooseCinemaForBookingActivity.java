@@ -109,11 +109,8 @@ public class ChooseCinemaForBookingActivity extends AppCompatActivity {
         dateAdapter.setOnDateClickListener(new DateAdapter.OnDateClickListener() {
             @Override
             public void onDateClick(Date date, int position) {
-                // Handle date selection here
-                Log.d(TAG, "Selected date: " + date.toString() + " at position: " + position);
-                // In a real application, you might re-fetch or filter cinemas based on this selected date
-                // For example: fetchCinemasForDate(date);
-                Toast.makeText(ChooseCinemaForBookingActivity.this, "Bạn đã chọn ngày: " + new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(date), Toast.LENGTH_SHORT).show();
+
+
             }
         });
 
@@ -135,13 +132,9 @@ public class ChooseCinemaForBookingActivity extends AppCompatActivity {
         cinemaAdapter.setOnItemClickListener(new CinemaBookingAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Cinema cinema) {
-                // Handle cinema item click (e.g., navigate to showtimes for this cinema)
+
                 Toast.makeText(ChooseCinemaForBookingActivity.this, "Đã chọn rạp: " + cinema.getName(), Toast.LENGTH_SHORT).show();
-                // Example: Intent to next activity, passing filmId and cinemaId
-                // Intent intent = new Intent(ChooseCinemaActivity.this, ShowtimeActivity.class);
-                // intent.putExtra("filmId", filmId);
-                // intent.putExtra("cinemaId", cinema.getId());
-                // startActivity(intent);
+
             }
 
             @Override
