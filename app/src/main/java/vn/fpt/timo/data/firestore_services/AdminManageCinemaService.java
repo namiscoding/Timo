@@ -18,8 +18,10 @@ public class AdminManageCinemaService {
             List<Cinema> list = new ArrayList<>();
             for (DocumentSnapshot doc : snapshot.getDocuments()) {
                 Cinema cinema = doc.toObject(Cinema.class);
-                cinema.setId(doc.getId());
-                list.add(cinema);
+                if (cinema != null) {
+                    cinema.setId(doc.getId());
+                    list.add(cinema);
+                }
             }
             callback.onData(list);
         });
@@ -31,9 +33,5 @@ public class AdminManageCinemaService {
         } else {
             cinemasRef.document(cinema.getId()).set(cinema).addOnSuccessListener(aVoid -> onComplete.run());
         }
-    }
-
-    public void toggleCinemaStatus(String id, boolean isActive, Runnable onComplete) {
-        cinemasRef.document(id).update("isActive", isActive).addOnSuccessListener(aVoid -> onComplete.run());
     }
 }

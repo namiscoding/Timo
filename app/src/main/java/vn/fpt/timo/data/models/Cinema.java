@@ -15,7 +15,7 @@ public class Cinema {
     private String address;
     private String city;
     private GeoPoint location;
-    private boolean isActive;
+    private boolean isActive = true;
     private transient double distance;
     private boolean isExpanded = false; // NEW: for UI expansion state
 //    private transient List<TimeSlotAdapter.DisplayTimeSlot> timeSlots; // NEW: Sử dụng DisplayTimeSlot từ TimeSlotAdapter // NEW: for displaying available showtime slots

@@ -1,22 +1,17 @@
 package vn.fpt.timo.ui.fragment.admin;
 
-import android.app.AlertDialog;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,9 +27,11 @@ import vn.fpt.timo.ui.dialog.AddEditCinemaDialog;
 import vn.fpt.timo.viewmodel.admin.ManageCinemasViewModel;
 
 public class ManageCinemasFragment extends Fragment {
+    private static final String TAG = "ManageCinemasFragment";
     private ManageCinemasViewModel viewModel;
     private AdminManageCinemaAdapter adapter;
     private List<Cinema> allCinemas = new ArrayList<>();
+    private List<Cinema> filteredCinemas = new ArrayList<>();
 
     @Nullable
     @Override
@@ -44,76 +41,68 @@ public class ManageCinemasFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "Fragment created and view initialized");
         viewModel = new ViewModelProvider(this).get(ManageCinemasViewModel.class);
 
         RecyclerView rv = view.findViewById(R.id.rvCinemas);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         adapter = new AdminManageCinemaAdapter(new ArrayList<>(), new AdminManageCinemaAdapter.CinemaActionListener() {
             @Override
             public void onEdit(Cinema cinema) {
+                Log.d(TAG, "Edit clicked for cinema: " + cinema.getName());
                 AddEditCinemaDialog.show(requireActivity(), cinema, viewModel);
             }
 
             @Override
-            public void onToggleStatus(Cinema cinema) {
-                viewModel.toggleCinemaStatus(cinema.getId(), !cinema.isActive());
-                showSuccess(cinema.isActive() ? "Vô hiệu hóa thành công" : "Kích hoạt thành công");
+            public void onToggleActive(Cinema cinema) {
+                Log.d(TAG, "Toggle clicked for cinema: " + cinema.getName() + ", current isActive: " + cinema.isActive());
+                cinema.setActive(!cinema.isActive());
+                viewModel.addOrUpdateCinema(cinema);
             }
         });
         rv.setAdapter(adapter);
 
         viewModel.getCinemas().observe(getViewLifecycleOwner(), cinemas -> {
+            Log.d(TAG, "Received " + (cinemas != null ? cinemas.size() : 0) + " cinemas from ViewModel");
             allCinemas.clear();
-            allCinemas.addAll(cinemas);
-            adapter.updateData(cinemas);
+            if (cinemas != null) {
+                allCinemas.addAll(cinemas);
+            }
+            filterCinemas(""); // Làm mới filter khi dữ liệu thay đổi
         });
 
-        view.findViewById(R.id.btnAddCinema).setOnClickListener(v -> AddEditCinemaDialog.show(requireActivity(), null, viewModel));
-        viewModel.loadCinemas();
+        view.findViewById(R.id.btnAddCinema).setOnClickListener(v -> {
+            Log.d(TAG, "Add cinema button clicked");
+            AddEditCinemaDialog.show(requireActivity(), null, viewModel);
+        });
 
         EditText etSearch = view.findViewById(R.id.etSearchCinema);
         etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 filterCinemas(s.toString());
             }
-            @Override
-            public void afterTextChanged(Editable s) {}
         });
+
+        viewModel.loadCinemas();
     }
 
     private void filterCinemas(String query) {
-        List<Cinema> filteredList = new ArrayList<>();
+        filteredCinemas.clear();
         for (Cinema cinema : allCinemas) {
-            if (cinema.getName().toLowerCase().contains(query.toLowerCase()) ||
-                    cinema.getAddress().toLowerCase().contains(query.toLowerCase())) {
-                filteredList.add(cinema);
+            if ((cinema.getName() != null && cinema.getName().toLowerCase().contains(query.toLowerCase())) ||
+                    (cinema.getAddress() != null && cinema.getAddress().toLowerCase().contains(query.toLowerCase()))) {
+                filteredCinemas.add(cinema);
             }
         }
-        adapter.updateData(filteredList);
+        adapter.updateData(filteredCinemas);
     }
 
-    private void showSuccess(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        View customView = getLayoutInflater().inflate(R.layout.dialog_custom_alert, null);
-
-        TextView titleView = customView.findViewById(R.id.title);
-        TextView messageView = customView.findViewById(R.id.message);
-        Button okButton = customView.findViewById(R.id.btnOk);
-
-        titleView.setText("Thành công");
-        titleView.setTextColor(ContextCompat.getColor(getContext(), R.color.success_green));
-        messageView.setText(message);
-
-        okButton.setBackgroundTintList(ColorStateList.valueOf(
-                ContextCompat.getColor(getContext(), R.color.button_red)));
-        okButton.setTextColor(Color.WHITE);
-
-        AlertDialog dialog = builder.setView(customView).create();
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        okButton.setOnClickListener(v -> dialog.dismiss());
-        dialog.show();
+    @SuppressLint("NotifyDataSetChanged")
+    private void loadCinemas() {
+        viewModel.loadCinemas();
     }
 }
