@@ -28,10 +28,6 @@ public class AdminManageCinemaRepository {
                             cinemas.add(cinema);
                         }
                     }
-                    Log.d("FIREBASE_CINEMAS", "Loaded " + cinemas.size() + " cinemas from Firebase");
-                    for (Cinema c : cinemas) {
-                        Log.d("FIREBASE_CINEMAS", "Cinema: " + c.getName() + ", Address: " + c.getAddress());
-                    }
                     callback.accept(cinemas);
                 })
                 .addOnFailureListener(e -> Log.e("FIREBASE_CINEMAS", "Error loading cinemas", e));
@@ -39,16 +35,5 @@ public class AdminManageCinemaRepository {
 
     public void addOrUpdateCinema(Cinema cinema, Runnable onComplete) {
         adminManageCinemaService.addOrUpdateCinema(cinema, onComplete);
-    }
-
-    public void toggleCinemaStatus(String id, boolean newStatus, Runnable onComplete) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("cinemas").document(id)
-                .update("isActive", newStatus)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("FIREBASE_CINEMAS", "Toggled status for cinema ID: " + id);
-                    if (onComplete != null) onComplete.run();
-                })
-                .addOnFailureListener(e -> Log.e("FIREBASE_CINEMAS", "Error toggling cinema status", e));
     }
 }
