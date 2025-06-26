@@ -1,20 +1,50 @@
 package vn.fpt.timo;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.google.firebase.appcheck.interop.BuildConfig;
+
+import vn.fpt.feature_manager.TestActivity;
 
 public class MainActivity extends AppCompatActivity {
-
-    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        db = FirebaseFirestore.getInstance();
-        // ...
+        handleModuleActivities();
     }
+
+    private void handleModuleActivities() {
+        Intent intent = null;
+        //anh em chỉnh module ở đây
+        String module = "manager";
+        switch (module) {
+            case "auth":
+                //intent = new Intent(this, AuthActivity.class);
+                break;
+            case "admin":
+                //intent = new Intent(this, AdminActivity.class);
+                break;
+            case "customer":
+                //intent = new Intent(this, CustomerActivity.class);
+                break;
+            case "manager":
+                intent = new Intent(this, TestActivity.class);
+                break;
+            default:
+                return;
+        }
+
+        startActivity(intent);
+        finish(); // Đóng màn hình splash
+    }
+
 }

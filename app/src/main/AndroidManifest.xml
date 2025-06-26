@@ -1,85 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <!-- Các quyền truy cập chung cho toàn ứng dụng -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Timo"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activity.ChooseCinemaForBookingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.findAllFilmCustomerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.IntroActivity"
-            android:exported="true" /> <!-- Manager Activities -->
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <activity
-            android:name=".ui.activity.MovieManagementActivity"
-            android:exported="false" /> <!-- Manager Activities -->
-        <activity
-            android:name=".ui.activity.CreateShowtimeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.FilmSelectionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.ManagerHomePageActivity"
-            android:exported="false" /> <!-- Admin Activities -->
-        <activity
-            android:name=".ui.activity.admin.AdminDashboardActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ui.activity.admin.ManageFilmsFragmentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.admin.ManageCinemasFragmentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.admin.ManageUserFragmentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.RoomManagementActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.ManagerHomePageActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="vn.fpt.timo.ui.activity.ManagerHomePageActivity" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.activity.AddEditRoomActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.RoomManagementActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
-        </activity>
-        <activity
-            android:name=".ui.activity.SeatMapActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.activity.RoomManagementActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="vn.fpt.timo.ui.activity.RoomManagementActivity" />
-        </activity> <!-- User-Facing Activities -->
-        <activity
-            android:name=".ui.activity.HomeScreenActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.customerfilmDetailActivity"
-            android:exported="false" />
     </application>
 
 </manifest>

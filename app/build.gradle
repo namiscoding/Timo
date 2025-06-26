@@ -1,3 +1,5 @@
+// File: app/build.gradle
+
 plugins {
     alias(libs.plugins.android.application)
     id 'com.google.gms.google-services'
@@ -30,23 +32,36 @@ android {
 }
 
 dependencies {
+    // ===================================================================
+    // 1. PHỤ THUỘC VÀO CÁC MODULE KHÁC
+    // ===================================================================
+    implementation project(':core')
 
+    implementation project(':feature_auth')
+    implementation project(':feature_customer')
+    implementation project(':feature_admin')
+    implementation project(':feature_manager')
+
+    // ===================================================================
+    // 2. CÁC THƯ VIỆN UI CƠ BẢN (cho các Activity/Shell của app)
+    // ===================================================================
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
     implementation libs.firebase.firestore
-
     implementation platform('com.google.firebase:firebase-bom:33.15.0')
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
-    implementation libs.play.services.location
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    // Lưu ý: Các thư viện này cũng sẽ cần được thêm vào các module feature
 
+    // ===================================================================
+    // 3. CÁC THƯ VIỆN CẤP ỨNG DỤNG (ví dụ)
+    // ===================================================================
+    // implementation 'com.google.firebase:firebase-analytics'
+
+    // ===================================================================
+    // 4. THƯ VIỆN TEST CHO MODULE APP
+    // ===================================================================
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
-    implementation platform('com.google.firebase:firebase-bom:33.15.0')
-    implementation ('com.google.android.exoplayer:exoplayer:2.19.1')
-    implementation ('com.google.android.gms:play-services-location:21.0.1')
 }

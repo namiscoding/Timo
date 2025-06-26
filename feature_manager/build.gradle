@@ -7,7 +7,7 @@ android {
     compileSdk 35
 
     defaultConfig {
-        minSdk 30
+        minSdk 26
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -23,10 +23,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
-
+    implementation project(':core')
     implementation libs.appcompat
     implementation libs.material
     testImplementation libs.junit
