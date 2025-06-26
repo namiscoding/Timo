@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -68,18 +69,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         String userRole = user.getRole() != null ? user.getRole().toLowerCase() : "";
 
         if ("manager".equals(userRole)) {
-            // Hiển thị thông tin rạp cho Manager
+            // Hiển thị thông tin rạp và icon cho Manager
             String cinemaName = "Không có";
             if (user.getAssignedCinemaId() != null && !user.getAssignedCinemaId().isEmpty()) {
                 cinemaName = cinemaIdToName.getOrDefault(user.getAssignedCinemaId(), "Không rõ");
             }
             holder.tvCinema.setText("Rạp: " + cinemaName);
-            holder.tvCinema.setVisibility(View.VISIBLE);
+            holder.layoutCinema.setVisibility(View.VISIBLE); // Show cinema icon and text
             holder.tvCreatedAt.setVisibility(View.GONE);
 
             // Debug log
             Log.d("UserAdapter", "Manager - Cinema ID: " + user.getAssignedCinemaId() + ", Cinema Name: " + cinemaName);
         } else {
+            // Ẩn thông tin rạp và icon cho Customer và Admin
+            holder.layoutCinema.setVisibility(View.GONE); // Hide cinema icon and text
             // Hiển thị ngày tạo cho Customer và Admin
             if (user.getCreatedAt() != null) {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
@@ -88,9 +91,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             } else {
                 holder.tvCreatedAt.setVisibility(View.GONE);
             }
-
-            // Ẩn thông tin rạp cho Customer và Admin
-            holder.tvCinema.setVisibility(View.GONE);
         }
 
         // Hiển thị trạng thái active/deactive
@@ -149,6 +149,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         TextView tvEmail, tvDisplayName, tvCinema, tvCreatedAt, tvStatus;
         Button btnEdit, btnToggleActive;
         ImageView imgAvatar;
+        LinearLayout layoutCinema;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -160,6 +161,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnToggleActive = itemView.findViewById(R.id.btnToggleActive);
             imgAvatar = itemView.findViewById(R.id.imgAvatar);
+            layoutCinema = itemView.findViewById(R.id.layoutCinema);
         }
     }
 }

@@ -4,6 +4,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
@@ -46,7 +47,7 @@ public class AddEditUserDialog extends DialogFragment {
     private TextView tvDialogTitle, tvAssignedCinemaLabel;
     private View tilCinema;
 
-    private  TextView tvPassword;
+    private TextView tvPassword;
     private TextInputLayout layoutPassword, layoutRePassword;
     private User user;
     private ManageUsersViewModel viewModel;
@@ -85,7 +86,6 @@ public class AddEditUserDialog extends DialogFragment {
         setupClickListeners(view);
         return dialog;
     }
-
 
     private void initViews(View view) {
         etEmail = view.findViewById(R.id.etEmail);
@@ -196,6 +196,7 @@ public class AddEditUserDialog extends DialogFragment {
 
         setupRoleRestrictions();
     }
+
     private void showRoleRestrictionMessage() {
         // Tạo TextView thông báo
         TextView tvRoleRestriction = new TextView(getContext());
@@ -208,21 +209,20 @@ public class AddEditUserDialog extends DialogFragment {
         ViewGroup roleContainer = (ViewGroup) spnRole.getParent().getParent();
         roleContainer.addView(tvRoleRestriction, roleContainer.indexOfChild((View) spnRole.getParent()) + 1);
     }
+
     private void setupRoleRestrictions() {
         // Nếu đang edit user và user có role là Customer
         if (user != null && user.getRole() != null &&
                 user.getRole().equalsIgnoreCase("customer")) {
-
             // Disable spinner role
             spnRole.setEnabled(false);
-
             // Ẩn luôn phần cinema assignment vì Customer không cần
             hideCinemaSelection();
-
             // Thêm thông báo cho user biết tại sao không thể thay đổi
             showRoleRestrictionMessage();
         }
     }
+
     // Thêm method mới để set cinema selection
     private void setCinemaSelection() {
         if (user.getAssignedCinemaId() != null && !user.getAssignedCinemaId().isEmpty()) {
@@ -243,10 +243,11 @@ public class AddEditUserDialog extends DialogFragment {
         layoutPassword.setVisibility(View.GONE);
         tvPassword.setVisibility(View.GONE);
     }
-    private void disableEmail()
-    {
+
+    private void disableEmail() {
         etEmail.setEnabled(false);
     }
+
     private void showCinemaSelection() {
         tvAssignedCinemaLabel.setVisibility(View.VISIBLE);
         tilCinema.setVisibility(View.VISIBLE);
@@ -256,7 +257,6 @@ public class AddEditUserDialog extends DialogFragment {
         tvAssignedCinemaLabel.setVisibility(View.GONE);
         tilCinema.setVisibility(View.GONE);
     }
-
 
     private void setupClickListeners(View view) {
         Button btnCancel = view.findViewById(R.id.btnCancel);
@@ -298,10 +298,18 @@ public class AddEditUserDialog extends DialogFragment {
         dismiss();
     }
 
-    // Cập nhật method validateFields() để consistent
+    // Cập nhật method validateFields() để thêm validation email
     private boolean validateFields() {
-        if (etEmail.getText().toString().trim().isEmpty()) {
+        String email = etEmail.getText().toString().trim();
+
+        if (email.isEmpty()) {
             showWarning("Email không được để trống");
+            return false;
+        }
+
+        // Kiểm tra định dạng email
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showWarning("Email không đúng định dạng (ví dụ: example@domain.com)");
             return false;
         }
 
@@ -340,6 +348,7 @@ public class AddEditUserDialog extends DialogFragment {
 
         return true;
     }
+
     private void showWarning(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View customView = getLayoutInflater().inflate(R.layout.dialog_custom_alert, null);
