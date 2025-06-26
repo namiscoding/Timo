@@ -53,41 +53,26 @@
                 android:ellipsize="end"
                 android:layout_marginBottom="4dp" />
 
-            <!-- Role -->
-            <LinearLayout
+            <!-- Display Name -->
+            <TextView
+                android:id="@+id/tvDisplayName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp">
+                android:text="Tên hiển thị"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp" />
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_role"
-                    android:layout_marginEnd="6dp"
-                    android:layout_gravity="center_vertical"
-                    app:tint="#FFFFFF" />
-
-                <TextView
-                    android:id="@+id/tvRole"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Vai trò"
-                    android:textSize="14sp"
-                    android:textColor="#FFFFFF"
-                    android:fontFamily="sans-serif"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
-
-            </LinearLayout>
-
-            <!-- Cinema Assignment -->
+            <!-- Cinema Assignment (chỉ hiển thị cho manager) -->
             <LinearLayout
                 android:id="@+id/layoutCinema"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="4dp">
 
                 <ImageView
                     android:layout_width="16dp"
@@ -109,6 +94,33 @@
                     android:ellipsize="end" />
 
             </LinearLayout>
+
+            <!-- Created At (chỉ hiển thị cho customer) -->
+            <TextView
+                android:id="@+id/tvCreatedAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tạo lúc: 01/01/2024"
+                android:textSize="12sp"
+                android:textColor="#CCCCCC"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone" />
+
+            <!-- Status -->
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Trạng thái: Hoạt động"
+                android:textSize="12sp"
+                android:textColor="#00FF00"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="8dp" />
 
             <!-- Action Buttons -->
             <LinearLayout
@@ -133,13 +145,13 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDelete"
+                    android:id="@+id/btnToggleActive"
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
-                    android:text="Xóa"
+                    android:text="Tạm khóa"
                     android:textSize="12sp"
                     android:textColor="#FFFFFF"
-                    android:backgroundTint="#FC3323"
+                    android:backgroundTint="#FF9800"
                     app:cornerRadius="6dp"
                     app:rippleColor="#FFFFFF33"
                     style="@style/Widget.MaterialComponents.Button" />

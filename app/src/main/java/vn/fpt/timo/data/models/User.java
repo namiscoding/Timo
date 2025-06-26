@@ -14,8 +14,10 @@ public class User {
     private String displayName;
     private String photoUrl;
     private String role;
+    private String password;
     private long loyaltyPoints; // Sử dụng long để an toàn hơn
     private String assignedCinemaId;
+    private boolean isActive = true;
 
     @ServerTimestamp
     private Timestamp createdAt;
@@ -24,18 +26,31 @@ public class User {
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
     public String getDisplayName() { return displayName; }
     public void setDisplayName(String displayName) { this.displayName = displayName; }
+
     public String getPhotoUrl() { return photoUrl; }
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
     public long getLoyaltyPoints() { return loyaltyPoints; }
     public void setLoyaltyPoints(long loyaltyPoints) { this.loyaltyPoints = loyaltyPoints; }
+
     public String getAssignedCinemaId() { return assignedCinemaId; }
     public void setAssignedCinemaId(String assignedCinemaId) { this.assignedCinemaId = assignedCinemaId; }
+
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
 }

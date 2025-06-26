@@ -41,4 +41,8 @@ public class UserRepository {
     public void deleteUser(String id, Runnable onComplete) {
         userService.deleteUser(id, onComplete);
     }
+    public void updateUser(User user, Runnable onComplete) {
+        userService.addOrUpdateUser(user, onComplete);
+    }
+
 }
