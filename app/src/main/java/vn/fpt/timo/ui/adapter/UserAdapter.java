@@ -1,5 +1,6 @@
 package vn.fpt.timo.ui.adapter;
 
+import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import vn.fpt.timo.R;
@@ -25,16 +28,22 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     public interface UserActionListener {
         void onEdit(User user);
-        void onDelete(User user);
+        void onToggleActive(User user);
     }
 
     private final List<User> users;
     private final UserActionListener listener;
     private Map<String, String> cinemaIdToName = new HashMap<>();
+    private String currentTab = "customers";
 
     public void setCinemaMap(Map<String, String> cinemaMap) {
         this.cinemaIdToName = cinemaMap;
     }
+
+    public void setCurrentTab(String currentTab) {
+        this.currentTab = currentTab;
+    }
+
     public UserAdapter(List<User> users, UserActionListener listener) {
         this.users = users;
         this.listener = listener;
@@ -50,37 +59,74 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = users.get(position);
-        holder.tvEmail.setText("Email: " + user.getEmail());
-        holder.tvRole.setText("Vai trò: " + user.getRole());
-        String cinemaName = "Không có";
-        if (user.getAssignedCinemaId() != null && !user.getAssignedCinemaId().isEmpty()) {
-            cinemaName = cinemaIdToName.getOrDefault(user.getAssignedCinemaId(), "Không rõ");
-            Log.d("UserAdapter", "User: " + user.getEmail() + ", assignedCinemaId: " + user.getAssignedCinemaId() + ", cinemaName: " + cinemaName);
 
+        // Hiển thị email và tên
+        holder.tvEmail.setText("Email: " + (user.getEmail() != null ? user.getEmail() : "Không có"));
+        holder.tvDisplayName.setText("Tên: " + (user.getDisplayName() != null ? user.getDisplayName() : "Không có"));
+
+        // Kiểm tra role để hiển thị thông tin phù hợp
+        String userRole = user.getRole() != null ? user.getRole().toLowerCase() : "";
+
+        if ("manager".equals(userRole)) {
+            // Hiển thị thông tin rạp cho Manager
+            String cinemaName = "Không có";
+            if (user.getAssignedCinemaId() != null && !user.getAssignedCinemaId().isEmpty()) {
+                cinemaName = cinemaIdToName.getOrDefault(user.getAssignedCinemaId(), "Không rõ");
+            }
+            holder.tvCinema.setText("Rạp: " + cinemaName);
+            holder.tvCinema.setVisibility(View.VISIBLE);
+            holder.tvCreatedAt.setVisibility(View.GONE);
+
+            // Debug log
+            Log.d("UserAdapter", "Manager - Cinema ID: " + user.getAssignedCinemaId() + ", Cinema Name: " + cinemaName);
+        } else {
+            // Hiển thị ngày tạo cho Customer và Admin
+            if (user.getCreatedAt() != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+                holder.tvCreatedAt.setText("Tạo lúc: " + sdf.format(user.getCreatedAt().toDate()));
+                holder.tvCreatedAt.setVisibility(View.VISIBLE);
+            } else {
+                holder.tvCreatedAt.setVisibility(View.GONE);
+            }
+
+            // Ẩn thông tin rạp cho Customer và Admin
+            holder.tvCinema.setVisibility(View.GONE);
         }
 
-        holder.tvCinema.setText("Rạp: " + cinemaName);
-
+        // Hiển thị trạng thái active/deactive
+        holder.tvStatus.setText("Trạng thái: " + (user.isActive() ? "Hoạt động" : "Tạm khóa"));
+        holder.tvStatus.setTextColor(user.isActive() ?
+                holder.itemView.getContext().getColor(android.R.color.holo_green_light) :
+                holder.itemView.getContext().getColor(android.R.color.holo_red_light));
 
         holder.btnEdit.setOnClickListener(v -> listener.onEdit(user));
-        holder.btnDelete.setOnClickListener(v -> {
+
+        // Thay nút xóa bằng nút Active/Deactive
+        String toggleText = user.isActive() ? "Tạm khóa" : "Kích hoạt";
+        holder.btnToggleActive.setText(toggleText);
+        holder.btnToggleActive.setBackgroundTintList(
+                ColorStateList.valueOf(holder.itemView.getContext().getColor(
+                        user.isActive() ? R.color.orange : android.R.color.holo_green_light
+                ))
+        );
+
+        holder.btnToggleActive.setOnClickListener(v -> {
+            String action = user.isActive() ? "tạm khóa" : "kích hoạt";
             DialogUtils.showConfirmDeleteDialog(v.getContext(),
-                    "Bạn có chắc muốn xóa người dùng này?",
+                    "Bạn có chắc muốn " + action + " tài khoản này?",
                     () -> {
-                        listener.onDelete(user); // callback xử lý xóa ở nơi khác
-                        users.remove(user);
-                        notifyItemRemoved(holder.getAdapterPosition());
+                        listener.onToggleActive(user);
                         // Hiện dialog thành công
-                        DialogUtils.showSuccessDialog(v.getContext(), "Xóa người dùng thành công!");
+                        DialogUtils.showSuccessDialog(v.getContext(),
+                                "Đã " + action + " tài khoản thành công!");
                     }
             );
         });
 
-
         if (user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()) {
             Glide.with(holder.imgAvatar.getContext())
                     .load(user.getPhotoUrl())
-                    .placeholder(R.drawable.ic_person) // fallback
+                    .placeholder(R.drawable.ic_person)
                     .error(R.drawable.ic_person)
                     .into(holder.imgAvatar);
         } else {
@@ -100,19 +146,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView tvEmail, tvRole, tvCinema;
-        Button btnEdit, btnDelete;
+        TextView tvEmail, tvDisplayName, tvCinema, tvCreatedAt, tvStatus;
+        Button btnEdit, btnToggleActive;
         ImageView imgAvatar;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             tvEmail = itemView.findViewById(R.id.tvEmail);
-            tvRole = itemView.findViewById(R.id.tvRole);
+            tvDisplayName = itemView.findViewById(R.id.tvDisplayName);
             tvCinema = itemView.findViewById(R.id.tvCinema);
+            tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
             btnEdit = itemView.findViewById(R.id.btnEdit);
-            btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnToggleActive = itemView.findViewById(R.id.btnToggleActive);
             imgAvatar = itemView.findViewById(R.id.imgAvatar);
-
         }
     }
 }

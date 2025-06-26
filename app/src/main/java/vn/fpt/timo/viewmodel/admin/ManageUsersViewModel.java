@@ -35,4 +35,8 @@ public class ManageUsersViewModel extends ViewModel {
     public void loadAllCinemas(Consumer<List<Cinema>> callback) {
         adminManageCinemaRepository.getAllCinemas(callback);
     }
+    public void updateUser(User user) {
+        repository.updateUser(user, this::loadUsers);
+    }
+
 }

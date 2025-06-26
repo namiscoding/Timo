@@ -17,6 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.tabs.TabLayout;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,9 @@ public class ManageUsersFragment extends Fragment {
     private ManageUsersViewModel viewModel;
     private UserAdapter adapter;
     private List<User> allUsers = new ArrayList<>();
+    private List<User> filteredUsers = new ArrayList<>();
+    private TabLayout tabLayout;
+    private String currentTab = "customers"; // "customers" hoặc "managers"
 
     @Nullable
     @Override
@@ -46,6 +51,11 @@ public class ManageUsersFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(ManageUsersViewModel.class);
 
+        // Setup TabLayout
+        tabLayout = view.findViewById(R.id.tabLayout);
+        tabLayout.addTab(tabLayout.newTab().setText("Khách hàng"));
+        tabLayout.addTab(tabLayout.newTab().setText("Manager & Admin"));
+
         RecyclerView rvUsers = view.findViewById(R.id.rvUsers);
         rvUsers.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -56,14 +66,31 @@ public class ManageUsersFragment extends Fragment {
             }
 
             @Override
-            public void onDelete(User user) {
-                viewModel.deleteUser(user.getId());
+            public void onToggleActive(User user) {
+                // Toggle trạng thái active/deactive
+                user.setActive(!user.isActive());
+                viewModel.updateUser(user);
             }
         });
         rvUsers.setAdapter(adapter);
 
+        // Tab selection listener
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                currentTab = tab.getPosition() == 0 ? "customers" : "managers";
+                filterUsersByTab();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
         // Đợi load xong cinema, rồi mới observe user
-        loadCinemas(); // sửa ở đây
+        loadCinemas();
 
         view.findViewById(R.id.btnAddUser).setOnClickListener(v ->
                 AddEditUserDialog.show(requireActivity(), null, viewModel));
@@ -79,18 +106,33 @@ public class ManageUsersFragment extends Fragment {
         });
     }
 
+    private void filterUsersByTab() {
+        filteredUsers.clear();
+        for (User user : allUsers) {
+            if (currentTab.equals("customers")) {
+                // Tab khách hàng: chỉ hiển thị role "customer"
+                if ("customer".equalsIgnoreCase(user.getRole())) {
+                    filteredUsers.add(user);
+                }
+            } else {
+                // Tab manager & admin: hiển thị role "manager" và "admin"
+                if ("manager".equalsIgnoreCase(user.getRole()) || "admin".equalsIgnoreCase(user.getRole())) {
+                    filteredUsers.add(user);
+                }
+            }
+        }
+        adapter.updateData(filteredUsers);
+    }
 
     private void filterUsers(String query) {
         List<User> filtered = new ArrayList<>();
-        for (User user : allUsers) {
+        for (User user : filteredUsers) {
             String cinemaName = cinemaIdToName.getOrDefault(user.getAssignedCinemaId(), "");
             if ((user.getEmail() != null && user.getEmail().toLowerCase().contains(query.toLowerCase())) ||
-                    (user.getRole() != null && user.getRole().toLowerCase().contains(query.toLowerCase())) ||
+                    (user.getDisplayName() != null && user.getDisplayName().toLowerCase().contains(query.toLowerCase())) ||
                     (cinemaName.toLowerCase().contains(query.toLowerCase()))) {
                 filtered.add(user);
             }
-            Log.d("CinemaDebug", "userId: " + user.getId() + ", cinemaId: " + user.getAssignedCinemaId());
-
         }
         adapter.updateData(filtered);
     }
@@ -107,6 +149,8 @@ public class ManageUsersFragment extends Fragment {
 
             // Gán map rạp vào adapter để dùng khi hiển thị
             adapter.setCinemaMap(cinemaIdToName);
+            adapter.setCurrentTab(currentTab);
+
             // Chỉ observe sau khi đã có map cinema
             viewModel.getUsers().observe(getViewLifecycleOwner(), users -> {
                 allUsers.clear();
@@ -114,16 +158,15 @@ public class ManageUsersFragment extends Fragment {
                 for (User u : users) {
                     Log.d("UserDebug", "email=" + u.getEmail() +
                             ", role=" + u.getRole() +
-                            ", assignedCinemaId=" + u.getAssignedCinemaId());
+                            ", assignedCinemaId=" + u.getAssignedCinemaId() +
+                            ", isActive=" + u.isActive());
                 }
-                adapter.updateData(users);
+                filterUsersByTab(); // Filter theo tab hiện tại
             });
 
             // Gọi load user sau khi đã có danh sách rạp
             viewModel.loadUsers();
             adapter.notifyDataSetChanged();
-
         });
     }
-
 }

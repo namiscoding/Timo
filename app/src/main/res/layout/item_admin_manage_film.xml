@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:background="#FC3323"
+                android:background="#FA3323"
                 android:src="@drawable/ic_movie" />
 
         </androidx.cardview.widget.CardView>

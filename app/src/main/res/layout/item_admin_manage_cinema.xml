@@ -46,7 +46,7 @@
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:src="@drawable/ic_person"
+                    android:src="@drawable/ic_location"
                     android:layout_marginEnd="6dp"
                     android:layout_gravity="center_vertical"
                     app:tint="#FFFFFF" />
@@ -80,7 +80,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_schedule"
+                        android:src="@drawable/ic_city"
                         android:layout_marginEnd="4dp"
                         android:layout_gravity="center_vertical"
                         app:tint="#FFFFFF" />
@@ -104,7 +104,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_star"
+                        android:src="@drawable/ic_status"
                         android:layout_marginEnd="4dp"
                         android:layout_gravity="center_vertical"
                         app:tint="#FFC107" />
