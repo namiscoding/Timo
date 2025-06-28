@@ -1,13 +1,17 @@
+// feature_manager/build.gradle
 plugins {
-    alias(libs.plugins.android.library)
+    // Remove: alias(libs.plugins.android.library)
+    id 'com.android.application' // Keep this if it's the main app
+    id 'com.google.gms.google-services'
 }
 
 android {
-    namespace 'vn.fpt.feature_manager'
+    namespace 'vn.fpt.feature_manager' // This is the package name for your source code
     compileSdk 35
 
     defaultConfig {
         minSdk 26
+        applicationId 'vn.fpt.feature_manager'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -32,7 +36,14 @@ dependencies {
     implementation project(':core')
     implementation libs.appcompat
     implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    // Firebase BOM should be imported *before* specific Firebase libraries
+    implementation platform('com.google.firebase:firebase-bom:33.16.0')
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 }

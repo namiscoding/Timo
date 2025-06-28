@@ -1,11 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application>
+        <activity
+            android:name=".ui.activity.ManagerHomePageActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Timo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.activity.ManagerSeatMapActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Timo"/>
+        <activity
+            android:name=".ui.activity.ManagerRoomManagementActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Timo"/>
+        <activity
+            android:name=".ui.activity.ManagerMovieManagementActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Timo"/>
+        <activity
+            android:name=".ui.activity.ManagerScheduleViewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Timo"/>
+        <activity
+            android:name=".ui.activity.ManagerFilmSelectionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Timo"/>
+        <activity
+            android:name=".ui.activity.ManagerCreateShowtimeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Timo"/>
+        <activity
+            android:name=".ui.activity.ManagerAddEditRoomActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Timo"/>
         <activity
             android:name=".TestActivity"
             android:exported="false"
             android:theme="@style/Theme.Timo" />
+
+        <activity
+            android:name=".ui.activity.ManagerProductManagementActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Timo"/>
+        <activity
+            android:name=".ui.activity.ManagerAddEditProductActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Timo"/>
     </application>
 
 </manifest>
