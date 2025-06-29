@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="button_red">#FC3323</color>
+    <color name="warning_yellow">#FF9800</color>
+    <color name="error_red">#F44336</color>
+    <color name="success_green">#4CAF50</color>
+    <color name="gray">#7C7C7C</color>
+    <color name="background_dark">#181A20FF</color>
+    <color name="orange">#d14706</color>
+    <!-- Màu nền màn hình -->
+    <color name="screen_background">#37474F</color>
+</resources>

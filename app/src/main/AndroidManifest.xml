@@ -19,6 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="vn.fpt.feature_admin.ui.activity.AdminDashboardActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
