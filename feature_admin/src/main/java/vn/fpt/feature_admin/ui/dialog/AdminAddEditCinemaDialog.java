@@ -1,47 +1,54 @@
 package vn.fpt.feature_admin.ui.dialog;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import androidx.core.content.ContextCompat;
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.ArrayAdapter;
-import android.widget.AdapterView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.GeoPoint;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
-import vn.fpt.feature_admin.R;
 import vn.fpt.core.models.Cinema;
+import vn.fpt.feature_admin.R;
 import vn.fpt.feature_admin.viewmodel.AdminManageCinemasViewModel;
 
-public class AdminAddEditCinemaDialog  extends DialogFragment {
+public class AdminAddEditCinemaDialog extends DialogFragment {
     private static final String TAG = "AddEditCinemaDialog";
+
     private EditText etName, etAddress, etCity, etLatitude, etLongitude;
     private Cinema cinema;
     private AdminManageCinemasViewModel viewModel;
     private TextView tvDialogTitle;
+    private SupportMapFragment mapFragment;
+    private boolean isMapInitialized = false;
 
     public static void show(FragmentActivity activity, Cinema cinema, AdminManageCinemasViewModel vm) {
         AdminAddEditCinemaDialog dialog = new AdminAddEditCinemaDialog();
@@ -99,6 +106,7 @@ public class AdminAddEditCinemaDialog  extends DialogFragment {
 
         btnCancel.setOnClickListener(v -> dismiss());
         btnSave.setOnClickListener(v -> saveCinema());
+
     }
 
     private void saveCinema() {
@@ -115,7 +123,7 @@ public class AdminAddEditCinemaDialog  extends DialogFragment {
                 showWarning("Kinh độ (-180 đến 180) hoặc vĩ độ (-90 đến 90) không hợp lệ");
                 return;
             }
-            cinema.setLocation(new com.google.firebase.firestore.GeoPoint(latitude, longitude));
+            cinema.setLocation(new GeoPoint(latitude, longitude));
         } catch (NumberFormatException e) {
             showWarning("Kinh độ hoặc vĩ độ phải là số hợp lệ");
             return;
@@ -200,4 +208,53 @@ public class AdminAddEditCinemaDialog  extends DialogFragment {
         okButton.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mapFragment == null) {
+            mapFragment = SupportMapFragment.newInstance();
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.mapContainer, mapFragment)
+                    .commit();
+
+            mapFragment.getMapAsync(googleMap -> {
+                isMapInitialized = true;
+                googleMap.getUiSettings().setZoomControlsEnabled(true);
+                googleMap.setOnMapClickListener(latLng -> {
+                    etLatitude.setText(String.valueOf(latLng.latitude));
+                    etLongitude.setText(String.valueOf(latLng.longitude));
+
+                    // Reverse geocoding để lấy địa chỉ
+                    Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+                    try {
+                        List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                        if (addresses != null && !addresses.isEmpty()) {
+                            Address address = addresses.get(0);
+                            String fullAddress = address.getAddressLine(0); // hoặc custom hơn nếu bạn muốn chia ra
+                            etAddress.setText(fullAddress);
+                        } else {
+                            Toast.makeText(getContext(), "Không tìm thấy địa chỉ", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getContext(), "Lỗi khi lấy địa chỉ", Toast.LENGTH_SHORT).show();
+                    }
+
+                    googleMap.clear();
+                    googleMap.addMarker(new MarkerOptions().position(latLng).title("Vị trí đã chọn"));
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
+                });
+
+
+                if (cinema != null && cinema.getLocation() != null) {
+                    LatLng pos = new LatLng(cinema.getLocation().getLatitude(), cinema.getLocation().getLongitude());
+                    googleMap.addMarker(new MarkerOptions().position(pos).title("Vị trí hiện tại"));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 15f));
+                }
+            });
+        }
+    }
+
 }
