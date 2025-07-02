@@ -28,7 +28,7 @@
     <color name="cinemax_dark_gray">#1A1A1A</color>
     <color name="cinemax_light_gray">#CCCCCC</color>
     <color name="cinemax_footer_gray">#666666</color>
-
+    <color name="gold">#FFD700</color>
     <color name="seat_regular_color">#333333</color>        <!-- Xanh lá - ghế thường -->
     <color name="seat_vip_color">#FF9800</color>            <!-- Cam - ghế VIP -->
     <color name="seat_couple_color">#E91E63</color>         <!-- Hồng - ghế đôi -->
