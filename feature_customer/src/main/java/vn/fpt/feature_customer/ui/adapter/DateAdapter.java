@@ -123,8 +123,8 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.DateViewHolder
 
         public DateViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewDayOfWeek = itemView.findViewById(R.id.textViewDayOfWeek);
-            textViewDayOfMonth = itemView.findViewById(R.id.textViewDayOfMonth);
+            textViewDayOfWeek = itemView.findViewById(R.id.dayOfWeekTextView);
+            textViewDayOfMonth = itemView.findViewById(R.id.dateTextView);
         }
     }
 

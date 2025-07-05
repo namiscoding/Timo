@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.common.collect.ComparisonChain;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.IOException;
@@ -41,9 +42,9 @@ import java.util.Locale;
 import vn.fpt.core.models.Cinema;
 import vn.fpt.feature_customer.R;
 import vn.fpt.feature_customer.data.firestore_services.CustomerCinemaService;
-import vn.fpt.feature_customer.data.firestore_services.CustomerShowtimeService;
+// import vn.fpt.feature_customer.data.firestore_services.CustomerShowtimeService; // Không cần nữa
 import vn.fpt.feature_customer.ui.adapter.CustomerCinemaAdapter;
-import vn.fpt.feature_customer.ui.adapter.DateAdapter;
+// import vn.fpt.feature_customer.ui.adapter.DateAdapter; // Không cần nữa
 
 public class CustomerChooseCinemaActivity extends AppCompatActivity {
 
@@ -57,18 +58,18 @@ public class CustomerChooseCinemaActivity extends AppCompatActivity {
 
     private CustomerCinemaAdapter cinemaAdapter;
     private CustomerCinemaService cinemaService;
-    private CustomerShowtimeService showtimeService;
+    // private CustomerShowtimeService showtimeService; // Không cần nữa
 
     private List<Cinema> allCinemas = new ArrayList<>();
     private List<Cinema> favoriteCinemas = new ArrayList<>();
     private boolean showingAllCinemas = true;
 
-    private DateAdapter dateAdapter;
-    private RecyclerView recyclerViewDates;
-    private Date selectedDate; // Stores the date selected by the user
+    // private DateAdapter dateAdapter; // Không cần nữa
+    // private RecyclerView recyclerViewDates; // Không cần nữa
+    // private Date selectedDate; // Không cần nữa
 
     private FusedLocationProviderClient fusedLocationClient;
-    private String filmId; // The ID of the film selected previously
+    private String filmId;
     private Location lastKnownLocation;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -86,51 +87,28 @@ public class CustomerChooseCinemaActivity extends AppCompatActivity {
         favoritesButton = findViewById(R.id.favoritesButton);
         recyclerViewCinemas = findViewById(R.id.recyclerViewCinemas);
         progressBarCinemas = findViewById(R.id.progressBarCinemas);
-        recyclerViewDates = findViewById(R.id.recyclerViewDates);
 
         filmId = getIntent().getStringExtra("filmId");
+
         if (filmId == null || filmId.isEmpty()) {
             Log.e(TAG, "filmId is null or empty. Cannot proceed without a film ID.");
             Toast.makeText(this, "Lỗi: Không tìm thấy ID phim.", Toast.LENGTH_LONG).show();
-            finish(); // Exit if no film ID
+            finish();
             return;
         }
+
 
         toolbarTitle.setText("Chọn Rạp Chiếu");
         backArrow.setOnClickListener(v -> finish());
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         cinemaService = new CustomerCinemaService();
-        showtimeService = new CustomerShowtimeService();
 
-        // --- Date RecyclerView Setup ---
-        recyclerViewDates.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        dateAdapter = new DateAdapter(DateAdapter.generateNext7DaysDates());
-        recyclerViewDates.setAdapter(dateAdapter);
-
-        // Set up DateAdapter click listener
-        dateAdapter.setOnDateClickListener(new DateAdapter.OnDateClickListener() {
-            @Override
-            public void onDateClick(Date date, int position) {
-                selectedDate = date; // Update the selected date
-                Log.d(TAG, "Date selected: " + new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(selectedDate));
-
-                // Inform the cinema adapter about the new selected date to refresh showtimes
-                cinemaAdapter.setSelectedDate(selectedDate);
-                // Note: notifyDataSetChanged is called inside setSelectedDate
-            }
-        });
-
-        // Initialize with the first date as selected by default
-        if (!dateAdapter.getDates().isEmpty()) {
-            selectedDate = dateAdapter.getDates().get(0).getDate();
-            dateAdapter.setSelectedPosition(0); // Visually select the first date
-        }
 
         // --- Cinema RecyclerView Setup ---
         recyclerViewCinemas.setLayoutManager(new LinearLayoutManager(this));
-        // Pass necessary dependencies to the cinema adapter
-        cinemaAdapter = new CustomerCinemaAdapter(new ArrayList<>(), showtimeService, filmId, this); // 'this' is LifecycleOwner
+        // Constructor của CustomerCinemaAdapter đã thay đổi
+        cinemaAdapter = new CustomerCinemaAdapter(new ArrayList<>());
         recyclerViewCinemas.setAdapter(cinemaAdapter);
 
         // --- Toggle Buttons Setup ---
@@ -138,46 +116,40 @@ public class CustomerChooseCinemaActivity extends AppCompatActivity {
         favoritesButton.setOnClickListener(v -> showFavoriteCinemas());
 
         // Initial button states
+        allCinemaButton.setBackgroundResource(R.drawable.selected_button_bg);
         allCinemaButton.setTextColor(Color.WHITE);
+        favoritesButton.setBackgroundColor(Color.TRANSPARENT);
         favoritesButton.setTextColor(Color.parseColor("#808080"));
+
 
         // --- CinemaAdapter Item and Favorite Click Listeners ---
         cinemaAdapter.setOnItemClickListener(new CustomerCinemaAdapter.OnItemClickListener() {
             @Override
             public void onCinemaClick(Cinema cinema) {
-                // Handle click on a cinema item (e.g., navigate to a detailed showtime/seat selection screen)
-                Toast.makeText(CustomerChooseCinemaActivity.this, "Bạn đã chọn rạp: " + cinema.getName(), Toast.LENGTH_SHORT).show();
-                // Example of navigating to a next activity with relevant data
-                // Intent intent = new Intent(CustomerChooseCinemaActivity.this, ShowtimeDetailsActivity.class);
-                // intent.putExtra("cinemaId", cinema.getId());
-                // intent.putExtra("filmId", filmId);
-                // intent.putExtra("selectedDateMillis", selectedDate != null ? selectedDate.getTime() : -1L);
-                // startActivity(intent);
+                Intent intent = new Intent(CustomerChooseCinemaActivity.this, SeatListActivity.class);
+                intent.putExtra("filmId", filmId);
+                intent.putExtra("cinemaId",cinema.getId());
+                startActivity(intent);
             }
 
             @Override
             public void onFavoriteClick(Cinema cinema, ImageView starIcon) {
-                // Toggle the 'isActive' status (which represents favorite status)
                 cinema.setActive(!cinema.isActive());
 
-                // Update status in Firestore (if you have this implemented)
                 cinemaService.updateCinemaActiveStatus(cinema.getId(), cinema.isActive())
                         .addOnSuccessListener(aVoid -> {
                             Log.d(TAG, "Cinema favorite status updated in Firestore.");
-                            // Re-filter and update the favoriteCinemas list locally
                             updateFavoriteCinemasList();
-                            // If currently showing favorites, refresh the adapter to reflect changes
                             if (!showingAllCinemas) {
                                 cinemaAdapter.updateCinemas(favoriteCinemas);
                             } else {
-                                // If showing all, just update this specific item's view
                                 cinemaAdapter.notifyItemChanged(allCinemas.indexOf(cinema));
                             }
                             Toast.makeText(CustomerChooseCinemaActivity.this, cinema.getName() + (cinema.isActive() ? " đã thêm vào yêu thích" : " đã gỡ khỏi yêu thích"), Toast.LENGTH_SHORT).show();
                         })
                         .addOnFailureListener(e -> {
                             cinema.setActive(!cinema.isActive());
-                            cinemaAdapter.notifyItemChanged(allCinemas.indexOf(cinema)); // Revert UI
+                            cinemaAdapter.notifyItemChanged(allCinemas.indexOf(cinema));
                         });
             }
         });
@@ -301,8 +273,8 @@ public class CustomerChooseCinemaActivity extends AppCompatActivity {
 
                         updateFavoriteCinemasList();
 
-                        // After fetching cinemas, ensure the cinema adapter has the currently selected date
-                        cinemaAdapter.setSelectedDate(selectedDate);
+                        // Không cần cập nhật selectedDate cho cinemaAdapter nữa
+                        // cinemaAdapter.setSelectedDate(selectedDate);
                         if (showingAllCinemas) {
                             cinemaAdapter.updateCinemas(allCinemas);
                         } else {
@@ -343,9 +315,9 @@ public class CustomerChooseCinemaActivity extends AppCompatActivity {
         if (!showingAllCinemas) {
             showingAllCinemas = true;
             allCinemaButton.setTextColor(Color.WHITE);
-            allCinemaButton.setBackgroundResource(R.drawable.selected_button_bg); // Set selected background
+            allCinemaButton.setBackgroundResource(R.drawable.selected_button_bg);
             favoritesButton.setTextColor(Color.parseColor("#808080"));
-            favoritesButton.setBackgroundColor(Color.TRANSPARENT); // Clear background
+            favoritesButton.setBackgroundColor(Color.TRANSPARENT);
             cinemaAdapter.updateCinemas(allCinemas);
             Log.d(TAG, "Showing all cinemas.");
         }
@@ -355,9 +327,9 @@ public class CustomerChooseCinemaActivity extends AppCompatActivity {
         if (showingAllCinemas) {
             showingAllCinemas = false;
             favoritesButton.setTextColor(Color.WHITE);
-            favoritesButton.setBackgroundResource(R.drawable.selected_button_bg); // Set selected background
+            favoritesButton.setBackgroundResource(R.drawable.selected_button_bg);
             allCinemaButton.setTextColor(Color.parseColor("#808080"));
-            allCinemaButton.setBackgroundColor(Color.TRANSPARENT); // Clear background
+            allCinemaButton.setBackgroundColor(Color.TRANSPARENT);
             cinemaAdapter.updateCinemas(favoriteCinemas);
             if (favoriteCinemas.isEmpty()) {
                 Toast.makeText(this, "Bạn chưa có rạp yêu thích nào.", Toast.LENGTH_SHORT).show();

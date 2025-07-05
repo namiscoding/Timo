@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:gravity="center"
-    android:background="@drawable/rounded_showtime_slot_bg"
     android:padding="8dp"
-    android:layout_marginEnd="8dp">
+    android:layout_marginEnd="8dp"
+    android:background="@drawable/rounded_showtime_slot_bg"
+    android:gravity="center">
 
     <TextView
         android:id="@+id/showtimeTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="10:00"
         android:textColor="@android:color/white"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:text="19:30" />
 
     <TextView
         android:id="@+id/showtimePrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="100.000đ"
         android:textColor="@android:color/darker_gray"
         android:textSize="12sp"
-        android:layout_marginTop="2dp" />
-
+        tools:text="100.000đ" />
 </LinearLayout>

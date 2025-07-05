@@ -23,8 +23,8 @@ public class Showtime {
     private String screeningRoomName;
 
     // Dữ liệu của suất chiếu
-    private Timestamp showTime;
-    private Timestamp endTime;
+    private Date  showTime;
+    private Date  endTime;
     private double pricePerSeat;
     private String status;
     private long seatsAvailable;
@@ -48,10 +48,10 @@ public class Showtime {
     public void setCinemaName(String cinemaName) { this.cinemaName = cinemaName; }
     public String getScreeningRoomName() { return screeningRoomName; }
     public void setScreeningRoomName(String screeningRoomName) { this.screeningRoomName = screeningRoomName; }
-    public Timestamp getShowTime() { return showTime; }
-    public void setShowTime(Timestamp showTime) { this.showTime = showTime; }
-    public Timestamp getEndTime() { return endTime; }
-    public void setEndTime(Timestamp endTime) { this.endTime = endTime; }
+    public Date  getShowTime() { return showTime; }
+    public void setShowTime(Date  showTime) { this.showTime = showTime; }
+    public Date  getEndTime() { return endTime; }
+    public void setEndTime(Date  endTime) { this.endTime = endTime; }
     public double getPricePerSeat() { return pricePerSeat; }
     public void setPricePerSeat(double pricePerSeat) { this.pricePerSeat = pricePerSeat; }
     public String getStatus() { return status; }
