@@ -13,9 +13,16 @@ import java.util.Date;
 import java.util.List;
 
 import vn.fpt.core.models.Showtime;
-import vn.fpt.feature_manager.data.repositories.ManagerShowtimeRepository;
+//import vn.fpt.feature_manager.data.repositories.ManagerShowtimeRepository; // Không cần import Repository nữa
+
 public class ManagerShowtimeService {
     private final FirebaseFirestore db;
+
+    // Định nghĩa lại interface callback riêng trong Service
+    public interface ShowtimeCallback {
+        void onSuccess();
+        void onFailure(String message);
+    }
 
     public ManagerShowtimeService() {
         this.db = FirebaseFirestore.getInstance();
@@ -44,7 +51,7 @@ public class ManagerShowtimeService {
                 .get();
     }
 
-    public void createShowtime(CollectionReference showtimeCollection, Showtime newShowtime, ManagerShowtimeRepository.ShowtimeCallback callback) {
+    public void createShowtime(CollectionReference showtimeCollection, Showtime newShowtime, ShowtimeCallback callback) {
         getShowtimesForRoomOnDate(showtimeCollection, newShowtime.getScreeningRoomId(), newShowtime.getShowTime().toDate())
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Showtime> existingShowtimes = queryDocumentSnapshots.toObjects(Showtime.class);
@@ -67,7 +74,6 @@ public class ManagerShowtimeService {
                 });
     }
 
-    // Helper methods to get start and end of day
     private Date getStartOfDay(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);

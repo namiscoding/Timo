@@ -38,78 +38,63 @@ public class ManagerCreateShowtimeViewModel extends ViewModel {
     public LiveData<String> success = _success;
 
     public ManagerCreateShowtimeViewModel() {
-        // Constructor không cần khởi tạo repository nữa
-        // vì RoomRepository cần cinemaId
+        // Các Repository sẽ được khởi tạo khi cinemaId có sẵn
     }
 
     public void loadInitialData(String filmId, String cinemaId) {
         _isLoading.setValue(true);
 
-        // Khởi tạo các repository ở đây
         filmRepository = new ManagerFilmRepository();
         showtimeRepository = new ManagerShowtimeRepository();
         roomRepository = new ManagerRoomRepository(cinemaId);
 
         // Lấy thông tin phim
-        filmRepository.getFilmById(filmId, new ManagerFilmRepository.OnFilmsFetchedListener() {
-            @Override
-            public void onSuccess(List<Film> films) {
-                if (films != null && !films.isEmpty()) {
-                    _selectedFilm.postValue(films.get(0));
-                }
+        filmRepository.getFilmById(filmId).observeForever(film -> {
+            if (film != null) {
+                _selectedFilm.postValue(film);
+                _error.postValue(null);
+            } else {
+                _error.postValue("Lỗi lấy thông tin phim: Không tìm thấy phim.");
             }
-            @Override
-            public void onFailure(String errorMessage) {
-                _error.postValue("Lỗi lấy thông tin phim: " + errorMessage);
-                _isLoading.postValue(false);
-            }
+            // Không set isLoading=false ở đây vì còn chờ rooms
         });
 
-        // Lấy danh sách phòng chiếu bằng callback
-        roomRepository.getScreeningRooms(new ManagerRoomRepository.RoomLoadCallback() {
-            @Override
-            public void onSuccess(List<ScreeningRoom> rooms) {
-                _screeningRooms.postValue(rooms);
-                _isLoading.postValue(false);
+        // Lấy danh sách phòng chiếu
+        roomRepository.getScreeningRooms().observeForever(result -> {
+            if (result.rooms != null) {
+                _screeningRooms.postValue(result.rooms);
+                _error.postValue(null);
+            } else {
+                _error.postValue("Lỗi lấy danh sách phòng: " + result.error);
             }
-
-            @Override
-            public void onFailure(String error) {
-                _error.postValue("Lỗi lấy danh sách phòng: " + error);
-                _isLoading.postValue(false);
-            }
+            _isLoading.postValue(false); // Set isLoading=false sau khi cả 2 task hoàn thành
         });
     }
 
     public void fetchSchedule(String roomId, Date date) {
-        _dailySchedule.setValue(new java.util.ArrayList<>());
+        _dailySchedule.setValue(new java.util.ArrayList<>()); // Xóa lịch cũ trước khi tải mới
         _isLoading.setValue(true);
-        showtimeRepository.getShowtimesForRoomOnDate(roomId, date)
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    _dailySchedule.setValue(queryDocumentSnapshots.toObjects(Showtime.class));
-                    _isLoading.setValue(false);
-                })
-                .addOnFailureListener(e -> {
-                    _error.setValue("Lỗi lấy lịch chiếu: " + e.getMessage());
-                    _isLoading.setValue(false);
-                });
+        showtimeRepository.getShowtimesForRoomOnDate(roomId, date).observeForever(result -> {
+            if (result.showtimes != null) {
+                _dailySchedule.setValue(result.showtimes);
+                _error.setValue(null);
+            } else {
+                _error.setValue("Lỗi lấy lịch chiếu: " + result.error);
+            }
+            _isLoading.setValue(false);
+        });
     }
-
-    // Sửa lại phương thức này trong CreateShowtimeViewModel.java
 
     public void saveShowtime(Showtime newShowtime) {
         _isLoading.setValue(true);
-        showtimeRepository.createShowtime(newShowtime, new ManagerShowtimeRepository.ShowtimeCallback() {
-            @Override
-            public void onSuccess() {
+        showtimeRepository.createShowtime(newShowtime).observeForever(result -> {
+            if (result.success) {
                 _isLoading.setValue(false);
                 _success.setValue("Tạo lịch chiếu thành công!");
-            }
-
-            @Override
-            public void onFailure(String message) {
+                _error.setValue(null);
+            } else {
                 _isLoading.setValue(false);
-                _error.setValue(message);
+                _error.setValue(result.error);
             }
         });
     }

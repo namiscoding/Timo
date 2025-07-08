@@ -7,15 +7,33 @@ import java.util.List;
 
 import vn.fpt.core.models.ScreeningRoom;
 import vn.fpt.core.models.Seat;
-import vn.fpt.feature_manager.data.repositories.ManagerRoomRepository;
+//import vn.fpt.feature_manager.data.repositories.ManagerRoomRepository; // Không cần import Repository nữa
+
 public class ManagerRoomService {
     private final FirebaseFirestore db;
+
+    // Định nghĩa lại các interface Callback riêng trong Service
+    public interface RoomLoadCallback {
+        void onSuccess(List<ScreeningRoom> rooms);
+        void onFailure(String error);
+    }
+
+    public interface RoomActionCallback {
+        void onSuccess();
+        void onFailure(String error);
+    }
+
+    public interface SingleRoomLoadCallback {
+        void onSuccess(ScreeningRoom room);
+        void onFailure(String error);
+    }
+
 
     public ManagerRoomService() {
         this.db = FirebaseFirestore.getInstance();
     }
 
-    public void getScreeningRooms(CollectionReference roomsCollection, ManagerRoomRepository.RoomLoadCallback callback) {
+    public void getScreeningRooms(CollectionReference roomsCollection, RoomLoadCallback callback) {
         roomsCollection.orderBy("name").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<ScreeningRoom> rooms = queryDocumentSnapshots.toObjects(ScreeningRoom.class);
@@ -24,7 +42,7 @@ public class ManagerRoomService {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    public void getRoomById(CollectionReference roomsCollection, String roomId, ManagerRoomRepository.SingleRoomLoadCallback callback) {
+    public void getRoomById(CollectionReference roomsCollection, String roomId, SingleRoomLoadCallback callback) {
         roomsCollection.document(roomId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -36,7 +54,7 @@ public class ManagerRoomService {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    public void addScreeningRoomAndSeats(CollectionReference roomsCollection, ScreeningRoom room, ManagerRoomRepository.RoomActionCallback callback) {
+    public void addScreeningRoomAndSeats(CollectionReference roomsCollection, ScreeningRoom room, RoomActionCallback callback) {
         WriteBatch batch = db.batch();
         DocumentReference roomRef = roomsCollection.document();
         room.setId(roomRef.getId());
@@ -58,7 +76,7 @@ public class ManagerRoomService {
                 .addOnFailureListener(e -> callback.onFailure("Lỗi khi tạo phòng và ghế: " + e.getMessage()));
     }
 
-    public void updateScreeningRoomAndSeats(CollectionReference roomsCollection, ScreeningRoom room, ManagerRoomRepository.RoomActionCallback callback) {
+    public void updateScreeningRoomAndSeats(CollectionReference roomsCollection, ScreeningRoom room, RoomActionCallback callback) {
         DocumentReference roomRef = roomsCollection.document(room.getId());
         roomRef.get().addOnSuccessListener(documentSnapshot -> {
             if (!documentSnapshot.exists()) {
@@ -76,7 +94,7 @@ public class ManagerRoomService {
         }).addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    private void recreateSeatsAndupdateRoom(DocumentReference roomRef, ScreeningRoom room, ManagerRoomRepository.RoomActionCallback callback) {
+    private void recreateSeatsAndupdateRoom(DocumentReference roomRef, ScreeningRoom room, RoomActionCallback callback) {
         CollectionReference seatsRef = roomRef.collection("seats");
         seatsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             WriteBatch batch = db.batch();
@@ -98,7 +116,7 @@ public class ManagerRoomService {
         }).addOnFailureListener(e -> callback.onFailure("Không thể đọc ghế cũ: " + e.getMessage()));
     }
 
-    public void deleteScreeningRoomAndSeats(CollectionReference roomsCollection, String roomId, ManagerRoomRepository.RoomActionCallback callback) {
+    public void deleteScreeningRoomAndSeats(CollectionReference roomsCollection, String roomId, RoomActionCallback callback) {
         DocumentReference roomRef = roomsCollection.document(roomId);
         CollectionReference seatsRef = roomRef.collection("seats");
         seatsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {

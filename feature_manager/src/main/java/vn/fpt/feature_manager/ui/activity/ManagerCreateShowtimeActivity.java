@@ -39,7 +39,6 @@ import vn.fpt.feature_manager.ui.adapter.ManagerDailyScheduleAdapter;
 public class ManagerCreateShowtimeActivity extends AppCompatActivity {
     private ManagerCreateShowtimeViewModel viewModel;
 
-    // UI Components
     private TextView tvSelectedFilmTitle, tvCalculatedEndTime, tvConflictWarning;
     private Spinner spinnerRooms;
     private Button btnSelectDate, btnSelectTime, btnSaveShowtime;
@@ -48,7 +47,6 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
     private RecyclerView rvDailySchedule;
     private ManagerDailyScheduleAdapter scheduleAdapter;
 
-    // Data holders
     private Film selectedFilm;
     private ScreeningRoom selectedRoom;
     private Calendar selectedDateTime = Calendar.getInstance();
@@ -99,26 +97,42 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
         viewModel.isLoading.observe(this, isLoading ->
                 progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE));
 
-        viewModel.error.observe(this, error ->
-                Toast.makeText(this, error, Toast.LENGTH_LONG).show());
+        viewModel.error.observe(this, error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+            }
+        });
 
         viewModel.success.observe(this, successMsg -> {
-            Toast.makeText(this, successMsg, Toast.LENGTH_LONG).show();
+            if (successMsg != null && !successMsg.isEmpty()) {
+                Toast.makeText(this, successMsg, Toast.LENGTH_LONG).show();
+                // Có thể reset lại success message trong ViewModel sau khi hiển thị
+            }
             finish();
         });
 
         viewModel.selectedFilm.observe(this, film -> {
             this.selectedFilm = film;
-            tvSelectedFilmTitle.setText(film.getTitle());
+            if (film != null) {
+                tvSelectedFilmTitle.setText(film.getTitle());
+            }
             checkAndValidate();
         });
 
         viewModel.screeningRooms.observe(this, rooms -> {
             this.roomList = rooms;
-            List<String> roomNames = rooms.stream().map(ScreeningRoom::getName).collect(Collectors.toList());
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, roomNames);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerRooms.setAdapter(adapter);
+            if (rooms != null && !rooms.isEmpty()) {
+                List<String> roomNames = rooms.stream().map(ScreeningRoom::getName).collect(Collectors.toList());
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, roomNames);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerRooms.setAdapter(adapter);
+                // Chọn phòng đầu tiên làm mặc định nếu có
+                selectedRoom = rooms.get(0);
+                fetchScheduleForSelectedDate();
+            } else {
+                spinnerRooms.setAdapter(null);
+                selectedRoom = null;
+            }
         });
 
         viewModel.dailySchedule.observe(this, showtimes -> {
@@ -135,7 +149,9 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
                 fetchScheduleForSelectedDate();
             }
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+                selectedRoom = null; // Reset if nothing selected
+            }
         });
 
         btnSelectDate.setOnClickListener(v -> showDatePicker());
@@ -176,12 +192,19 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
     private void fetchScheduleForSelectedDate() {
         if (selectedRoom != null) {
             viewModel.fetchSchedule(selectedRoom.getId(), selectedDateTime.getTime());
+        } else {
+            // Không có phòng được chọn, không tải lịch
+            scheduleAdapter.setShowtimes(new ArrayList<>());
+            tvConflictWarning.setVisibility(View.GONE);
+            btnSaveShowtime.setEnabled(false);
         }
     }
 
     private void checkAndValidate() {
         if (selectedFilm == null || selectedRoom == null || btnSelectTime.getText().toString().equals("Chọn giờ...")) {
             btnSaveShowtime.setEnabled(false);
+            tvConflictWarning.setVisibility(View.GONE); // Ẩn cảnh báo nếu thông tin chưa đủ
+            tvCalculatedEndTime.setText("Dự kiến kết thúc lúc: --:--"); // Reset text
             return;
         }
 
@@ -197,8 +220,13 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
         List<Showtime> existingShowtimes = viewModel.dailySchedule.getValue();
         if (existingShowtimes != null) {
             for (Showtime existing : existingShowtimes) {
+                // Kiểm tra xem showtime hiện tại có phải là chính showtime đang chỉnh sửa không (nếu có)
+                // (Hiện tại chưa có chức năng chỉnh sửa showtime, nhưng cần lưu ý cho tương lai)
+
                 long existingStartTime = existing.getShowTime().toDate().getTime();
                 long existingEndTime = existing.getEndTime().toDate().getTime();
+
+                // Logic kiểm tra trùng lặp: newStartTime < existingEndTime && newEndTime > existingStartTime
                 if (newStartTime < existingEndTime && newEndTime > existingStartTime) {
                     hasConflict = true;
                     break;
@@ -212,14 +240,34 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
             btnSaveShowtime.setEnabled(false);
         } else {
             tvConflictWarning.setVisibility(View.GONE);
-            btnSaveShowtime.setEnabled(true);
+            // Kích hoạt nút chỉ khi tất cả thông tin hợp lệ
+            btnSaveShowtime.setEnabled(
+                    !etPrice.getText().toString().isEmpty() &&
+                            Double.parseDouble(etPrice.getText().toString().trim().isEmpty() ? "0" : etPrice.getText().toString().trim()) > 0
+            );
         }
     }
 
     private void saveShowtime() {
-        String priceStr = etPrice.getText().toString();
+        String priceStr = etPrice.getText().toString().trim();
         if (priceStr.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập giá vé", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        double price;
+        try {
+            price = Double.parseDouble(priceStr);
+            if (price <= 0) {
+                Toast.makeText(this, "Giá phải lớn hơn 0.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Giá không hợp lệ.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (selectedFilm == null || selectedRoom == null) {
+            Toast.makeText(this, "Vui lòng chọn phim và phòng chiếu.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -229,7 +277,7 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
         newShowtime.setScreeningRoomId(selectedRoom.getId());
         newShowtime.setFilmTitle(selectedFilm.getTitle());
         newShowtime.setFilmPosterUrl(selectedFilm.getPosterImageUrl());
-        newShowtime.setCinemaName("Tên rạp ABC");
+        newShowtime.setCinemaName("Tên rạp ABC"); // Bạn có thể lấy tên rạp từ nguồn khác
         newShowtime.setScreeningRoomName(selectedRoom.getName());
 
         Timestamp showTime = new Timestamp(selectedDateTime.getTime());
@@ -239,9 +287,9 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
 
         newShowtime.setShowTime(showTime);
         newShowtime.setEndTime(endTime);
-        newShowtime.setPricePerSeat(Double.parseDouble(priceStr));
-        newShowtime.setStatus("open_for_booking");
-        newShowtime.setSeatsAvailable(selectedRoom.getTotalSeats());
+        newShowtime.setPricePerSeat(price);
+        newShowtime.setStatus("open_for_booking"); // Trạng thái mặc định
+        newShowtime.setSeatsAvailable(selectedRoom.getTotalSeats()); // Tổng số ghế của phòng
 
         viewModel.saveShowtime(newShowtime);
     }

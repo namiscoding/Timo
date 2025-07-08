@@ -14,17 +14,25 @@ import java.util.Collections;
 import java.util.List;
 
 import vn.fpt.core.models.Film;
-import vn.fpt.feature_manager.data.repositories.ManagerFilmRepository;
+//import vn.fpt.feature_manager.data.repositories.ManagerFilmRepository; // Không cần import Repository nữa
+
 public class ManagerFilmService {
     public static final String TAG = "ManagerFilmService";
     private final CollectionReference filmCollection;
+
+    // Định nghĩa lại interface callback riêng trong Service (hoặc sử dụng một cơ chế trả về khác)
+    // Để giữ nguyên phương thức gọi từ Repository, chúng ta vẫn cần interface này ở đây.
+    public interface OnFilmsFetchedListener {
+        void onSuccess(List<Film> films);
+        void onFailure(String errorMessage);
+    }
 
     public ManagerFilmService() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         this.filmCollection = db.collection("films");
     }
 
-    public void getAllFilms(ManagerFilmRepository.OnFilmsFetchedListener listener) {
+    public void getAllFilms(OnFilmsFetchedListener listener) {
         Task<QuerySnapshot> screeningFilmsTask = filmCollection
                 .whereEqualTo("status", "Đang chiếu")
                 .get();
@@ -51,7 +59,7 @@ public class ManagerFilmService {
         }).addOnFailureListener(e -> listener.onFailure(e.getMessage()));
     }
 
-    public void getFilmById(String filmId, ManagerFilmRepository.OnFilmsFetchedListener listener) {
+    public void getFilmById(String filmId, OnFilmsFetchedListener listener) {
         filmCollection.document(filmId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -66,7 +74,7 @@ public class ManagerFilmService {
                 .addOnFailureListener(e -> listener.onFailure(e.getMessage()));
     }
 
-    public void getFilms(String genre, String status, ManagerFilmRepository.OnFilmsFetchedListener listener) {
+    public void getFilms(String genre, String status, OnFilmsFetchedListener listener) {
         Log.d(TAG, "FilmService: getFilms called with Genre: " + genre + ", Status: " + status);
         Query query = filmCollection;
 

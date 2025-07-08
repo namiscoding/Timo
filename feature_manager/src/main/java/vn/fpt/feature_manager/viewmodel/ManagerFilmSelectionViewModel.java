@@ -26,18 +26,15 @@ public class ManagerFilmSelectionViewModel extends ViewModel {
 
     public void loadAllFilms() {
         _isLoading.setValue(true);
-        filmRepository.getAllFilms(new ManagerFilmRepository.OnFilmsFetchedListener() {
-            @Override
-            public void onSuccess(List<Film> filmList) {
+        // Quan sát LiveData từ Repository
+        filmRepository.getAllFilms().observeForever(filmList -> {
+            if (filmList != null) {
                 _films.setValue(filmList);
-                _isLoading.setValue(false);
+                _error.setValue(null);
+            } else {
+                _error.setValue("Không thể tải danh sách phim.");
             }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                _error.setValue(errorMessage);
-                _isLoading.setValue(false);
-            }
+            _isLoading.setValue(false);
         });
     }
 }

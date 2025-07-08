@@ -2,6 +2,7 @@ package vn.fpt.feature_manager.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer; // Import Observer
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -26,7 +27,9 @@ public class ManagerSeatViewModel extends ViewModel {
     }
 
     private final MutableLiveData<Set<String>> _selectedSeats = new MutableLiveData<>(new HashSet<>());
-    public LiveData<Set<String>> selectedSeats = _selectedSeats;
+    public LiveData<Set<String>> getSelectedSeats() {
+        return _selectedSeats;
+    }
     private MutableLiveData<Boolean> _isLoading = new MutableLiveData<>();
     public LiveData<Boolean> getIsLoading() {
         return _isLoading;
@@ -42,10 +45,6 @@ public class ManagerSeatViewModel extends ViewModel {
     private int rows;
     private int columns;
 
-    public LiveData<Set<String>> getSelectedSeats() {
-        return selectedSeats;
-    }
-    // Sửa init method để nhận rows và columns thay vì totalSeatsInRoom
     public void init(String cinemaId, String roomId, int rows, int columns) {
         if (this.cinemaId == null || !this.cinemaId.equals(cinemaId) ||
                 this.roomId == null || !this.roomId.equals(roomId)) {
@@ -54,7 +53,9 @@ public class ManagerSeatViewModel extends ViewModel {
             this.rows = rows;
             this.columns = columns;
             seatRepository = new ManagerSeatRepository(cinemaId, roomId);
-            loadSeats();
+            // Khởi tạo roomRepository ở đây để nó có thể được sử dụng trong loadRoomAndSeats
+            roomRepository = new ManagerRoomRepository(cinemaId);
+            loadSeats(); // Tải ghế ngay khi khởi tạo
         }
     }
 
@@ -64,11 +65,11 @@ public class ManagerSeatViewModel extends ViewModel {
             return;
         }
         _isLoading.setValue(true);
+        // Quan sát LiveData từ Repository
         seatRepository.getSeats(new ManagerSeatRepository.SeatLoadCallback() {
             @Override
             public void onSuccess(List<Seat> seats) {
                 if (seats.isEmpty() && rows > 0 && columns > 0) {
-                    // Nếu chưa có ghế nào trong Firestore, tạo ghế ban đầu với layout rows x columns
                     generateAndSaveInitialSeats(rows, columns);
                 } else {
                     _seats.setValue(seats);
@@ -87,7 +88,6 @@ public class ManagerSeatViewModel extends ViewModel {
     }
 
     private void generateAndSaveInitialSeats(int rows, int columns) {
-        // Sử dụng SeatGenerator để tạo danh sách ghế với layout chính xác
         List<Seat> initialSeats = ManagerSeatGenerator.generateSeatsWithLayout(rows, columns);
         if (initialSeats.isEmpty()) {
             _errorMessage.setValue("Không thể tạo sơ đồ ghế tự động.");
@@ -99,7 +99,7 @@ public class ManagerSeatViewModel extends ViewModel {
             @Override
             public void onSuccess() {
                 _errorMessage.setValue(null);
-                loadSeats(); // Tải lại ghế sau khi đã tạo thành công
+                loadSeats();
             }
 
             @Override
@@ -124,7 +124,7 @@ public class ManagerSeatViewModel extends ViewModel {
             @Override
             public void onSuccess() {
                 _errorMessage.setValue(null);
-                loadSeats(); // Tải lại danh sách sau khi cập nhật thành công
+                loadSeats();
             }
 
             @Override
@@ -145,7 +145,7 @@ public class ManagerSeatViewModel extends ViewModel {
             @Override
             public void onSuccess() {
                 _errorMessage.setValue(null);
-                loadSeats(); // Tải lại danh sách sau khi xóa thành công
+                loadSeats();
             }
 
             @Override
@@ -156,34 +156,37 @@ public class ManagerSeatViewModel extends ViewModel {
         });
     }
 
-    public void loadRoomAndSeats(String cinemaId, String roomId) {
-        if (roomRepository == null) roomRepository = new ManagerRoomRepository(cinemaId);
-
-        // Lấy thông tin phòng (số hàng, cột)
-        roomRepository.getRoomById(roomId, new ManagerRoomRepository.SingleRoomLoadCallback() {
-            @Override
-            public void onSuccess(ScreeningRoom room) { _roomInfo.setValue(room); }
-            @Override
-            public void onFailure(String error) { /* ... */ }
-        });
-
-        // Lấy danh sách ghế
-        seatRepository.getSeatsForRoom(cinemaId, roomId, new ManagerSeatRepository.SeatLoadCallback() {
-            @Override
-            public void onSuccess(List<Seat> seatList) { _seats.setValue(seatList); }
-            @Override
-            public void onFailure(String error) { /* ... */ }
+    // Phương thức này có thể được gọi để tải lại thông tin phòng nếu cần
+    // Tuy nhiên, init() đã thiết lập rows và columns, nên không thực sự cần gọi lại
+    // Trừ khi thông tin phòng thay đổi sau khi activity được tạo
+    public void loadRoomInfo() {
+        if (roomRepository == null || roomId == null) {
+            _errorMessage.setValue("Room Repository hoặc Room ID chưa được thiết lập.");
+            return;
+        }
+        // Quan sát LiveData từ Repository để lấy thông tin phòng
+        roomRepository.getRoomById(roomId).observeForever(result -> { // Sử dụng observeForever hoặc cung cấp LifecycleOwner
+            if (result.room != null) {
+                _roomInfo.setValue(result.room);
+                _errorMessage.setValue(null);
+            } else {
+                _errorMessage.setValue(result.error);
+                _roomInfo.setValue(null); // Đặt null nếu không tìm thấy phòng hoặc có lỗi
+            }
         });
     }
 
+
     public void toggleSeatSelection(String seatId) {
         Set<String> currentSelection = _selectedSeats.getValue();
-        if (currentSelection.contains(seatId)) {
-            currentSelection.remove(seatId);
+        Set<String> newSelection = (currentSelection != null) ? new HashSet<>(currentSelection) : new HashSet<>();
+
+        if (newSelection.contains(seatId)) {
+            newSelection.remove(seatId);
         } else {
-            currentSelection.add(seatId);
+            newSelection.add(seatId);
         }
-        _selectedSeats.setValue(currentSelection);
+        _selectedSeats.setValue(newSelection);
     }
 
     public void updateSelectedSeatsStatus(boolean isActive) {
@@ -194,12 +197,12 @@ public class ManagerSeatViewModel extends ViewModel {
         }
 
         _isLoading.setValue(true);
-        // Gọi phương thức đúng của Repository
         seatRepository.updateSeatStatus(seatIdsToUpdate, isActive, new ManagerSeatRepository.SeatActionCallback() {
             @Override
             public void onSuccess() {
-                loadSeats(); // Tải lại danh sách ghế
-                _selectedSeats.postValue(new HashSet<>()); // Xóa các lựa chọn
+                _errorMessage.setValue(null);
+                loadSeats();
+                _selectedSeats.postValue(new HashSet<>());
                 _isLoading.postValue(false);
             }
             @Override

@@ -1,20 +1,20 @@
 // feature_manager/build.gradle
 plugins {
-    // Remove: alias(libs.plugins.android.library)
-    id 'com.android.application' // Keep this if it's the main app
+    // Remove: alias(libs.plugins.android.library) // Đã được loại bỏ
+    id 'com.android.application' // Đã được giữ lại
     id 'com.google.gms.google-services'
 }
 
 android {
-    namespace 'vn.fpt.feature_manager' // This is the package name for your source code
-    compileSdk 35
+    namespace 'vn.fpt.feature_manager' // OK
+    compileSdk 35 // OK
 
     defaultConfig {
-        minSdk 26
-        applicationId 'vn.fpt.feature_manager'
+        minSdk 26 // OK
+        applicationId 'vn.fpt.feature_manager' // OK, đây là điểm rất quan trọng
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner" // OK
+        consumerProguardFiles "consumer-rules.pro" // OK
     }
 
     buildTypes {
@@ -24,26 +24,30 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_11 // OK
+        targetCompatibility JavaVersion.VERSION_11 // OK
     }
     buildFeatures {
-        viewBinding true
+        viewBinding true // OK
     }
 }
 
 dependencies {
-    implementation project(':core')
-    implementation libs.appcompat
-    implementation libs.material
-    implementation libs.activity
-    implementation libs.constraintlayout
-    testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
+    implementation project(':core') // OK
+    implementation libs.appcompat // OK
+    implementation libs.material // OK
+    implementation libs.activity // OK
+    implementation libs.constraintlayout // OK
+    testImplementation libs.junit // OK
+    androidTestImplementation libs.ext.junit // OK
+    androidTestImplementation libs.espresso.core // OK
+
     // Firebase BOM should be imported *before* specific Firebase libraries
-    implementation platform('com.google.firebase:firebase-bom:33.16.0')
-    implementation 'com.google.firebase:firebase-firestore'
-    implementation 'com.github.bumptech.glide:glide:4.12.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation platform('com.google.firebase:firebase-bom:33.16.0') // OK, phiên bản mới nhất
+    implementation 'com.google.firebase:firebase-firestore' // OK, sẽ lấy phiên bản từ BOM
+
+    implementation 'com.github.bumptech.glide:glide:4.12.0' // OK
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0' // OK
+
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0' // Bạn có thể tìm phiên bản mới nhất nếu v3.1.0 gây lỗi hoặc có vấn đề.// OK, thư viện biểu đồ đã được thêm
 }

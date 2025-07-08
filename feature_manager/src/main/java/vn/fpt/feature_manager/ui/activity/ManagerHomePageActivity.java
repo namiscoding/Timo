@@ -19,7 +19,7 @@ public class ManagerHomePageActivity extends AppCompatActivity {
     private CardView cardManageMovies;
     private CardView cardManageShowtimes;
     private CardView cardManageServices;
-
+    private CardView cardManageIncome;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +30,7 @@ public class ManagerHomePageActivity extends AppCompatActivity {
         cardManageMovies = findViewById(R.id.cardManageMovies);
         cardManageShowtimes = findViewById(R.id.cardManageShowtimes);
         cardManageServices = findViewById(R.id.cardManageServices);
+        cardManageIncome = findViewById(R.id.cardManageIncome);
 
         cardManageRooms.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +56,10 @@ public class ManagerHomePageActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        cardManageIncome.setOnClickListener(v -> {
+            Intent intent = new Intent(ManagerHomePageActivity.this, ManagerReportActivity.class);
+            startActivity(intent);
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

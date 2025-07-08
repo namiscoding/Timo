@@ -108,27 +108,22 @@ public class ManagerScheduleViewActivity extends AppCompatActivity {
             Button dateButton = new Button(this);
             dateButton.setLayoutParams(params);
             dateButton.setText(buttonFormat.format(calendar.getTime()));
-            dateButton.setAllCaps(false); // Cho phép chữ thường trong nút
+            dateButton.setAllCaps(false);
             dateButton.setBackgroundResource(R.drawable.date_button_selector_manager);
             dateButton.setTextColor(ContextCompat.getColorStateList(this, R.color.date_button_text_color_selector_manager));
             dateButton.setTag(calendar.getTime());
 
             dateButton.setOnClickListener(v -> {
-                // 1. Bỏ chọn nút cũ (nếu có)
                 if (lastSelectedButton != null) {
                     lastSelectedButton.setSelected(false);
                 }
-                // 2. Chọn nút mới được nhấn
                 v.setSelected(true);
-                // 3. Cập nhật lại nút được chọn cuối cùng
                 lastSelectedButton = (Button) v;
-                // 4. Tải dữ liệu cho ngày được chọn
                 viewModel.loadScheduleForDate((Date) v.getTag());
             });
 
             dateButtonContainer.addView(dateButton);
 
-            // Tự động chọn ngày hôm nay
             if (i == 0) {
                 dateButton.performClick();
             }

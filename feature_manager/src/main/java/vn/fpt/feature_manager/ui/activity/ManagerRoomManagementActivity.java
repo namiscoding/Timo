@@ -28,7 +28,6 @@ import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.ui.adapter.ManagerRoomAdapter;
 import vn.fpt.feature_manager.viewmodel.ManagerRoomViewModel;
 
-// THÊM "implements ManagerRoomAdapter.OnRoomActionListener" VÀO ĐÂY
 public class ManagerRoomManagementActivity extends AppCompatActivity implements ManagerRoomAdapter.OnRoomActionListener {
 
     private RecyclerView recyclerView;
@@ -37,6 +36,8 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
     private ProgressBar progressBar;
     private TextView tvNoRooms;
     private FloatingActionButton fabAddRoom;
+    private Toolbar toolbar;
+    private TextView tvToolbarTitle;
 
     private String cinemaId;
     private ManagerRoomViewModel roomViewModel;
@@ -44,18 +45,7 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Giả sử layout của bạn tên là activity_manager_room_management
         setContentView(R.layout.activity_manager_room_management);
-
-        Toolbar toolbar = findViewById(R.id.toolbarRoomManagement);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            // Giả sử bạn có TextView title trong Toolbar
-            // actionBar.setDisplayShowTitleEnabled(false);
-        }
 
         cinemaId = getIntent().getStringExtra("cinemaId");
         if (cinemaId == null || cinemaId.isEmpty()) {
@@ -68,6 +58,7 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
         roomViewModel.init(cinemaId);
 
         initViews();
+        setupToolbar();
         setupRecyclerView();
         observeViewModel();
 
@@ -79,15 +70,30 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
     }
 
     private void initViews() {
+        toolbar = findViewById(R.id.toolbarRoomManagement);
+        tvToolbarTitle = findViewById(R.id.toolbar_title);
         recyclerView = findViewById(R.id.recyclerViewRooms);
         progressBar = findViewById(R.id.progressBar);
         tvNoRooms = findViewById(R.id.tvNoRooms);
         fabAddRoom = findViewById(R.id.fabAddRoom);
     }
 
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false); // Ẩn tiêu đề mặc định của ActionBar
+        }
+        // Đặt tiêu đề cho TextView trong Toolbar
+        if (tvToolbarTitle != null) {
+            tvToolbarTitle.setText("Quản lý phòng chiếu");
+        }
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
     private void setupRecyclerView() {
         roomList = new ArrayList<>();
-        // Constructor gọi bây giờ đã hoàn toàn chính xác
         roomAdapter = new ManagerRoomAdapter(this, roomList, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(roomAdapter);
@@ -100,8 +106,6 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
                 roomList.addAll(rooms);
             }
             roomAdapter.notifyDataSetChanged();
-
-            // Ẩn/hiện thông báo khi không có phòng
             tvNoRooms.setVisibility(roomList.isEmpty() ? View.VISIBLE : View.GONE);
         });
 
@@ -114,12 +118,19 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
                 Toast.makeText(this, "Lỗi: " + errorMessage, Toast.LENGTH_LONG).show();
             }
         });
+
+        roomViewModel.getOperationSuccess().observe(this, isSuccess -> {
+            if (isSuccess) {
+                // Toast đã được hiển thị trong AddEditRoomActivity, không cần hiển thị lại ở đây
+                roomViewModel.onOperationSuccessHandled(); // Đặt lại trạng thái thành công
+                // loadScreeningRooms() được gọi trong ViewModel sau mỗi thao tác, nên không cần gọi lại ở đây
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Tải lại danh sách mỗi khi quay lại màn hình này
         roomViewModel.loadScreeningRooms();
     }
 
@@ -132,7 +143,6 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
         return super.onOptionsItemSelected(item);
     }
 
-    //region OnRoomActionListener implementation (Các @Override giờ đã hợp lệ)
     @Override
     public void onEditRoom(ScreeningRoom room) {
         Intent intent = new Intent(ManagerRoomManagementActivity.this, ManagerAddEditRoomActivity.class);
@@ -166,5 +176,4 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
         intent.putExtra("columns", room.getColumns());
         startActivity(intent);
     }
-    //endregion
 }

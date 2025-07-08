@@ -1,40 +1,89 @@
 package vn.fpt.feature_manager.data.repositories;
 
-import com.google.android.gms.tasks.Task;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Date;
+import java.util.List;
 
 import vn.fpt.core.models.Showtime;
 import vn.fpt.feature_manager.data.service.ManagerShowtimeService;
+
 public class ManagerShowtimeRepository {
     private final ManagerShowtimeService showtimeService;
     private final CollectionReference showtimeCollection;
 
-    // Interface callback để trả kết quả về cho ViewModel
-    public interface ShowtimeCallback {
-        void onSuccess();
-        void onFailure(String message);
+    public static class ShowtimeActionResult {
+        public boolean success;
+        public String error;
+
+        public ShowtimeActionResult(boolean success, String error) {
+            this.success = success;
+            this.error = error;
+        }
     }
+
+    public static class ShowtimeLoadResult {
+        public List<Showtime> showtimes;
+        public String error;
+
+        public ShowtimeLoadResult(List<Showtime> showtimes, String error) {
+            this.showtimes = showtimes;
+            this.error = error;
+        }
+    }
+
 
     public ManagerShowtimeRepository() {
         this.showtimeService = new ManagerShowtimeService();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Repository là nơi biết đường dẫn đến collection "Showtimes"
         this.showtimeCollection = db.collection("showtimes");
     }
 
-    public Task<QuerySnapshot> getShowtimesForRoomOnDate(String roomId, Date date) {
-        return showtimeService.getShowtimesForRoomOnDate(showtimeCollection, roomId, date);
+    // Thay đổi trả về LiveData cho Task QuerySnapshot
+    public LiveData<ShowtimeLoadResult> getShowtimesForRoomOnDate(String roomId, Date date) {
+        MutableLiveData<ShowtimeLoadResult> result = new MutableLiveData<>();
+        showtimeService.getShowtimesForRoomOnDate(showtimeCollection, roomId, date)
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    result.setValue(new ShowtimeLoadResult(queryDocumentSnapshots.toObjects(Showtime.class), null));
+                })
+                .addOnFailureListener(e -> {
+                    result.setValue(new ShowtimeLoadResult(null, e.getMessage()));
+                });
+        return result;
     }
 
-    public Task<QuerySnapshot> getShowtimesForDate(Date date) {
-        return showtimeService.getShowtimesForDate(showtimeCollection, date);
+    // Thay đổi trả về LiveData cho Task QuerySnapshot
+    public LiveData<ShowtimeLoadResult> getShowtimesForDate(Date date) {
+        MutableLiveData<ShowtimeLoadResult> result = new MutableLiveData<>();
+        showtimeService.getShowtimesForDate(showtimeCollection, date)
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    result.setValue(new ShowtimeLoadResult(queryDocumentSnapshots.toObjects(Showtime.class), null));
+                })
+                .addOnFailureListener(e -> {
+                    result.setValue(new ShowtimeLoadResult(null, e.getMessage()));
+                });
+        return result;
     }
 
-    public void createShowtime(Showtime newShowtime, ShowtimeCallback callback) {
-        showtimeService.createShowtime(showtimeCollection, newShowtime, callback);
+    // Thay đổi trả về LiveData<ShowtimeActionResult>
+    public LiveData<ShowtimeActionResult> createShowtime(Showtime newShowtime) {
+        MutableLiveData<ShowtimeActionResult> result = new MutableLiveData<>();
+        showtimeService.createShowtime(showtimeCollection, newShowtime, new ManagerShowtimeService.ShowtimeCallback() {
+            @Override
+            public void onSuccess() {
+                result.setValue(new ShowtimeActionResult(true, null));
+            }
+
+            @Override
+            public void onFailure(String message) {
+                result.setValue(new ShowtimeActionResult(false, message));
+            }
+        });
+        return result;
     }
 }

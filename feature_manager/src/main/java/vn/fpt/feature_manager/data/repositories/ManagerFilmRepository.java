@@ -1,4 +1,8 @@
 package vn.fpt.feature_manager.data.repositories;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import java.util.List;
 
 import vn.fpt.core.models.Film;
@@ -7,29 +11,64 @@ import vn.fpt.feature_manager.data.service.ManagerFilmService;
 public class ManagerFilmRepository {
     private final ManagerFilmService filmService;
 
-    // Interface callback để trả kết quả về cho ViewModel
-    public interface OnFilmsFetchedListener {
-        void onSuccess(List<Film> films);
-        void onFailure(String errorMessage);
-    }
-
     public ManagerFilmRepository() {
-        // Repository sẽ khởi tạo và giữ một instance của Service
         this.filmService = new ManagerFilmService();
     }
 
-    public void getAllFilms(OnFilmsFetchedListener listener) {
-        // Chỉ cần gọi đến Service tương ứng
-        filmService.getAllFilms(listener);
+    // Thay đổi trả về LiveData
+    public LiveData<List<Film>> getAllFilms() {
+        MutableLiveData<List<Film>> result = new MutableLiveData<>();
+        filmService.getAllFilms(new ManagerFilmService.OnFilmsFetchedListener() {
+            @Override
+            public void onSuccess(List<Film> films) {
+                result.setValue(films);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                // Có thể gửi null hoặc danh sách rỗng để báo lỗi qua LiveData,
+                // ViewModel sẽ xử lý errorMessage riêng
+                result.setValue(null);
+            }
+        });
+        return result;
     }
 
-    public void getFilmById(String filmId, OnFilmsFetchedListener listener) {
-        // Chỉ cần gọi đến Service tương ứng
-        filmService.getFilmById(filmId, listener);
+    // Thay đổi trả về LiveData
+    public LiveData<Film> getFilmById(String filmId) {
+        MutableLiveData<Film> result = new MutableLiveData<>();
+        filmService.getFilmById(filmId, new ManagerFilmService.OnFilmsFetchedListener() {
+            @Override
+            public void onSuccess(List<Film> films) {
+                if (films != null && !films.isEmpty()) {
+                    result.setValue(films.get(0));
+                } else {
+                    result.setValue(null); // Không tìm thấy phim
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                result.setValue(null); // Lỗi khi tải phim
+            }
+        });
+        return result;
     }
 
-    public void getFilms(String genre, String status, OnFilmsFetchedListener listener) {
-        // Chỉ cần gọi đến Service tương ứng
-        filmService.getFilms(genre, status, listener);
+    // Thay đổi trả về LiveData
+    public LiveData<List<Film>> getFilms(String genre, String status) {
+        MutableLiveData<List<Film>> result = new MutableLiveData<>();
+        filmService.getFilms(genre, status, new ManagerFilmService.OnFilmsFetchedListener() {
+            @Override
+            public void onSuccess(List<Film> films) {
+                result.setValue(films);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                result.setValue(null); // Lỗi khi tải phim
+            }
+        });
+        return result;
     }
 }

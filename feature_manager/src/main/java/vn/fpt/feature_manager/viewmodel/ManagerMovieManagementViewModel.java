@@ -12,7 +12,6 @@ import vn.fpt.feature_manager.data.repositories.ManagerFilmRepository;
 public class ManagerMovieManagementViewModel extends ViewModel {
     private final ManagerFilmRepository filmRepository;
 
-    // Biến để lưu trạng thái filter hiện tại
     private String currentGenre = "All";
     private String currentStatus = "All";
 
@@ -27,36 +26,30 @@ public class ManagerMovieManagementViewModel extends ViewModel {
 
     public ManagerMovieManagementViewModel() {
         filmRepository = new ManagerFilmRepository();
-        triggerFilmLoad(); // Tải lần đầu với filter mặc định
+        triggerFilmLoad();
     }
 
-    // Activity sẽ gọi hàm này khi người dùng chọn một thể loại mới
     public void setGenreFilter(String genre) {
         this.currentGenre = genre;
         triggerFilmLoad();
     }
 
-    // Activity sẽ gọi hàm này khi người dùng chọn một trạng thái mới
     public void setStatusFilter(String status) {
         this.currentStatus = status;
         triggerFilmLoad();
     }
 
-    // Hàm private để thực hiện việc tải phim
     private void triggerFilmLoad() {
         _isLoading.setValue(true);
-        filmRepository.getFilms(currentGenre, currentStatus, new ManagerFilmRepository.OnFilmsFetchedListener() {
-            @Override
-            public void onSuccess(List<Film> filmList) {
+        // Quan sát LiveData từ Repository
+        filmRepository.getFilms(currentGenre, currentStatus).observeForever(filmList -> {
+            if (filmList != null) {
                 _films.setValue(filmList);
-                _isLoading.setValue(false);
+                _error.setValue(null);
+            } else {
+                _error.setValue("Không thể tải danh sách phim với bộ lọc.");
             }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                _error.setValue(errorMessage);
-                _isLoading.setValue(false);
-            }
+            _isLoading.setValue(false);
         });
     }
 }

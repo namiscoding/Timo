@@ -32,33 +32,31 @@ public class ManagerScheduleViewModel extends ViewModel {
 
     public void loadScheduleForDate(Date date) {
         _isLoading.setValue(true);
-        showtimeRepository.getShowtimesForDate(date)
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Showtime> flatList = queryDocumentSnapshots.toObjects(Showtime.class);
+        showtimeRepository.getShowtimesForDate(date).observeForever(result -> {
+            if (result.showtimes != null) {
+                List<Showtime> flatList = result.showtimes;
 
-                    // --- LOGIC GROUPING ---
-                    Map<String, List<Showtime>> groupedMap = new LinkedHashMap<>();
-                    for (Showtime showtime : flatList) {
-                        groupedMap.computeIfAbsent(showtime.getFilmId(), k -> new ArrayList<>()).add(showtime);
+                Map<String, List<Showtime>> groupedMap = new LinkedHashMap<>();
+                for (Showtime showtime : flatList) {
+                    groupedMap.computeIfAbsent(showtime.getFilmId(), k -> new ArrayList<>()).add(showtime);
+                }
+
+                List<FilmSchedule> resultList = new ArrayList<>();
+                for (Map.Entry<String, List<Showtime>> entry : groupedMap.entrySet()) {
+                    List<Showtime> showtimesForFilm = entry.getValue();
+                    if (!showtimesForFilm.isEmpty()) {
+                        String title = showtimesForFilm.get(0).getFilmTitle();
+                        String posterUrl = showtimesForFilm.get(0).getFilmPosterUrl();
+                        resultList.add(new FilmSchedule(title, posterUrl, showtimesForFilm));
                     }
-
-                    List<FilmSchedule> resultList = new ArrayList<>();
-                    for (Map.Entry<String, List<Showtime>> entry : groupedMap.entrySet()) {
-                        List<Showtime> showtimesForFilm = entry.getValue();
-                        if (!showtimesForFilm.isEmpty()) {
-                            // Lấy thông tin phim từ suất chiếu đầu tiên
-                            String title = showtimesForFilm.get(0).getFilmTitle();
-                            String posterUrl = showtimesForFilm.get(0).getFilmPosterUrl();
-                            resultList.add(new FilmSchedule(title, posterUrl, showtimesForFilm));
-                        }
-                    }
-
-                    _schedules.setValue(resultList);
-                    _isLoading.setValue(false);
-                })
-                .addOnFailureListener(e -> {
-                    _error.setValue("Lỗi tải lịch chiếu: " + e.getMessage());
-                    _isLoading.setValue(false);
-                });
+                }
+                _schedules.setValue(resultList);
+                _error.setValue(null);
+            } else {
+                _error.setValue("Lỗi tải lịch chiếu: " + result.error);
+                _schedules.setValue(new ArrayList<>());
+            }
+            _isLoading.setValue(false);
+        });
     }
 }

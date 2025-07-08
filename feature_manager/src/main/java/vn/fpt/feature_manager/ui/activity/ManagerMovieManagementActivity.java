@@ -56,7 +56,7 @@ public class ManagerMovieManagementActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         rvMovies = findViewById(R.id.rvMovies);
         chipGroupGenres = findViewById(R.id.chipGroupGenres);
-        chipGroupStatus = findViewById(R.id.chipGroupStatus); // ID này giờ đã tồn tại
+        chipGroupStatus = findViewById(R.id.chipGroupStatus);
         progressBar = findViewById(R.id.progressBar);
     }
 
@@ -85,7 +85,6 @@ public class ManagerMovieManagementActivity extends AppCompatActivity {
             chip.setOnClickListener(v -> viewModel.setGenreFilter(genre));
             chipGroupGenres.addView(chip);
         }
-        // Chọn chip "All" làm mặc định
         if(chipGroupGenres.getChildCount() > 0) {
             ((Chip) chipGroupGenres.getChildAt(0)).setChecked(true);
         }
@@ -101,11 +100,10 @@ public class ManagerMovieManagementActivity extends AppCompatActivity {
         for (Map.Entry<String, String> entry : statusMap.entrySet()) {
             Chip chip = (Chip) getLayoutInflater().inflate(R.layout.item_genre_chip_manager, chipGroupStatus, false);
             chip.setText(entry.getKey());
-            chip.setId(View.generateViewId()); // Gán ID tự động
+            chip.setId(View.generateViewId());
             chip.setOnClickListener(v -> viewModel.setStatusFilter(entry.getValue()));
             chipGroupStatus.addView(chip);
         }
-        // Chọn chip "Tất cả" làm mặc định
         if(chipGroupStatus.getChildCount() > 0) {
             ((Chip) chipGroupStatus.getChildAt(0)).setChecked(true);
         }

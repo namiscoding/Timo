@@ -32,17 +32,16 @@ public class ManagerRoomViewModel extends ViewModel{
         return _errorMessage;
     }
 
-
-
     private String cinemaId;
 
     public void init(String cinemaId) {
-        if (this.cinemaId == null) { // Đảm bảo chỉ khởi tạo một lần
+        if (this.cinemaId == null) {
             this.cinemaId = cinemaId;
             roomRepository = new ManagerRoomRepository(cinemaId);
-            //loadScreeningRooms();
+            loadScreeningRooms();
         }
     }
+
     public void onOperationSuccessHandled() {
         _operationSuccess.setValue(false);
     }
@@ -53,98 +52,62 @@ public class ManagerRoomViewModel extends ViewModel{
             return;
         }
         _isLoading.setValue(true);
-        roomRepository.getScreeningRooms(new ManagerRoomRepository.RoomLoadCallback() {
-            @Override
-            public void onSuccess(List<ScreeningRoom> rooms) {
-                _screeningRooms.setValue(rooms);
-                _isLoading.setValue(false);
-                _errorMessage.setValue(null); // Xóa lỗi nếu có
+        roomRepository.getScreeningRooms().observeForever(result -> {
+            if (result.rooms != null) {
+                _screeningRooms.setValue(result.rooms);
+                _errorMessage.setValue(null);
+            } else {
+                _errorMessage.setValue(result.error);
+                _screeningRooms.setValue(new ArrayList<>());
             }
-
-            @Override
-            public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
-                _screeningRooms.setValue(new ArrayList<>()); // Trả về danh sách trống
-            }
+            _isLoading.setValue(false);
         });
-    }
-
-    private void handleSuccess() {
-        _errorMessage.setValue(null);
-        _isLoading.setValue(false);
-        _operationSuccess.setValue(true); // GỬI TÍN HIỆU THÀNH CÔNG!
-        loadScreeningRooms(); // Vẫn tải lại list để RoomManagementActivity cập nhật
-    }
-
-    private void handleFailure(String error) {
-        _errorMessage.setValue(error);
-        _isLoading.setValue(false);
     }
 
     public void addScreeningRoom(ScreeningRoom room) {
         _isLoading.setValue(true);
-        roomRepository.addScreeningRoomAndSeats(room, new ManagerRoomRepository.RoomActionCallback() {
-            @Override
-            public void onSuccess() {
-                _isLoading.setValue(false);
-                _operationSuccess.setValue(true); // Gửi tín hiệu thành công
+        roomRepository.addScreeningRoomAndSeats(room).observeForever(result -> {
+            if (result.success) {
+                _operationSuccess.setValue(true);
+                _errorMessage.setValue(null);
+                loadScreeningRooms();
+            } else {
+                _errorMessage.setValue(result.error);
             }
-            @Override
-            public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
-            }
+            _isLoading.setValue(false);
         });
     }
 
     public void updateScreeningRoom(ScreeningRoom room) {
         _isLoading.setValue(true);
-        roomRepository.updateScreeningRoomAndSeats(room, new ManagerRoomRepository.RoomActionCallback() {
-            @Override
-            public void onSuccess() {
-                _isLoading.setValue(false);
-                _operationSuccess.setValue(true); // Gửi tín hiệu thành công
+        roomRepository.updateScreeningRoomAndSeats(room).observeForever(result -> {
+            if (result.success) {
+                _operationSuccess.setValue(true);
+                _errorMessage.setValue(null);
+                loadScreeningRooms();
+            } else {
+                _errorMessage.setValue(result.error);
             }
-            @Override
-            public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
-            }
+            _isLoading.setValue(false);
         });
     }
 
     public void deleteScreeningRoom(String roomId) {
         _isLoading.setValue(true);
-        roomRepository.deleteScreeningRoomAndSeats(roomId, new ManagerRoomRepository.RoomActionCallback() {
-            @Override
-            public void onSuccess() {
-                // Khi xóa ở RoomManagementActivity thì không cần quay về trang nào cả
-                // Chỉ cần tải lại danh sách
+        roomRepository.deleteScreeningRoomAndSeats(roomId).observeForever(result -> {
+            if (result.success) {
+                _errorMessage.setValue(null);
                 loadScreeningRooms();
+            } else {
+                _errorMessage.setValue(result.error);
             }
-            @Override
-            public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
-            }
+            _isLoading.setValue(false);
+            // Có thể đặt _operationSuccess.setValue(true) nếu muốn hiển thị toast "Xóa thành công"
+            // trong RoomManagementActivity, nhưng hiện tại loadScreeningRooms() đã refresh list
         });
     }
 
-    private void handleActionCallback() {
-        new ManagerRoomRepository.RoomActionCallback() {
-            @Override
-            public void onSuccess() {
-                _isLoading.setValue(false);
-                _operationSuccess.setValue(true); // GỬI TÍN HIỆU THÀNH CÔNG!
-            }
-
-            @Override
-            public void onFailure(String error) {
-                _errorMessage.setValue(error);
-                _isLoading.setValue(false);
-            }
-        };
+    public LiveData<ManagerRoomRepository.SingleRoomResult> getRoomById(String roomId) {
+        return roomRepository.getRoomById(roomId);
     }
-
 }

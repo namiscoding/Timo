@@ -36,21 +36,14 @@ public class ManagerFilmSelectionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager_film_selection);
 
-        // 1. Tìm và gán các view
         initViews();
-
-        // 2. Cài đặt các thành phần UI (Toolbar, RecyclerView)
         setupToolbar();
         setupRecyclerView();
-
-        // 3. Cài đặt các listener (SAU KHI CÁC VIEW VÀ ADAPTER ĐÃ ĐƯỢC TẠO)
         setupListeners();
 
-        // 4. Cài đặt ViewModel và bắt đầu quan sát dữ liệu
         viewModel = new ViewModelProvider(this).get(ManagerFilmSelectionViewModel.class);
         setupObservers();
 
-        // 5. Yêu cầu ViewModel tải dữ liệu
         viewModel.loadAllFilms();
     }
 
@@ -70,59 +63,35 @@ public class ManagerFilmSelectionActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        // Adapter được khởi tạo ở đây
         adapter = new ManagerFilmSelectionAdapter(this);
         rvFilms.setAdapter(adapter);
     }
 
     private void setupListeners() {
-        // Sự kiện click cho item trong danh sách
-        // Dòng này sẽ không còn lỗi vì adapter đã được tạo ở bước setupRecyclerView()
         adapter.setOnFilmClickListener(film -> {
             Intent intent = new Intent(ManagerFilmSelectionActivity.this, ManagerCreateShowtimeActivity.class);
             intent.putExtra("FILM_ID", film.getId());
-            intent.putExtra("CINEMA_ID", "SnB2yfpm9rQ1lupv2xGz");
+            intent.putExtra("CINEMA_ID", "SnB2yfpm9rQ1lupv2xGz"); // Sử dụng cinemaId hardcode
             startActivity(intent);
         });
 
-        // Sự kiện click cho nút xem lịch chiếu
         btnViewSchedule.setOnClickListener(v -> {
             Intent intent = new Intent(this, ManagerScheduleViewActivity.class);
             startActivity(intent);
         });
     }
 
-    private void observeViewModel() {
-        viewModel.isLoading.observe(this, isLoading -> {
-            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        });
-
-        viewModel.films.observe(this, films -> {
-            if (films != null) {
-                adapter.setFilms(films);
-            }
-        });
-
-        viewModel.error.observe(this, error -> {
-            if (error != null && !error.isEmpty()) {
-                Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
     private void setupObservers() {
-        // 1. Quan sát trạng thái loading
         viewModel.isLoading.observe(this, isLoading -> {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         });
 
-        // 2. Quan sát danh sách phim
         viewModel.films.observe(this, films -> {
             if (films != null) {
                 adapter.setFilms(films);
             }
         });
 
-        // 3. Quan sát thông báo lỗi
         viewModel.error.observe(this, error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_LONG).show();
