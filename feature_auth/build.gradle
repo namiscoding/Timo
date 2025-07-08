@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -29,7 +30,30 @@ dependencies {
     implementation project(':core')
     implementation libs.appcompat
     implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
+    implementation libs.firebase.auth
+    implementation libs.credentials
+    implementation libs.credentials.play.services.auth
+    implementation libs.googleid
+    implementation libs.firebase.firestore
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation 'com.github.bumptech.glide:glide:...'
+
+    implementation libs.androidx.annotation //TruongLan add
+    implementation libs.androidx.lifecycle.livedata.ktx //TruongLan add
+    implementation libs.androidx.lifecycle.viewmodel.ktx //TruongLan add
+
+    implementation platform('com.google.firebase:firebase-bom:33.15.0') //TruongLan add
+
+    // Firebase Authentication
+    implementation 'com.google.firebase:firebase-auth:22.0.0' //TruongLan add
+
+    // Google Sign-In
+    implementation 'com.google.android.gms:play-services-auth:20.7.0' //TruongLan add
+
+    // Material Components (nếu bạn dùng MaterialButton)
+    implementation 'com.google.android.material:material:1.12.0' //TruongLan add
 }
