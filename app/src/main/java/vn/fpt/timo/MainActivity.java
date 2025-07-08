@@ -13,6 +13,7 @@ import com.google.firebase.appcheck.interop.BuildConfig;
 
 import vn.fpt.feature_admin.ui.activity.AdminDashboardActivity;
 import vn.fpt.feature_manager.TestActivity;
+import vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
                 //intent = new Intent(this, CustomerActivity.class);
                 break;
             case "manager":
-                intent = new Intent(this, TestActivity.class);
+                intent = new Intent(this, ManagerHomePageActivity.class);
                 break;
             default:
                 return;
