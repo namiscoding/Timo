@@ -58,11 +58,6 @@ public class AdminManageUsersFragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("Khách hàng"));
         tabLayout.addTab(tabLayout.newTab().setText("Manager & Admin"));
 
-        // Setup TabLayout
-        tabLayout = view.findViewById(R.id.tabLayout);
-        tabLayout.addTab(tabLayout.newTab().setText("Khách hàng"));
-        tabLayout.addTab(tabLayout.newTab().setText("Manager & Admin"));
-
         RecyclerView rvUsers = view.findViewById(R.id.rvUsers);
         rvUsers.setLayoutManager(new LinearLayoutManager(requireContext()));
 
