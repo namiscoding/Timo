@@ -1,5 +1,6 @@
-package vn.fpt.feature_customer.ui.adapter; // Đảm bảo package này đúng
+package vn.fpt.feature_customer.ui.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,30 +8,29 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat; // Thêm import này
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.Timestamp;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import vn.fpt.core.models.Showtime; // Đảm bảo import đúng model Showtime của bạn
-import vn.fpt.feature_customer.R; // Đảm bảo import đúng R file của bạn
+import vn.fpt.core.models.Showtime;
+import vn.fpt.feature_customer.R;
 
 public class ShowtimeAdapter extends RecyclerView.Adapter<ShowtimeAdapter.ShowtimeViewHolder> {
 
+    private static final String TAG = "ShowtimeAdapter";
     private List<Showtime> showtimeList;
     private OnShowtimeClickListener listener;
-    private int selectedPosition = RecyclerView.NO_POSITION; // Theo dõi vị trí suất chiếu được chọn
-    private Showtime selectedShowtimeObject; // Theo dõi đối tượng Showtime được chọn
+    private int selectedPosition = RecyclerView.NO_POSITION;
+    private Showtime selectedShowtimeObject;
 
     public interface OnShowtimeClickListener {
         void onShowtimeClick(Showtime showtime);
-    }
-
-    public void setOnShowtimeClickListener(OnShowtimeClickListener listener) {
-        this.listener = listener;
     }
 
     public ShowtimeAdapter() {
@@ -38,25 +38,27 @@ public class ShowtimeAdapter extends RecyclerView.Adapter<ShowtimeAdapter.Showti
     }
 
     public ShowtimeAdapter(List<Showtime> showtimeList) {
-        this.showtimeList = showtimeList;
+        this.showtimeList = showtimeList != null ? new ArrayList<>(showtimeList) : new ArrayList<>();
+    }
+
+    public void setOnShowtimeClickListener(OnShowtimeClickListener listener) {
+        this.listener = listener;
     }
 
     public void updateShowtimes(List<Showtime> newShowtimes) {
         this.showtimeList.clear();
-        this.showtimeList.addAll(newShowtimes);
-        this.selectedPosition = RecyclerView.NO_POSITION; // Reset lựa chọn khi dữ liệu thay đổi
+        if (newShowtimes != null) {
+            this.showtimeList.addAll(newShowtimes);
+        }
+        this.selectedPosition = RecyclerView.NO_POSITION;
         this.selectedShowtimeObject = null;
         notifyDataSetChanged();
+        Log.d(TAG, "Updated showtimes: " + showtimeList.size() + " items");
     }
 
-    /**
-     * Thiết lập suất chiếu được chọn (để highlight trên UI).
-     * @param showtimeToSelect Đối tượng Showtime cần được chọn.
-     */
     public void setSelectedShowtime(Showtime showtimeToSelect) {
         int newPosition = RecyclerView.NO_POSITION;
         if (showtimeToSelect != null) {
-            // Tìm vị trí của suất chiếu trong danh sách hiện tại
             for (int i = 0; i < showtimeList.size(); i++) {
                 if (showtimeList.get(i).equals(showtimeToSelect)) {
                     newPosition = i;
@@ -65,66 +67,94 @@ public class ShowtimeAdapter extends RecyclerView.Adapter<ShowtimeAdapter.Showti
             }
         }
 
-        // Chỉ cập nhật nếu vị trí chọn thay đổi
         if (newPosition != selectedPosition) {
             int oldSelectedPosition = this.selectedPosition;
             this.selectedPosition = newPosition;
             this.selectedShowtimeObject = showtimeToSelect;
 
-            // Thông báo cho adapter để vẽ lại các item bị ảnh hưởng
             if (oldSelectedPosition != RecyclerView.NO_POSITION) {
-                notifyItemChanged(oldSelectedPosition); // Bỏ highlight item cũ
+                notifyItemChanged(oldSelectedPosition);
             }
             if (this.selectedPosition != RecyclerView.NO_POSITION) {
-                notifyItemChanged(this.selectedPosition); // Highlight item mới
+                notifyItemChanged(this.selectedPosition);
             }
+            Log.d(TAG, "Selected showtime at position: " + selectedPosition);
         }
     }
 
     @NonNull
     @Override
     public ShowtimeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Đảm bảo item_showtime_slot.xml tồn tại và đúng
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_showtime_slot, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_showtime_slot, parent, false);
         return new ShowtimeViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ShowtimeViewHolder holder, int position) {
         Showtime showtime = showtimeList.get(position);
+        if (showtime == null) {
+            Log.e(TAG, "Showtime at position " + position + " is null");
+            holder.showtimeTime.setText("N/A");
+            holder.showtimePrice.setText("N/A");
+            return;
+        }
 
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        if (showtime.getShowTime() != null) {
-            holder.showtimeTime.setText(timeFormat.format(showtime.getShowTime()));
-        } else {
+        // Format showTime as Timestamp
+        try {
+            Timestamp showTime = showtime.getShowTime();
+            String formattedTime = "N/A";
+            if (showTime != null) {
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                formattedTime = timeFormat.format(showTime.toDate());
+            } else {
+                Log.w(TAG, "showTime is null at position " + position);
+            }
+            holder.showtimeTime.setText(formattedTime);
+        } catch (Exception e) {
+            Log.e(TAG, "Error formatting showTime at position " + position, e);
             holder.showtimeTime.setText("N/A");
         }
 
-        holder.showtimePrice.setText(String.format(Locale.getDefault(), "%,.0fđ", showtime.getPricePerSeat()));
+        // Format price
+        try {
+            double price = showtime.getPricePerSeat();
+            holder.showtimePrice.setText(String.format(Locale.getDefault(), "%,.0fđ", price));
+        } catch (Exception e) {
+            Log.e(TAG, "Error formatting price at position " + position, e);
+            holder.showtimePrice.setText("N/A");
+        }
 
-        // --- Logic highlight suất chiếu được chọn ---
+        // Highlight selected showtime
         if (position == selectedPosition) {
-            holder.itemView.setBackgroundResource(R.drawable.ic_seat_selected); // Nền khi được chọn
-            holder.showtimeTime.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.black)); // Chữ màu đen
+            holder.itemView.setBackgroundResource(R.drawable.ic_seat_selected);
+            holder.showtimeTime.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.black));
             holder.showtimePrice.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.black));
         } else {
-            holder.itemView.setBackgroundResource(R.drawable.rounded_showtime_slot_bg); // Nền mặc định
-            holder.showtimeTime.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.white)); // Chữ màu trắng
+            holder.itemView.setBackgroundResource(R.drawable.rounded_showtime_slot_bg);
+            holder.showtimeTime.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.white));
             holder.showtimePrice.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.darker_gray));
         }
 
+        // Handle click events
         holder.itemView.setOnClickListener(v -> {
+            setSelectedShowtime(showtime);
             if (listener != null) {
-                // Khi click, thiết lập vị trí chọn mới và gọi listener
-                setSelectedShowtime(showtime);
                 listener.onShowtimeClick(showtime);
             } else {
-                // Fallback Toast nếu listener chưa được cài đặt (chỉ để debug)
                 String filmTitle = showtime.getFilmTitle() != null ? showtime.getFilmTitle() : "Phim không xác định";
-                String formattedTime = showtime.getShowTime() != null ? timeFormat.format(showtime.getShowTime()) : "N/A";
+                String formattedTime = "N/A";
+                try {
+                    if (showtime.getShowTime() != null) {
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                        formattedTime = timeFormat.format(showtime.getShowTime().toDate());
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error formatting showTime for Toast", e);
+                }
                 Toast.makeText(v.getContext(), "Showtime clicked: " + filmTitle + " at " + formattedTime, Toast.LENGTH_SHORT).show();
             }
-          });
+        });
     }
 
     @Override

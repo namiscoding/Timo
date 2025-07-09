@@ -194,86 +194,70 @@ public class CustomerShowtimeService {
             return futureShowtimes;
         }
 
-        // Lấy ngày bắt đầu và kết thúc của ngày được chọn (dùng cho lọc client)
-        Date startOfDay = getStartOfDayTimestamp(date).toDate(); // Convert to Date for client-side comparison
-        Date endOfDay = getEndOfDayTimestamp(date).toDate();     // Convert to Date for client-side comparison
+        // Get start and end of the day as Firestore Timestamps
+        Timestamp startOfDay = getStartOfDayTimestamp(date);
+        Timestamp endOfDay = getEndOfDayTimestamp(date);
 
-        // --- TRUY VẤN FIRESTORE ĐƯỢC ĐƠN GIẢN HÓA ---
+        // Query Firestore with filters for filmId, cinemaId, and date range
         db.collection("showtimes")
-                .whereEqualTo("filmId", filmId) // Giữ lại điều kiện này để giảm lượng dữ liệu tải về tối thiểu
-                // .orderBy("filmId", Query.Direction.ASCENDING) // Có thể cần chỉ mục đơn trên filmId nếu không có orderBy nào
-                // CÁC ĐIỀU KIỆN SAU SẼ ĐƯỢC LỌC TRÊN CLIENT:
-                // .whereEqualTo("cinemaId", cinemaId)
-                // .whereGreaterThanOrEqualTo("showTime", getStartOfDayTimestamp(date))
-                // .whereLessThan("showTime", getEndOfDayTimestamp(date))
-                // .orderBy("showTime", Query.Direction.ASCENDING)
+                .whereEqualTo("filmId", filmId)
+                .whereEqualTo("cinemaId", cinemaId)
+                .whereGreaterThanOrEqualTo("showTime", startOfDay)
+                .whereLessThanOrEqualTo("showTime", endOfDay)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            List<Showtime> rawShowtimes = new ArrayList<>();
-                            if (task.getResult() != null) {
-                                for (QueryDocumentSnapshot doc : task.getResult()) {
-                                    try {
-                                        Showtime showtime = doc.toObject(Showtime.class);
-                                        showtime.setId(doc.getId());
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Showtime> showtimes = new ArrayList<>();
+                        if (task.getResult() != null) {
+                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                try {
+                                    Showtime showtime = doc.toObject(Showtime.class);
+                                    showtime.setId(doc.getId());
 
-                                        showtime.setCinemaId(Objects.requireNonNullElse(doc.getString("cinemaId"), ""));
-                                        showtime.setCinemaName(Objects.requireNonNullElse(doc.getString("cinemaName"), ""));
-                                        showtime.setFilmId(Objects.requireNonNullElse(doc.getString("filmId"), ""));
-                                        showtime.setFilmPosterUrl(Objects.requireNonNullElse(doc.getString("filmPosterUrl"), ""));
-                                        showtime.setFilmTitle(Objects.requireNonNullElse(doc.getString("filmTitle"), ""));
-                                        showtime.setScreeningRoomName(Objects.requireNonNullElse(doc.getString("screeningRoomName"), ""));
-                                        showtime.setScreeningRoomId(Objects.requireNonNullElse(doc.getString("screeningRoomId"), ""));
-                                        showtime.setStatus(Objects.requireNonNullElse(doc.getString("status"), ""));
-                                        showtime.setSeatsAvailable(Objects.requireNonNullElse(doc.getLong("seatsAvailable"), 0L));
+                                    // Set fields with null checks
+                                    showtime.setCinemaId(Objects.requireNonNullElse(doc.getString("cinemaId"), ""));
+                                    showtime.setCinemaName(Objects.requireNonNullElse(doc.getString("cinemaName"), ""));
+                                    showtime.setFilmId(Objects.requireNonNullElse(doc.getString("filmId"), ""));
+                                    showtime.setFilmPosterUrl(Objects.requireNonNullElse(doc.getString("filmPosterUrl"), ""));
+                                    showtime.setFilmTitle(Objects.requireNonNullElse(doc.getString("filmTitle"), ""));
+                                    showtime.setScreeningRoomName(Objects.requireNonNullElse(doc.getString("screeningRoomName"), ""));
+                                    showtime.setScreeningRoomId(Objects.requireNonNullElse(doc.getString("screeningRoomId"), ""));
+                                    showtime.setStatus(Objects.requireNonNullElse(doc.getString("status"), ""));
+                                    showtime.setSeatsAvailable(Objects.requireNonNullElse(doc.getLong("seatsAvailable"), 0L));
 
-
-                                        if (doc.contains("pricePerSeat")) {
-                                            Object priceObj = doc.get("pricePerSeat");
-                                            if (priceObj instanceof Long) {
-                                                showtime.setPricePerSeat(((Long) priceObj).doubleValue());
-                                            } else if (priceObj instanceof Double) {
-                                                showtime.setPricePerSeat((Double) priceObj);
-                                            } else {
-                                                showtime.setPricePerSeat(0.0);
-                                            }
+                                    // Handle pricePerSeat
+                                    if (doc.contains("pricePerSeat")) {
+                                        Object priceObj = doc.get("pricePerSeat");
+                                        if (priceObj instanceof Long) {
+                                            showtime.setPricePerSeat(((Long) priceObj).doubleValue());
+                                        } else if (priceObj instanceof Double) {
+                                            showtime.setPricePerSeat((Double) priceObj);
                                         } else {
                                             showtime.setPricePerSeat(0.0);
+                                            Log.w(TAG, "Invalid pricePerSeat type for doc ID: " + doc.getId());
                                         }
-                                        rawShowtimes.add(showtime);
-                                    } catch (Exception e) {
-                                        Log.e(TAG, "Error mapping showtime document to Showtime (pre-filter): " + e.getMessage() + " for doc ID: " + doc.getId(), e);
+                                    } else {
+                                        showtime.setPricePerSeat(0.0);
+                                        Log.w(TAG, "Missing pricePerSeat for doc ID: " + doc.getId());
                                     }
+
+                                    showtimes.add(showtime);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error mapping showtime document to Showtime: " + e.getMessage() + " for doc ID: " + doc.getId(), e);
                                 }
                             }
-
-                            // --- LỌC DỮ LIỆU TRÊN CLIENT ---
-                            List<Showtime> filteredShowtimes = new ArrayList<>();
-                            for (Showtime showtime : rawShowtimes) {
-                                boolean matchesCinema = Objects.equals(showtime.getCinemaId(), cinemaId);
-                                boolean matchesDateRange = false;
-                                if (showtime.getShowTime() != null) {
-                                    matchesDateRange = !showtime.getShowTime().toDate().before(startOfDay) && !showtime.getShowTime().toDate().after(endOfDay);
-                                }
-
-                                if (matchesCinema && matchesDateRange) {
-                                    filteredShowtimes.add(showtime);
-                                }
-                            }
-
-                            // --- SẮP XẾP DỮ LIỆU TRÊN CLIENT ---
-                            // Sắp xếp theo showTime (Date)
-                            Collections.sort(filteredShowtimes, Comparator.comparing(Showtime::getShowTime, Comparator.nullsLast(Comparator.naturalOrder())));
-
-                            futureShowtimes.complete(filteredShowtimes); // Hoàn thành CompletableFuture với danh sách đã lọc
-                        } else {
-                            Log.w(TAG, "Error getting showtimes.", task.getException());
-                            futureShowtimes.completeExceptionally(task.getException());
                         }
+
+                        // Sort showtimes by showTime
+                        Collections.sort(showtimes, Comparator.comparing(Showtime::getShowTime, Comparator.nullsLast(Comparator.naturalOrder())));
+
+                        futureShowtimes.complete(showtimes);
+                    } else {
+                        Log.w(TAG, "Error getting showtimes.", task.getException());
+                        futureShowtimes.completeExceptionally(task.getException());
                     }
                 });
+
         return futureShowtimes;
     }
 
