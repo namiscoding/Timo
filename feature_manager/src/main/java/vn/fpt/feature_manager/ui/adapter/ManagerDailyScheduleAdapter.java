@@ -55,7 +55,7 @@ public class ManagerDailyScheduleAdapter extends RecyclerView.Adapter<ManagerDai
 
         void bind(Showtime showtime) {
             tvTitle.setText(showtime.getFilmTitle());
-            String timeRange = timeFormat.format(showtime.getShowTime().toDate()) + " - " + timeFormat.format(showtime.getEndTime().toDate());
+            String timeRange = timeFormat.format(showtime.getShowTime()) + " - " + timeFormat.format(showtime.getEndTime());
             tvTime.setText(timeRange);
         }
     }

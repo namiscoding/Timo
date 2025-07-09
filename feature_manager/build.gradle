@@ -1,8 +1,6 @@
 // feature_manager/build.gradle
 plugins {
-    // Remove: alias(libs.plugins.android.library) // Đã được loại bỏ
-    id 'com.android.application' // Đã được giữ lại
-    id 'com.google.gms.google-services'
+    alias(libs.plugins.android.library)
 }
 
 android {
@@ -11,12 +9,9 @@ android {
 
     defaultConfig {
         minSdk 26 // OK
-        applicationId 'vn.fpt.feature_manager' // OK, đây là điểm rất quan trọng
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner" // OK
         consumerProguardFiles "consumer-rules.pro" // OK
     }
-
     buildTypes {
         release {
             minifyEnabled false

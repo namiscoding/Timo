@@ -22,7 +22,6 @@
         <activity
             android:name="vn.fpt.feature_admin.ui.activity.AdminDashboardActivity"
             android:exported="true" />
-
         <activity
             android:name="vn.fpt.feature_customer.ui.activity.CustomerIntroActivity"
             android:exported="true">

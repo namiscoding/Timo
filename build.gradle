@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // Đảm bảo phiên bản mới nhất của plugin Google Services
+        classpath 'com.android.tools.build:gradle:8.2.2'// Đảm bảo phiên bản mới nhất của plugin Google Services
         classpath 'com.google.gms:google-services:4.4.3' // Kiểm tra phiên bản mới nhất trên Firebase Docs
     }
 }

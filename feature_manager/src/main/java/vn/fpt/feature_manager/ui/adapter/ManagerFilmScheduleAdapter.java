@@ -81,7 +81,7 @@ public class ManagerFilmScheduleAdapter extends RecyclerView.Adapter<ManagerFilm
                 Chip chip = (Chip) LayoutInflater.from(context)
                         .inflate(R.layout.item_showtime_chip_manager, binding.chipGroupShowtimes, false);
 
-                String chipText = timeFormat.format(showtime.getShowTime().toDate())
+                String chipText = timeFormat.format(showtime.getShowTime())
                         + " - " + showtime.getScreeningRoomName();
                 chip.setText(chipText);
                 binding.chipGroupShowtimes.addView(chip);

@@ -52,7 +52,7 @@ public class ManagerShowtimeService {
     }
 
     public void createShowtime(CollectionReference showtimeCollection, Showtime newShowtime, ShowtimeCallback callback) {
-        getShowtimesForRoomOnDate(showtimeCollection, newShowtime.getScreeningRoomId(), newShowtime.getShowTime().toDate())
+        getShowtimesForRoomOnDate(showtimeCollection, newShowtime.getScreeningRoomId(), newShowtime.getShowTime())
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Showtime> existingShowtimes = queryDocumentSnapshots.toObjects(Showtime.class);
 

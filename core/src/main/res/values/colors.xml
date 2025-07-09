@@ -32,4 +32,5 @@
 
     <!-- Màu nền màn hình -->
     <color name="screen_background">#37474F</color>
+    <color name="background_dark">#181A20FF</color>
 </resources>
