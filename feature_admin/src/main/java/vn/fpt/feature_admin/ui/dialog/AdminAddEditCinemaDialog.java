@@ -1,4 +1,4 @@
-package vn.fpt.feature_admin.ui.dialog;
+package vn.fpt.timo.ui.dialog;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -32,29 +32,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import vn.fpt.feature_admin.R;
-import vn.fpt.core.models.Cinema;
-import vn.fpt.feature_admin.viewmodel.AdminManageCinemasViewModel;
+import vn.fpt.timo.R;
+import vn.fpt.timo.data.models.Cinema;
+import vn.fpt.timo.viewmodel.admin.ManageCinemasViewModel;
 
-public class AdminAddEditCinemaDialog  extends DialogFragment {
+public class AddEditCinemaDialog extends DialogFragment {
     private static final String TAG = "AddEditCinemaDialog";
     private EditText etName, etAddress, etCity, etLatitude, etLongitude;
     private Cinema cinema;
-    private AdminManageCinemasViewModel viewModel;
+    private ManageCinemasViewModel viewModel;
     private TextView tvDialogTitle;
 
-    public static void show(FragmentActivity activity, Cinema cinema, AdminManageCinemasViewModel vm) {
-        AdminAddEditCinemaDialog dialog = new AdminAddEditCinemaDialog();
+    public static void show(FragmentActivity activity, Cinema cinema, ManageCinemasViewModel vm) {
+        AddEditCinemaDialog dialog = new AddEditCinemaDialog();
         dialog.cinema = cinema;
         dialog.viewModel = vm;
-        dialog.show(activity.getSupportFragmentManager(), "AdminAddEditCinemaDialog");
+        dialog.show(activity.getSupportFragmentManager(), "AddEditCinemaDialog");
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
-        View view = getLayoutInflater().inflate(R.layout.admin_dialog_add_edit_cinema, null);
+        View view = getLayoutInflater().inflate(R.layout.dialog_add_edit_cinema, null);
         dialog.setView(view);
         dialog.setCanceledOnTouchOutside(false);
 

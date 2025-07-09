@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -14,19 +13,38 @@
         android:padding="16dp"
         android:orientation="horizontal">
 
-        <!-- Cinema Info -->
+        <!-- User Avatar -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="2dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/imgAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="#DCDCDC"
+                android:src="@drawable/ic_person" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- User Info -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- Name -->
+            <!-- Email -->
             <TextView
-                android:id="@+id/tvName"
+                android:id="@+id/tvEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tên rạp"
+                android:text="user@example.com"
                 android:textSize="16sp"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
@@ -35,9 +53,22 @@
                 android:ellipsize="end"
                 android:layout_marginBottom="4dp" />
 
-            <!-- Address -->
+            <!-- Display Name -->
+            <TextView
+                android:id="@+id/tvDisplayName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tên hiển thị"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Cinema Assignment (chỉ hiển thị cho manager) -->
             <LinearLayout
-                android:id="@+id/layoutAddress"
+                android:id="@+id/layoutCinema"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -52,38 +83,10 @@
                     app:tint="#FFFFFF" />
 
                 <TextView
-                    android:id="@+id/tvAddress"
+                    android:id="@+id/tvCinema"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Địa chỉ"
-                    android:textSize="14sp"
-                    android:textColor="#FFFFFF"
-                    android:fontFamily="sans-serif"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
-
-            </LinearLayout>
-
-            <!-- City -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp">
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_city"
-                    android:layout_marginEnd="6dp"
-                    android:layout_gravity="center_vertical"
-                    app:tint="#FFFFFF" />
-
-                <TextView
-                    android:id="@+id/tvCity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Thành phố"
+                    android:text="Rạp được gán (nếu có)"
                     android:textSize="12sp"
                     android:textColor="#FFFFFF"
                     android:fontFamily="sans-serif"
@@ -91,6 +94,20 @@
                     android:ellipsize="end" />
 
             </LinearLayout>
+
+            <!-- Created At (chỉ hiển thị cho customer) -->
+            <TextView
+                android:id="@+id/tvCreatedAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tạo lúc: 01/01/2024"
+                android:textSize="12sp"
+                android:textColor="#CCCCCC"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone" />
 
             <!-- Status -->
             <TextView
@@ -128,7 +145,7 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnToggleStatus"
+                    android:id="@+id/btnToggleActive"
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
                     android:text="Tạm khóa"

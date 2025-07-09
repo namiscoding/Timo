@@ -1,4 +1,5 @@
-package vn.fpt.feature_admin.data.repositories;
+package vn.fpt.timo.data.repositories;
+
 
 import android.util.Log;
 
@@ -9,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import vn.fpt.feature_admin.data.firestore_services.AdminManageUserService;
-import vn.fpt.core.models.User;
+import vn.fpt.timo.data.firestore_services.UserService;
+import vn.fpt.timo.data.models.User;
 
-public class AdminManageUserRepository {
-    private final AdminManageUserService userService = new AdminManageUserService();
+public class UserRepository {
+    private final UserService userService = new UserService();
 
     public void getAllUsers(Consumer<List<User>> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

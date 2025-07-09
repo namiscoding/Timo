@@ -1,4 +1,4 @@
-package vn.fpt.feature_admin.viewmodel;
+package vn.fpt.timo.viewmodel.admin;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -7,13 +7,13 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 import java.util.function.Consumer;
 
-import vn.fpt.core.models.Cinema;
-import vn.fpt.core.models.User;
-import vn.fpt.feature_admin.data.repositories.AdminManageCinemaRepository;
-import vn.fpt.feature_admin.data.repositories.AdminManageUserRepository;
+import vn.fpt.timo.data.models.Cinema;
+import vn.fpt.timo.data.models.User;
+import vn.fpt.timo.data.repositories.AdminManageCinemaRepository;
+import vn.fpt.timo.data.repositories.UserRepository;
 
-public class AdminManageUsersViewModel extends ViewModel {
-    private final AdminManageUserRepository repository = new AdminManageUserRepository();
+public class ManageUsersViewModel extends ViewModel {
+    private final UserRepository repository = new UserRepository();
     private final AdminManageCinemaRepository adminManageCinemaRepository = new AdminManageCinemaRepository();
     private final MutableLiveData<List<User>> users = new MutableLiveData<>();
 
