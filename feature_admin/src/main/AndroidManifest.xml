@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application
+        android:theme="@style/Theme.Timo">
+        <activity
+            android:name=".ui.activity.AdminDashboardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.activity.AdminManageCinemasFragmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.AdminManageFilmsFragmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.AdminManageUsersFragmentActivity"
+            android:exported="false" />
+    </application>
 </manifest>

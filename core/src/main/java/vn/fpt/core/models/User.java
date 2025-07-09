@@ -16,6 +16,8 @@ public class User {
     private String role;
     private long loyaltyPoints; // Sử dụng long để an toàn hơn
     private String assignedCinemaId;
+    private boolean isActive = true;
+    private String password;
 
     @ServerTimestamp
     private Timestamp createdAt;
@@ -38,6 +40,9 @@ public class User {
     public void setAssignedCinemaId(String assignedCinemaId) { this.assignedCinemaId = assignedCinemaId; }
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
-
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
 }

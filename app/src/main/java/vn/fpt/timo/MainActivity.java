@@ -11,7 +11,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.appcheck.interop.BuildConfig;
 
+import vn.fpt.feature_admin.ui.activity.AdminDashboardActivity;
+import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
 import vn.fpt.feature_manager.TestActivity;
+import vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,19 +28,19 @@ public class MainActivity extends AppCompatActivity {
     private void handleModuleActivities() {
         Intent intent = null;
         //anh em chỉnh module ở đây
-        String module = "manager";
+        String module = "customer";
         switch (module) {
             case "auth":
                 //intent = new Intent(this, AuthActivity.class);
                 break;
             case "admin":
-                //intent = new Intent(this, AdminActivity.class);
+                intent = new Intent(this, AdminDashboardActivity.class);
                 break;
             case "customer":
-                //intent = new Intent(this, CustomerActivity.class);
+                intent = new Intent(this, CustomerIntroActivity.class);
                 break;
             case "manager":
-                intent = new Intent(this, TestActivity.class);
+                intent = new Intent(this, ManagerHomePageActivity.class);
                 break;
             default:
                 return;

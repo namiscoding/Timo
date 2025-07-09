@@ -52,5 +52,11 @@ public class Film {
     public void setAverageStars(double averageStars) { this.averageStars = averageStars; }
     public List<String> getGenres() { return genres; }
     public void setGenres(List<String> genres) { this.genres = genres; }
+
+    @Override
+    public String toString() {
+        // Trả về tên phim để hiển thị trong Spinner
+        return title;
+    }
 }
 

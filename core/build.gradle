@@ -36,4 +36,14 @@ dependencies {
     androidTestImplementation libs.espresso.core
     implementation libs.firebase.firestore
     implementation platform('com.google.firebase:firebase-bom:33.15.0')
+
+    // Lifecycle components (LiveData and ViewModel)
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0' // Or the latest version
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0' // Or the latest version
+
+    // RecyclerView
+    implementation 'androidx.recyclerview:recyclerview:1.3.2' // Or the latest version
+
+    // Material Design (for nicer UI elements if needed)
+    implementation 'com.google.android.material:material:1.11.0' // Or the latest version
 }
