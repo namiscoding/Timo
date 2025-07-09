@@ -44,4 +44,5 @@ public class User {
     public void setActive(boolean active) { isActive = active; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
 }
