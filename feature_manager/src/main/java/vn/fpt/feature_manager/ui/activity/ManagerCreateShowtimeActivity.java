@@ -223,8 +223,8 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
                 // Kiểm tra xem showtime hiện tại có phải là chính showtime đang chỉnh sửa không (nếu có)
                 // (Hiện tại chưa có chức năng chỉnh sửa showtime, nhưng cần lưu ý cho tương lai)
 
-                long existingStartTime = existing.getShowTime().getTime();
-                long existingEndTime = existing.getEndTime().getTime();
+                long existingStartTime = existing.getShowTime().toDate().getTime();
+                long existingEndTime = existing.getEndTime().toDate().getTime();
 
                 // Logic kiểm tra trùng lặp: newStartTime < existingEndTime && newEndTime > existingStartTime
                 if (newStartTime < existingEndTime && newEndTime > existingStartTime) {
@@ -285,8 +285,8 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
         endCalendar.add(Calendar.MINUTE, (int) selectedFilm.getDurationMinutes());
         Timestamp endTime = new Timestamp(endCalendar.getTime());
 
-        newShowtime.setShowTime(showTime.toDate());
-        newShowtime.setEndTime(endTime.toDate());
+        newShowtime.setShowTime(showTime);
+        newShowtime.setEndTime(endTime);
         newShowtime.setPricePerSeat(price);
         newShowtime.setStatus("open_for_booking"); // Trạng thái mặc định
         newShowtime.setSeatsAvailable(selectedRoom.getTotalSeats()); // Tổng số ghế của phòng

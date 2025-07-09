@@ -255,7 +255,7 @@ public class CustomerShowtimeService {
                                 boolean matchesCinema = Objects.equals(showtime.getCinemaId(), cinemaId);
                                 boolean matchesDateRange = false;
                                 if (showtime.getShowTime() != null) {
-                                    matchesDateRange = !showtime.getShowTime().before(startOfDay) && !showtime.getShowTime().after(endOfDay);
+                                    matchesDateRange = !showtime.getShowTime().toDate().before(startOfDay) && !showtime.getShowTime().toDate().after(endOfDay);
                                 }
 
                                 if (matchesCinema && matchesDateRange) {
