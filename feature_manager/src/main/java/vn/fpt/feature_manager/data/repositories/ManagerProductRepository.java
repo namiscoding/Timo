@@ -1,0 +1,61 @@
+package vn.fpt.feature_manager.data.repositories;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.List;
+
+import vn.fpt.core.models.Product;
+import vn.fpt.feature_manager.data.service.ManagerProductService;
+
+public class ManagerProductRepository {
+
+    private final ManagerProductService productService;
+    private final CollectionReference productsCollection;
+
+    // Callbacks
+    public interface ProductLoadCallback {
+        void onSuccess(List<Product> products);
+        void onFailure(String error);
+    }
+
+    public interface ProductActionCallback {
+        void onSuccess();
+        void onFailure(String error);
+    }
+
+    public interface SingleProductLoadCallback {
+        void onSuccess(Product product);
+        void onFailure(String error);
+    }
+
+    // Constructor cần cinemaId để trỏ đến đúng collection sản phẩm của rạp
+    public ManagerProductRepository(String cinemaId) {
+        this.productService = new ManagerProductService();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Cấu trúc đường dẫn Firestore: cinemas/{cinemaId}/products
+        this.productsCollection = db.collection("cinemas")
+                .document(cinemaId)
+                .collection("products");
+    }
+
+    public void getProducts(ProductLoadCallback callback) {
+        productService.getProducts(productsCollection, callback);
+    }
+
+    public void addProduct(Product product, ProductActionCallback callback) {
+        productService.addProduct(productsCollection, product, callback);
+    }
+
+    public void updateProduct(Product product, ProductActionCallback callback) {
+        productService.updateProduct(productsCollection, product, callback);
+    }
+
+    public void deleteProduct(String productId, ProductActionCallback callback) {
+        productService.deleteProduct(productsCollection, productId, callback);
+    }
+
+    public void getProductById(String productId, SingleProductLoadCallback callback) {
+        productService.getProductById(productsCollection, productId, callback);
+    }
+}

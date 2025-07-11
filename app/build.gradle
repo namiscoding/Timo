@@ -51,6 +51,10 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.firebase.firestore
     implementation platform('com.google.firebase:firebase-bom:33.15.0')
+    implementation libs.firebase.auth
+    implementation libs.credentials
+    implementation libs.credentials.play.services.auth
+    implementation libs.googleid
     // Lưu ý: Các thư viện này cũng sẽ cần được thêm vào các module feature
 
     // ===================================================================
