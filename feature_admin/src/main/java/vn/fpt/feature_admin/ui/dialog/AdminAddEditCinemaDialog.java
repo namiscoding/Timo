@@ -222,38 +222,32 @@ public class AdminAddEditCinemaDialog extends DialogFragment {
             mapFragment.getMapAsync(googleMap -> {
                 isMapInitialized = true;
                 googleMap.getUiSettings().setZoomControlsEnabled(true);
+
+                // Sự kiện chạm bản đồ để chọn
                 googleMap.setOnMapClickListener(latLng -> {
                     etLatitude.setText(String.valueOf(latLng.latitude));
                     etLongitude.setText(String.valueOf(latLng.longitude));
-
-                    // Reverse geocoding để lấy địa chỉ
-                    Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
-                    try {
-                        List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                        if (addresses != null && !addresses.isEmpty()) {
-                            Address address = addresses.get(0);
-                            String fullAddress = address.getAddressLine(0); // hoặc custom hơn nếu bạn muốn chia ra
-                            etAddress.setText(fullAddress);
-                        } else {
-                            Toast.makeText(getContext(), "Không tìm thấy địa chỉ", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Lỗi khi lấy địa chỉ", Toast.LENGTH_SHORT).show();
-                    }
-
                     googleMap.clear();
                     googleMap.addMarker(new MarkerOptions().position(latLng).title("Vị trí đã chọn"));
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
                 });
 
-
                 if (cinema != null && cinema.getLocation() != null) {
+                    // Nếu đang sửa rạp ➝ zoom đến vị trí hiện tại
                     LatLng pos = new LatLng(cinema.getLocation().getLatitude(), cinema.getLocation().getLongitude());
                     googleMap.addMarker(new MarkerOptions().position(pos).title("Vị trí hiện tại"));
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 15f));
+                } else {
+                    // Nếu đang thêm mới ➝ mặc định về Hà Nội
+                    LatLng hanoi = new LatLng(21.0278, 105.8342);
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hanoi, 12f));
+                    googleMap.addMarker(new MarkerOptions().position(hanoi).title("Hà Nội"));
+                    // Optionally: tự điền vào các trường
+                    etLatitude.setText(String.valueOf(hanoi.latitude));
+                    etLongitude.setText(String.valueOf(hanoi.longitude));
                 }
             });
+
         }
     }
 
