@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <application
         android:theme="@style/Theme.Timo">
         <activity
@@ -15,5 +18,12 @@
         <activity
             android:name=".ui.activity.AdminManageUsersFragmentActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.activity.AdminStatisticActivity"
+            android:exported="false" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD3pAATNisK10OwnWGjvjjQ1ys2Pxba6J0"/>
+
     </application>
 </manifest>

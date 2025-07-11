@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- dialog_add_edit_cinema.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,7 +11,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Header -->
         <TextView
             android:id="@+id/tvDialogTitle"
             android:layout_width="wrap_content"
@@ -24,7 +22,6 @@
             android:fontFamily="sans-serif-medium"
             android:layout_marginBottom="24dp" />
 
-        <!-- Basic Information -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,7 +32,6 @@
             android:fontFamily="sans-serif-medium"
             android:layout_marginBottom="16dp" />
 
-        <!-- Name -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,7 +56,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Address -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -85,7 +80,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- City -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -110,7 +104,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Technical Details -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -121,7 +114,6 @@
             android:fontFamily="sans-serif-medium"
             android:layout_marginBottom="16dp" />
 
-        <!-- Latitude & Longitude Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -179,35 +171,16 @@
                     android:fontFamily="sans-serif" />
 
             </com.google.android.material.textfield.TextInputLayout>
-
         </LinearLayout>
 
-        <!-- Status -->
-        <com.google.android.material.textfield.TextInputLayout
+
+
+        <FrameLayout
+            android:id="@+id/mapContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:boxStrokeColor="#FC3323"
-            app:hintTextColor="#FC3323"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusBottomEnd="8dp"
-            android:layout_marginBottom="32dp">
+            android:layout_height="200dp"
+            android:layout_marginBottom="16dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Trạng thái"
-                android:textSize="16sp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#FFFFFF"
-                android:fontFamily="sans-serif" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -242,9 +215,6 @@
                 app:cornerRadius="6dp"
                 app:rippleColor="#FFFFFF33"
                 style="@style/Widget.MaterialComponents.Button" />
-
         </LinearLayout>
-
     </LinearLayout>
-
 </ScrollView>
