@@ -4,10 +4,12 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentId;
 import com.google.type.DateTime;
 
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-public class Showtime {
+public class Showtime implements Serializable {
     @DocumentId
     private String id;
 
