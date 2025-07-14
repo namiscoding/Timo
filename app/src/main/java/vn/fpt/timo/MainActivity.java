@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private void handleModuleActivities() {
         Intent intent = null;
         //anh em chỉnh module ở đây
-        String module = "customer";
+        String module = "admin";
         switch (module) {
             case "auth":
                 //intent = new Intent(this, AuthActivity.class);

@@ -18,8 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -94,26 +92,50 @@ public class AdminStatisticFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(AdminStatisticViewModel.class);
 
+        // Init from/to để bao quát data (from 1/6/2025, to 14/7/2025)
+        fromCalendar.set(2025, Calendar.JUNE, 1);
+        toCalendar.set(2025, Calendar.JULY, 14);
+
         setupCharts();
         loadCinemaFilterOptions();
         setupDatePickers();
 
         btnGenerate.setOnClickListener(v -> {
+            if (spnCinemaFilter.getSelectedItem() == null) {
+                Log.d("DEBUG", "Spinner not ready, skipping generate");
+                return;  // Tránh crash nếu Spinner chưa load
+            }
+
             Date from = fromCalendar.getTime();
             Date to = toCalendar.getTime();
             String selectedCinema = spnCinemaFilter.getSelectedItem().toString();
+
+            // Trim prefix emoji chính xác (length "🏢 " = 3 trong Java)
+            if (selectedCinema.startsWith("🎬 ")) {
+                selectedCinema = "Tất cả";
+            } else if (selectedCinema.startsWith("🏢 ")) {
+                selectedCinema = selectedCinema.substring(3);  // Sửa thành 3 để remove "🏢 " chính xác
+            }
+
+            Log.d("DEBUG", "Generating report for cinema: " + selectedCinema + ", from: " + from + ", to: " + to);
             viewModel.generateStatistics(from, to, selectedCinema);
         });
 
         viewModel.getReport().observe(getViewLifecycleOwner(), report -> {
-            if (report == null) return;
+            if (report == null) {
+                Log.d("DEBUG", "Report is null");
+                return;
+            }
+            Log.d("DEBUG", "Report received: Total Revenue = " + report.getTotalRevenue());
             updateRevenueDisplay(report.getTotalRevenue());
             updateBarChart(report);
             updatePieChart(report);
         });
-        showFixedData();
 
+        // Auto generate sau khi load (nhưng để sau khi Spinner ready, có thể dùng postDelayed nếu cần)
+        view.postDelayed(() -> btnGenerate.performClick(), 500);  // Delay 0.5s để chờ loadCinemaFilterOptions
     }
+
     private void setupCharts() {
         setupBarChart();
         setupPieChart();
@@ -286,7 +308,7 @@ public class AdminStatisticFragment extends Fragment {
         tvToDate.setText(sdf.format(toCalendar.getTime()));
 
         tvFromDate.setOnClickListener(v -> new DatePickerDialog(requireContext(),
-                (view, year, month, dayOfMonth) -> {
+                (view1, year, month, dayOfMonth) -> {
                     fromCalendar.set(year, month, dayOfMonth);
                     tvFromDate.setText(sdf.format(fromCalendar.getTime()));
                 },
@@ -296,7 +318,7 @@ public class AdminStatisticFragment extends Fragment {
         ).show());
 
         tvToDate.setOnClickListener(v -> new DatePickerDialog(requireContext(),
-                (view, year, month, dayOfMonth) -> {
+                (view1, year, month, dayOfMonth) -> {
                     toCalendar.set(year, month, dayOfMonth);
                     tvToDate.setText(sdf.format(toCalendar.getTime()));
                 },
@@ -313,7 +335,7 @@ public class AdminStatisticFragment extends Fragment {
 
             for (Cinema cinema : cinemas) {
                 cinemaNames.add("🏢 " + cinema.getName());
-                Log.d("DEBUG", "Cinema size = " + cinemas.size());
+                Log.d("DEBUG", "Cinema loaded: " + cinema.getName());
             }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -324,91 +346,5 @@ public class AdminStatisticFragment extends Fragment {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spnCinemaFilter.setAdapter(adapter);
         });
-    }
-    /**
-     * Method to show fixed sample data for testing UI
-     */
-    private void showFixedData() {
-        // Display sample total revenue
-        updateRevenueDisplay(15750000.0); // 15.75 triệu VND
-
-        // Create sample bar chart data (Revenue by Cinema)
-        showSampleBarChart();
-
-        // Create sample pie chart data (Booking count by Genre)
-        showSamplePieChart();
-    }
-
-    private void showSampleBarChart() {
-        List<BarEntry> barEntries = new ArrayList<>();
-        List<String> labels = new ArrayList<>();
-
-        // Sample cinema revenue data
-        String[] cinemaNames = {
-                "CGV Vincom", "Lotte Cinema", "Galaxy Cinema",
-                "BHD Star", "Cinestar", "Mega GS"
-        };
-        float[] revenues = {3500, 2800, 4200, 2100, 1850, 1300}; // in thousands VND
-
-        for (int i = 0; i < cinemaNames.length; i++) {
-            barEntries.add(new BarEntry(i, revenues[i]));
-            labels.add(cinemaNames[i]);
-        }
-
-        BarDataSet barDataSet = new BarDataSet(barEntries, "Doanh thu (nghìn VND)");
-
-        // Styling the bar dataset
-        barDataSet.setColors(CHART_COLORS);
-        barDataSet.setValueTextColor(Color.WHITE);
-        barDataSet.setValueTextSize(10f);
-        barDataSet.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                DecimalFormat format = new DecimalFormat("#,###");
-                return format.format(value) + "K";
-            }
-        });
-
-        BarData barData = new BarData(barDataSet);
-        barData.setBarWidth(0.6f);
-
-        barChart.setData(barData);
-        barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
-        barChart.animateY(1000);
-        barChart.invalidate();
-    }
-
-    private void showSamplePieChart() {
-        List<PieEntry> pieEntries = new ArrayList<>();
-
-        // Sample genre booking data
-        pieEntries.add(new PieEntry(35f, "Hành động"));
-        pieEntries.add(new PieEntry(25f, "Hài kịch"));
-        pieEntries.add(new PieEntry(15f, "Kinh dị"));
-        pieEntries.add(new PieEntry(12f, "Tình cảm"));
-        pieEntries.add(new PieEntry(8f, "Khoa học viễn tưởng"));
-        pieEntries.add(new PieEntry(5f, "Tài liệu"));
-
-        PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
-
-        // Styling the pie dataset
-        pieDataSet.setColors(CHART_COLORS);
-        pieDataSet.setValueTextColor(Color.WHITE);
-        pieDataSet.setValueTextSize(11f);
-        pieDataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
-        pieDataSet.setSliceSpace(2f);
-        pieDataSet.setSelectionShift(8f);
-
-        pieDataSet.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                return String.format("%.1f%%", value);
-            }
-        });
-
-        PieData pieData = new PieData(pieDataSet);
-        pieChart.setData(pieData);
-        pieChart.animateXY(1000, 1000);
-        pieChart.invalidate();
     }
 }
