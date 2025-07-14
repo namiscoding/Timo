@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +43,7 @@ public class AdminManageUsersFragment extends Fragment {
     private List<User> filteredUsers = new ArrayList<>();
     private TabLayout tabLayout;
     private String currentTab = "customers"; // "customers" hoặc "managers"
+    private TextView tvTotalCount; // TextView để hiển thị tổng số
 
     @Nullable
     @Override
@@ -57,6 +59,8 @@ public class AdminManageUsersFragment extends Fragment {
         tabLayout = view.findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Khách hàng"));
         tabLayout.addTab(tabLayout.newTab().setText("Manager & Admin"));
+
+        tvTotalCount = view.findViewById(R.id.tvTotalCount);
 
         RecyclerView rvUsers = view.findViewById(R.id.rvUsers);
         rvUsers.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -124,6 +128,7 @@ public class AdminManageUsersFragment extends Fragment {
             }
         }
         adapter.updateData(filteredUsers);
+        updateTotalCount();
     }
 
     private void filterUsers(String query) {
@@ -137,6 +142,16 @@ public class AdminManageUsersFragment extends Fragment {
             }
         }
         adapter.updateData(filtered);
+        updateTotalCount(filtered.size()); // Cập nhật tổng số sau search
+    }
+
+    private void updateTotalCount() {
+        updateTotalCount(filteredUsers.size());
+    }
+
+    private void updateTotalCount(int count) {
+        String label = currentTab.equals("customers") ? "khách hàng" : "manager & admin";
+        tvTotalCount.setText("Tổng số " + label + ": " + count);
     }
 
     @SuppressLint("NotifyDataSetChanged")

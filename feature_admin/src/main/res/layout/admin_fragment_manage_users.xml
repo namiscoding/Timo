@@ -83,6 +83,16 @@
             app:rippleColor="#FFFFFF33"
             style="@style/Widget.MaterialComponents.Button" />
 
+        <TextView
+            android:id="@+id/tvTotalCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tổng số: 0"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-medium" />
+
     </LinearLayout>
 
     <!-- Users List -->

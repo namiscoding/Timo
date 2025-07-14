@@ -21,12 +21,15 @@ public class AdminStatisticRepository {
         Timestamp from = new Timestamp(fromDate);
         Timestamp to = new Timestamp(toDate);
 
+        Log.d("DEBUG", "Querying bookings from: " + from.toDate() + " to: " + to.toDate());
+
         db.collection("bookings")
                 .whereGreaterThanOrEqualTo("createdAt", from)
                 .whereLessThanOrEqualTo("createdAt", to)
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     SystemReport report = new SystemReport();
+                    Log.d("DEBUG", "Number of bookings fetched: " + snapshot.size());
 
                     for (QueryDocumentSnapshot doc : snapshot) {
                         Booking booking = doc.toObject(Booking.class);
@@ -34,33 +37,45 @@ public class AdminStatisticRepository {
                         ShowtimeInfo showtimeInfo = booking.getShowtimeInfo();
                         PaymentDetails payment = booking.getPaymentDetails();
 
-                        if (payment == null || showtimeInfo == null) continue;
-
-                        // lọc theo cụm rạp nếu được chọn
-                        String cinemaName = showtimeInfo.getCinemaName();
-                        if (!"Tất cả".equals(cinemaFilter) && !cinemaFilter.equals(cinemaName)) {
+                        if (payment == null || showtimeInfo == null) {
+                            Log.d("DEBUG", "Skipping booking " + doc.getId() + ": Missing payment or showtimeInfo");
                             continue;
                         }
 
-                        double amount = payment.getFinalPrice();
+                        String cinemaName = showtimeInfo.getCinemaName();
+                        if (!"Tất cả".equals(cinemaFilter) && !cinemaFilter.equals(cinemaName)) {
+                            Log.d("DEBUG", "Skipping booking " + doc.getId() + ": Cinema mismatch - Filter: " + cinemaFilter + ", Booking: " + cinemaName);
+                            continue;
+                        }
+
+                        double amount = payment.getAmount();  // Sử dụng getAmount() để khớp với field "amount" trong Firestore
                         report.setTotalRevenue(report.getTotalRevenue() + amount);
 
-                        // thống kê doanh thu theo cụm rạp (theo tên)
                         report.getRevenueByCinema().put(
                                 cinemaName,
                                 report.getRevenueByCinema().getOrDefault(cinemaName, 0.0) + amount
                         );
-                        Log.d("REPORT", "Booking: " + booking.getId() +
-                                ", Cinema: " + booking.getShowtimeInfo().getCinemaName() +
+                        Log.d("REPORT", "Processed Booking: " + booking.getId() +
+                                ", Cinema: " + cinemaName +
                                 ", Revenue: " + amount);
 
+                        // Thống kê theo thể loại
+                        String genre = showtimeInfo.getGenre();
+                        if (genre != null) {
+                            report.getBookingCountByGenre().put(
+                                    genre,
+                                    report.getBookingCountByGenre().getOrDefault(genre, 0) + 1
+                            );
+                        } else {
+                            Log.d("DEBUG", "No genre for booking " + doc.getId());
+                        }
                     }
 
                     callback.accept(report);
                 })
                 .addOnFailureListener(e -> {
-                    e.printStackTrace();
-                    callback.accept(null); // hoặc handle lỗi phù hợp
+                    Log.e("ERROR", "Failed to fetch bookings", e);
+                    callback.accept(null);
                 });
     }
 }
