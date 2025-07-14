@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -134,6 +135,10 @@ public class AdminStatisticFragment extends Fragment {
 
         // Auto generate sau khi load (nhưng để sau khi Spinner ready, có thể dùng postDelayed nếu cần)
         view.postDelayed(() -> btnGenerate.performClick(), 500);  // Delay 0.5s để chờ loadCinemaFilterOptions
+
+        // Thêm onClick cho btnBack để quay lại
+        ImageButton btnBack = view.findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> requireActivity().finish());
     }
 
     private void setupCharts() {
