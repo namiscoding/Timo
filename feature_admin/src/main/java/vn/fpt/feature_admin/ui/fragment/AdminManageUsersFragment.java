@@ -1,3 +1,4 @@
+// AdminManageUsersFragment.java (Thêm onClick cho btnBack để finish activity)
 package vn.fpt.feature_admin.ui.fragment;
 
 
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,7 +45,7 @@ public class AdminManageUsersFragment extends Fragment {
     private List<User> filteredUsers = new ArrayList<>();
     private TabLayout tabLayout;
     private String currentTab = "customers"; // "customers" hoặc "managers"
-    private TextView tvTotalCount; // TextView để hiển thị tổng số
+    private TextView tvTotalCount; // TextView mới để hiển thị tổng số
 
     @Nullable
     @Override
@@ -60,7 +62,7 @@ public class AdminManageUsersFragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab().setText("Khách hàng"));
         tabLayout.addTab(tabLayout.newTab().setText("Manager & Admin"));
 
-        tvTotalCount = view.findViewById(R.id.tvTotalCount);
+        tvTotalCount = view.findViewById(R.id.tvTotalCount); // Find TextView mới
 
         RecyclerView rvUsers = view.findViewById(R.id.rvUsers);
         rvUsers.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -110,6 +112,10 @@ public class AdminManageUsersFragment extends Fragment {
                 filterUsers(s.toString());
             }
         });
+
+        // Thêm onClick cho btnBack để quay lại
+        ImageButton btnBack = view.findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> requireActivity().finish());
     }
 
     private void filterUsersByTab() {
@@ -128,7 +134,7 @@ public class AdminManageUsersFragment extends Fragment {
             }
         }
         adapter.updateData(filteredUsers);
-        updateTotalCount();
+        updateTotalCount(); // Cập nhật tổng số sau filter
     }
 
     private void filterUsers(String query) {
