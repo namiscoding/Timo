@@ -3,6 +3,7 @@ package vn.fpt.feature_customer.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,16 +13,26 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.Timestamp;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import vn.fpt.core.models.Product;
+import vn.fpt.core.models.PurchasedProduct;
 import vn.fpt.core.models.Seat;
 import vn.fpt.core.models.Showtime;
+import vn.fpt.core.models.ShowtimeInfo;
+import vn.fpt.core.models.Ticket;
 import vn.fpt.feature_customer.R;
+import vn.fpt.feature_customer.data.firestore_services.CustomerBookingService;
 import vn.fpt.feature_customer.data.firestore_services.CustomerProductService;
 import vn.fpt.feature_customer.data.firestore_services.CustomerShowtimeService;
 import vn.fpt.feature_customer.ui.adapter.FoodAdapter;
@@ -31,7 +42,8 @@ public class ChooseFoodActivity extends AppCompatActivity {
     private TextView selectedSeatsInfo, filmTitle, showtimeCinemaName, showtimeDateTime;
     private TextView filmAgeRestriction, ticketQuantity, ticketTotal, finalPriceTv;
     private RecyclerView foodRecyclerView;
-
+    private Button proceedToPaymentBtn;
+    CustomerBookingService CustomerBookingService;
     private ArrayList<Seat> selectedSeats;
     private FoodAdapter foodAdapter;
     private CustomerShowtimeService customerShowtimeService;
@@ -50,14 +62,52 @@ public class ChooseFoodActivity extends AppCompatActivity {
         String cinemaId = intent.getStringExtra("cinemaId");
         String showTimeId = intent.getStringExtra("selectedShowtime");
         selectedSeats = (ArrayList<Seat>) intent.getSerializableExtra("selectedSeats");
-
+        CustomerBookingService = new CustomerBookingService();
         displaySelectedSeats();
         fetchShowtimeAndFoods(showTimeId, cinemaId);
-fetchProduct(cinemaId);
+        fetchProduct(cinemaId);
         backButton.setOnClickListener(v -> finish());
+        proceedToPaymentBtn.setOnClickListener(v -> process());
+    }
+
+    private void process() {
+        List<Product> selectedProducts = foodAdapter.getSelectedProducts();
+        Map<String, Integer> quantityMap = foodAdapter.getQuantityMap();
+        List<PurchasedProduct> selectedProductItems = new ArrayList<>();
+
+        for (Product product : selectedProducts) {
+            int quantity = quantityMap.getOrDefault(product.getId(), 0);
+            PurchasedProduct purchasedProduct = new PurchasedProduct();
+            purchasedProduct.setProductId(product.getId());
+            purchasedProduct.setQuantity((long) quantity);
+            purchasedProduct.setName(product.getName());
+            purchasedProduct.setPriceAtPurchase(product.getPrice());
+            selectedProductItems.add(purchasedProduct);
+
+        }
+
+        ShowtimeInfo showtimeInfo = new ShowtimeInfo();
+        showtimeInfo.setCinemaName(currentShowtime.getCinemaName());
+        showtimeInfo.setFilmTitle(currentShowtime.getFilmTitle());
+        showtimeInfo.setScreeningRoomName(currentShowtime.getScreeningRoomName());
+        LocalDateTime localDateTime = LocalDate.now().atStartOfDay();
+        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        Timestamp timestamp = new Timestamp(date);
+        showtimeInfo.setShowTime(timestamp);
+        List<Ticket> ticketList = new ArrayList<>();
+        for (Seat seat : selectedSeats) {
+            Ticket ticket = new Ticket();
+            ticket.setCol(seat.getCol());
+            ticket.setRow(seat.getRow());
+            ticket.setSeatId(seat.getRow() + seat.getCol());
+            ticket.setPrice(currentShowtime.getPricePerSeat());
+            ticketList.add(ticket);
+        }
+        CustomerBookingService.insertBooking(selectedProductItems,ticketList,showtimeInfo,currentShowtime);
     }
 
     private void mapViews() {
+        proceedToPaymentBtn = findViewById(R.id.proceedToPaymentBtn);
         backButton = findViewById(R.id.backBtn);
         selectedSeatsInfo = findViewById(R.id.selectedSeatsInfo);
         filmTitle = findViewById(R.id.filmTitle);
@@ -101,7 +151,7 @@ fetchProduct(cinemaId);
 
     private void fetchProduct(String cinemaId) {
         customerProductService.getProductsForCinema(cinemaId)
-                 .thenAccept(products -> runOnUiThread(() -> setupFoodList(products)))
+                .thenAccept(products -> runOnUiThread(() -> setupFoodList(products)))
                 .exceptionally(e -> {
                     runOnUiThread(() -> Toast.makeText(this, "Lỗi khi tải danh sách đồ ăn", Toast.LENGTH_SHORT).show());
                     Log.e("ChooseFoodActivity", "Lỗi khi tải đồ ăn", e);
@@ -138,6 +188,7 @@ fetchProduct(cinemaId);
         double total = ticket + food;
         finalPriceTv.setText(formatCurrency(total)); // ✅ Đã hiển thị tổng
     }
+
     private double calculateFoodTotal() {
         Map<String, Integer> quantityMap = foodAdapter.getQuantityMap();
         List<Product> selectedProducts = foodAdapter.getSelectedProducts();
