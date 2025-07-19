@@ -38,6 +38,8 @@ dependencies {
     implementation libs.credentials.play.services.auth
     implementation libs.googleid
     implementation libs.firebase.firestore
+    implementation project(':feature_admin')
+    implementation project(':feature_manager')
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
