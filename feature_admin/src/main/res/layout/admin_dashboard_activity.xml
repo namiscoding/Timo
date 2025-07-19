@@ -121,6 +121,27 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"
             style="@style/Widget.MaterialComponents.Button" />
+        <!-- Thêm vào admin panel layout -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAuditTrail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Nhật ký hệ thống"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FC3323"
+            android:fontFamily="sans-serif-medium"
+            android:drawableLeft="@drawable/ic_history"
+            android:drawablePadding="12dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            app:cornerRadius="8dp"
+            app:rippleColor="#FFFFFF33"
+            app:layout_constraintTop_toBottomOf="@id/btnReport"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            style="@style/Widget.MaterialComponents.Button" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
