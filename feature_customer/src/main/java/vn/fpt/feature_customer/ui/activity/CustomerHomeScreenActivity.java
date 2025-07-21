@@ -34,6 +34,7 @@ import vn.fpt.feature_customer.ui.adapter.CustomerFilmAdapter;
 import vn.fpt.feature_customer.ui.adapter.CustomerFilmSliderAdapter;
 
 public class CustomerHomeScreenActivity extends AppCompatActivity {
+
     private RecyclerView nowPlayingRecyclerView;
     private RecyclerView comingSoonRecyclerView;
     private BottomNavigationView bottomNavigation;
@@ -149,7 +150,8 @@ public class CustomerHomeScreenActivity extends AppCompatActivity {
                     Toast.makeText(CustomerHomeScreenActivity.this, "Favorites Selected", Toast.LENGTH_SHORT).show();
                     return true;
                 } else if (id == R.id.cart) {
-                    Toast.makeText(CustomerHomeScreenActivity.this, "Cart Selected", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(CustomerHomeScreenActivity.this, CustomerViewTicket.class);
+                    startActivity(intent);
                     return true;
                 } else if (id == R.id.profile) {
                     Toast.makeText(CustomerHomeScreenActivity.this, "Profile Selected", Toast.LENGTH_SHORT).show();
