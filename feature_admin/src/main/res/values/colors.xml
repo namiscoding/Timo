@@ -9,4 +9,29 @@
     <color name="orange">#d14706</color>
     <!-- Màu nền màn hình -->
     <color name="screen_background">#37474F</color>
+    <!-- Dark Theme Colors -->
+    <color name="card_background">#2d2d2d</color>
+    <color name="input_background">#3a3a3a</color>
+
+    <!-- Text Colors -->
+    <color name="primary_text">#ffffff</color>
+    <color name="secondary_text">#b3b3b3</color>
+
+    <!-- Accent Colors -->
+    <color name="accent_color">#ff6b35</color>
+    <color name="accent_color_dark">#e55a2e</color>
+
+    <!-- Success Colors -->
+    <color name="success_background">#1b5e20</color>
+    <color name="success_text">#4caf50</color>
+
+    <!-- Chart Colors -->
+    <color name="chart_color_1">#ff6666</color>
+    <color name="chart_color_2">#66b2ff</color>
+    <color name="chart_color_3">#ffc166</color>
+    <color name="chart_color_4">#66ffb2</color>
+    <color name="chart_color_5">#b266ff</color>
+    <color name="chart_color_6">#ffff66</color>
+    <color name="chart_color_7">#ff66b2</color>
+    <color name="chart_color_8">#66ffff</color>
 </resources>

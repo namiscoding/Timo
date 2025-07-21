@@ -10,7 +10,7 @@ public class ShowtimeInfo {
     private String cinemaName;
     private String screeningRoomName;
     private Timestamp showTime;
-
+    private String genre;
     public ShowtimeInfo() {}
 
     // Getters and Setters...
@@ -22,4 +22,6 @@ public class ShowtimeInfo {
     public void setScreeningRoomName(String screeningRoomName) { this.screeningRoomName = screeningRoomName; }
     public Timestamp getShowTime() { return showTime; }
     public void setShowTime(Timestamp showTime) { this.showTime = showTime; }
+    public String getGenre() { return genre; }
+    public void setGenre(String genre) { this.genre = genre; }
 }
