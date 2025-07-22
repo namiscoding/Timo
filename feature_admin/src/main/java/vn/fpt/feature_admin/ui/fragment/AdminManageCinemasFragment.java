@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.R;
 import vn.fpt.core.models.Cinema;
 import vn.fpt.feature_admin.ui.adapter.AdminManageCinemaAdapter;
@@ -33,6 +34,7 @@ public class AdminManageCinemasFragment extends Fragment {
     private AdminManageCinemaAdapter adapter;
     private List<Cinema> allCinemas = new ArrayList<>();
     private List<Cinema> filteredCinemas = new ArrayList<>();
+    private String searchQuery = "";
 
     @Nullable
     @Override
@@ -51,14 +53,21 @@ public class AdminManageCinemasFragment extends Fragment {
         adapter = new AdminManageCinemaAdapter(new ArrayList<>(), new AdminManageCinemaAdapter.CinemaActionListener() {
             @Override
             public void onEdit(Cinema cinema) {
-                Log.d(TAG, "Edit clicked for cinema: " + cinema.getName());
                 AdminAddEditCinemaDialog.show(requireActivity(), cinema, viewModel);
             }
 
             @Override
             public void onToggleActive(Cinema cinema) {
-                Log.d(TAG, "Toggle clicked for cinema: " + cinema.getName() + ", current isActive: " + cinema.isActive());
+                Cinema oldCinema = new Cinema(cinema);
                 cinema.setActive(!cinema.isActive());
+                AuditLogger.getInstance().logDataChange(
+                        AuditLogger.Actions.UPDATE,
+                        AuditLogger.TargetTypes.CINEMA,
+                        cinema.getId(),
+                        (cinema.isActive() ? "Kích hoạt rạp" : "Tạm khóa rạp") + ": " + cinema.getName(),
+                        oldCinema,
+                        cinema
+                );
                 viewModel.addOrUpdateCinema(cinema);
             }
         });
@@ -80,12 +89,24 @@ public class AdminManageCinemasFragment extends Fragment {
 
         EditText etSearch = view.findViewById(R.id.etSearchCinema);
         etSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void afterTextChanged(Editable s) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterCinemas(s.toString());
+                searchQuery = s.toString();
+                if (!searchQuery.isEmpty()) {
+                    AuditLogger.getInstance().log(
+                            AuditLogger.Actions.VIEW,
+                            AuditLogger.TargetTypes.SYSTEM,
+                            "Admin tìm kiếm nhật ký với từ khóa: " + searchQuery,
+                            true
+                    );
+                }
             }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
 
         // Thêm onClick cho btnBack để quay lại

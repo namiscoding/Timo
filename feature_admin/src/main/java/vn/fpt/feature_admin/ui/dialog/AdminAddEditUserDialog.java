@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.R;
 import vn.fpt.core.models.User;
 import vn.fpt.core.models.Cinema;
@@ -267,31 +268,47 @@ public class AdminAddEditUserDialog extends DialogFragment {
     }
 
     private void saveUser() {
-        if (!validateFields()) return;
+        if (!validateFields()) {
+            AuditLogger.getInstance().logError(
+                    AuditLogger.Actions.CREATE, // Hoặc UPDATE nếu user != null
+                    AuditLogger.TargetTypes.USER,
+                    "Thất bại khi lưu tài khoản: " + etEmail.getText().toString().trim(),
+                    "Dữ liệu không hợp lệ"
+            );
+            return;
+        }
 
         user.setEmail(etEmail.getText().toString().trim());
         user.setDisplayName(etDisplayName.getText().toString().trim());
+
+        // Lưu dữ liệu trước khi thay đổi
+        User oldUser = (user.getId() != null) ? new User(user) : null;
 
         // Set password only for new users
         if (etPassword.getVisibility() == View.VISIBLE) {
             user.setPassword(etPassword.getText().toString().trim());
         }
 
-        // Set role - GIỮ NGUYÊN CASE TỪ SPINNER (không convert về lowercase)
         String selectedRole = spnRole.getSelectedItem().toString();
-        user.setRole(selectedRole); // Giữ nguyên: "Customer", "Manager", "Admin"
+        user.setRole(selectedRole);
 
-        // Set cinema assignment nếu Manager role
         if ("Manager".equals(selectedRole) && spnCinema.getSelectedItemPosition() > 0) {
             Cinema selectedCinema = cinemaList.get(spnCinema.getSelectedItemPosition() - 1);
             user.setAssignedCinemaId(selectedCinema.getId());
-
-            // Debug log
-            Log.d("AddEditUserDialog", "Saving Manager with cinema: " + selectedCinema.getId());
         } else {
             user.setAssignedCinemaId(null);
-            Log.d("AddEditUserDialog", "No cinema assigned for role: " + selectedRole);
         }
+
+        // Ghi log
+        String action = (user.getId() == null) ? AuditLogger.Actions.CREATE : AuditLogger.Actions.UPDATE;
+        AuditLogger.getInstance().logDataChange(
+                action,
+                AuditLogger.TargetTypes.USER,
+                user.getId(),
+                (action.equals(AuditLogger.Actions.CREATE) ? "Tạo mới tài khoản" : "Cập nhật tài khoản") + ": " + user.getEmail(),
+                oldUser,
+                user
+        );
 
         viewModel.addOrUpdateUser(user);
         showSuccess("Lưu tài khoản thành công!");

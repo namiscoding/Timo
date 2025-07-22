@@ -58,5 +58,24 @@ public class Film {
         // Trả về tên phim để hiển thị trong Spinner
         return title;
     }
+
+    public Film(Film other) {
+        if (other == null) return;
+
+        this.id = other.id;
+        this.title = other.title;
+        this.description = other.description;
+        this.posterImageUrl = other.posterImageUrl;
+        this.trailerUrl = other.trailerUrl;
+        this.durationMinutes = other.durationMinutes;
+        this.releaseDate = other.releaseDate != null ? new Timestamp(other.releaseDate.toDate()) : null;
+        this.director = other.director;
+        this.actors = other.actors != null ? List.copyOf(other.actors) : null;
+        this.ageRating = other.ageRating;
+        this.status = other.status;
+        this.averageStars = other.averageStars;
+        this.genres = other.genres != null ? List.copyOf(other.genres) : null;
+    }
+
 }
 

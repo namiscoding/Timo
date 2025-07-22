@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.R;
 import vn.fpt.core.models.Film;
 import vn.fpt.feature_admin.ui.adapter.AdminManageFilmAdapter;
@@ -59,7 +60,6 @@ public class AdminManageFilmsFragment extends Fragment {
 
             @Override
             public void onDelete(Film film) {
-                // Show confirmation dialog before deleting
                 View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_confirm, null);
                 AlertDialog dialog = new AlertDialog.Builder(requireContext())
                         .setView(dialogView)
@@ -70,6 +70,13 @@ public class AdminManageFilmsFragment extends Fragment {
                 Button btnOk = dialogView.findViewById(R.id.btnOk);
                 Button btnCancel = dialogView.findViewById(R.id.btnCancel);
                 btnOk.setOnClickListener(v2 -> {
+                    AuditLogger.getInstance().log(
+                            AuditLogger.Actions.DELETE,
+                            AuditLogger.TargetTypes.MOVIE,
+                            film.getId(),
+                            "Xóa phim: " + film.getTitle(),
+                            true
+                    );
                     viewModel.deleteFilm(film.getId());
                     showSuccess("Xóa thành công");
                     dialog.dismiss();

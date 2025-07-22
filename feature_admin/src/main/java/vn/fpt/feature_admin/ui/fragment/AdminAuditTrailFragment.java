@@ -106,6 +106,14 @@ public class AdminAuditTrailFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 searchQuery = s.toString();
+                if (!searchQuery.isEmpty()) {
+                    AuditLogger.getInstance().log(
+                            AuditLogger.Actions.VIEW,
+                            AuditLogger.TargetTypes.SYSTEM,
+                            "Admin tìm kiếm nhật ký với từ khóa: " + searchQuery,
+                            true
+                    );
+                }
                 filterLogs();
             }
 
@@ -128,7 +136,7 @@ public class AdminAuditTrailFragment extends Fragment {
         ArrayAdapter<String> roleAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                new String[]{"Tất cả", "ADMIN", "MANAGER", "CUSTOMER"}
+                new String[]{"Tất cả", "ADMIN", "MANAGER"}
         );
         spinnerUserRole.setAdapter(roleAdapter);
         spinnerUserRole.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -138,8 +146,13 @@ public class AdminAuditTrailFragment extends Fragment {
                     case 0: selectedUserRole = "ALL"; break;
                     case 1: selectedUserRole = "ADMIN"; break;
                     case 2: selectedUserRole = "MANAGER"; break;
-                    case 3: selectedUserRole = "CUSTOMER"; break;
                 }
+                AuditLogger.getInstance().log(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.SYSTEM,
+                        "Admin lọc nhật ký theo vai trò: " + selectedUserRole,
+                        true
+                );
                 loadAuditLogs();
             }
 
@@ -167,6 +180,12 @@ public class AdminAuditTrailFragment extends Fragment {
                     case 5: selectedActionType = "DELETE"; break;
                     case 6: selectedActionType = "VIEW"; break;
                 }
+                AuditLogger.getInstance().log(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.SYSTEM,
+                        "Admin lọc nhật ký theo hành động: " + selectedActionType,
+                        true
+                );
                 loadAuditLogs();
             }
 

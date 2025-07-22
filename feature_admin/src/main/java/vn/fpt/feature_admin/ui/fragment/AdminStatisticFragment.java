@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.R;
 import vn.fpt.feature_admin.data.firestore_services.AdminManageCinemaService;
 import vn.fpt.core.models.Cinema;
@@ -104,12 +105,19 @@ public class AdminStatisticFragment extends Fragment {
         btnGenerate.setOnClickListener(v -> {
             if (spnCinemaFilter.getSelectedItem() == null) {
                 Log.d("DEBUG", "Spinner not ready, skipping generate");
-                return;  // Tránh crash nếu Spinner chưa load
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.SYSTEM,
+                        "Thất bại khi tạo báo cáo thống kê",
+                        "Spinner rạp chiếu chưa sẵn sàng"
+                );
+                return;
             }
 
             Date from = fromCalendar.getTime();
             Date to = toCalendar.getTime();
             String selectedCinema = spnCinemaFilter.getSelectedItem().toString();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
             // Trim prefix emoji chính xác (length "🏢 " = 3 trong Java)
             if (selectedCinema.startsWith("🎬 ")) {
@@ -117,7 +125,12 @@ public class AdminStatisticFragment extends Fragment {
             } else if (selectedCinema.startsWith("🏢 ")) {
                 selectedCinema = selectedCinema.substring(3);  // Sửa thành 3 để remove "🏢 " chính xác
             }
-
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.VIEW,
+                    AuditLogger.TargetTypes.SYSTEM,
+                    "Admin tạo báo cáo thống kê cho " + selectedCinema + " từ " + sdf.format(from) + " đến " + sdf.format(to),
+                    true
+            );
             Log.d("DEBUG", "Generating report for cinema: " + selectedCinema + ", from: " + from + ", to: " + to);
             viewModel.generateStatistics(from, to, selectedCinema);
         });
