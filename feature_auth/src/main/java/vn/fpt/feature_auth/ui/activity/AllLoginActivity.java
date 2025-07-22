@@ -13,16 +13,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseUser;
-
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.ui.activity.AdminDashboardActivity;
 import vn.fpt.feature_auth.R;
 import vn.fpt.feature_auth.viewmodel.AuthenticationViewModel;
-import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
 import vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity;;
-
-
-
-
+import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
 
 public class AllLoginActivity extends AppCompatActivity {
 
@@ -76,7 +72,6 @@ public class AllLoginActivity extends AppCompatActivity {
         });
 
 
-
         authViewModel.getIsLoadingLiveData().observe(this, isLoading -> {
             if (isLoading) {
                 loginProgressBar.setVisibility(View.VISIBLE);
@@ -108,14 +103,43 @@ public class AllLoginActivity extends AppCompatActivity {
     }
 
     // Phương thức điều hướng dựa trên role
+    // Phương thức đầy đủ sau khi sửa
     private void navigateToRoleSpecificActivity(String role) {
         Intent intent;
+        FirebaseUser currentUser = authViewModel.getCurrentUser();
+
+        // Set info dựa trên role
+        if (currentUser != null) {
+            if ("Admin".equals(role)) {
+                AuditLogger.setAdminInfo(
+                        currentUser.getUid(),
+                        currentUser.getDisplayName() != null ? currentUser.getDisplayName() : currentUser.getEmail(),
+                        "Admin"
+                );
+            } else if ("Manager".equals(role)) {
+                AuditLogger.setManagerInfo(  // Fix: Dùng setManagerInfo thay vì setAdminInfo
+                        currentUser.getUid(),
+                        currentUser.getDisplayName() != null ? currentUser.getDisplayName() : currentUser.getEmail(),
+                        "Manager"
+                );
+            }
+        }
+
+        // Log login action (đã có sẵn, sẽ dùng info vừa set)
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.LOGIN,
+                AuditLogger.TargetTypes.SYSTEM,
+                "User logged in successfully with role: " + role,
+                true
+        );
+
+        // Phần điều hướng (giữ nguyên)
         switch (role) {
             case "Admin":
-                intent = new Intent(AllLoginActivity.this, TestAdminActivity.class);
+                intent = new Intent(AllLoginActivity.this, AdminDashboardActivity.class);
                 break;
             case "Manager":
-                intent = new Intent(AllLoginActivity.this, TestManagerActivity.class);
+                intent = new Intent(AllLoginActivity.this, ManagerHomePageActivity.class);
                 break;
             case "Customer":
             default: // Mặc định nếu không có role hoặc role không xác định

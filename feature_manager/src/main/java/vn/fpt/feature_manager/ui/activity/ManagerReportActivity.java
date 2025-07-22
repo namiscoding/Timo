@@ -39,6 +39,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import vn.fpt.core.models.Film;
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.ui.adapter.ReportFilmAdapter;
 import vn.fpt.feature_manager.viewmodel.ManagerReportViewModel;
@@ -91,6 +92,13 @@ public class ManagerReportActivity extends AppCompatActivity {
         startDate.set(Calendar.DAY_OF_MONTH, 1);
         btnSelectStartDate.setText(dateFormat.format(startDate.getTime()));
         btnSelectEndDate.setText(dateFormat.format(endDate.getTime()));
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.SYSTEM,
+                "Manager truy cập báo cáo thống kê",
+                true
+        );
     }
 
     private void initViews() {
@@ -210,6 +218,14 @@ public class ManagerReportActivity extends AppCompatActivity {
                 return;
             }
             String filmId = (selectedFilmFilter != null && !"All".equals(selectedFilmFilter.getId())) ? selectedFilmFilter.getId() : null;
+
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.VIEW,
+                    AuditLogger.TargetTypes.SYSTEM,
+                    "Manager tạo báo cáo thống kê từ " + dateFormat.format(startDate.getTime()) + " đến " + dateFormat.format(endDate.getTime()),
+                    true
+            );
+
             viewModel.generateReport(startDate.getTime(), endDate.getTime(), filmId, selectedReportType);
         });
     }
@@ -227,6 +243,12 @@ public class ManagerReportActivity extends AppCompatActivity {
                 tvNoReportData.setVisibility(View.VISIBLE);
                 rvReportSummary.setVisibility(View.GONE);
                 barChart.setVisibility(View.GONE); // Ẩn biểu đồ khi có lỗi
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.SYSTEM,
+                        "Lỗi khi tạo báo cáo thống kê cho manager",
+                        errorMessage
+                );
             }
         });
 

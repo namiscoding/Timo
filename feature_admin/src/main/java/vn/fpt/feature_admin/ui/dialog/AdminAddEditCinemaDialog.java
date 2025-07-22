@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import vn.fpt.core.models.Cinema;
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.R;
 import vn.fpt.feature_admin.viewmodel.AdminManageCinemasViewModel;
 
@@ -110,7 +111,17 @@ public class AdminAddEditCinemaDialog extends DialogFragment {
     }
 
     private void saveCinema() {
-        if (!validateFields()) return;
+        if (!validateFields()) {
+            AuditLogger.getInstance().logError(
+                    AuditLogger.Actions.CREATE, // Hoặc UPDATE nếu cinema != null
+                    AuditLogger.TargetTypes.CINEMA,
+                    "Thất bại khi lưu rạp: " + etName.getText().toString().trim(),
+                    "Dữ liệu không hợp lệ"
+            );
+            return;
+        }
+
+        Cinema oldCinema = (cinema.getId() != null) ? new Cinema(cinema) : null;
 
         cinema.setName(etName.getText().toString().trim());
         cinema.setAddress(etAddress.getText().toString().trim());
@@ -120,16 +131,38 @@ public class AdminAddEditCinemaDialog extends DialogFragment {
             double latitude = Double.parseDouble(etLatitude.getText().toString().trim());
             double longitude = Double.parseDouble(etLongitude.getText().toString().trim());
             if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.CREATE, // Hoặc UPDATE
+                        AuditLogger.TargetTypes.CINEMA,
+                        "Thất bại khi lưu rạp: " + etName.getText().toString().trim(),
+                        "Kinh độ hoặc vĩ độ không hợp lệ"
+                );
                 showWarning("Kinh độ (-180 đến 180) hoặc vĩ độ (-90 đến 90) không hợp lệ");
                 return;
             }
             cinema.setLocation(new GeoPoint(latitude, longitude));
         } catch (NumberFormatException e) {
+            AuditLogger.getInstance().logError(
+                    AuditLogger.Actions.CREATE, // Hoặc UPDATE
+                    AuditLogger.TargetTypes.CINEMA,
+                    "Thất bại khi lưu rạp: " + etName.getText().toString().trim(),
+                    "Kinh độ hoặc vĩ độ không hợp lệ: " + e.getMessage()
+            );
             showWarning("Kinh độ hoặc vĩ độ phải là số hợp lệ");
             return;
         }
 
-        Log.d(TAG, "Saving cinema: " + cinema.getName() + ", isActive: " + cinema.isActive());
+        // Ghi log
+        String action = (cinema.getId() == null) ? AuditLogger.Actions.CREATE : AuditLogger.Actions.UPDATE;
+        AuditLogger.getInstance().logDataChange(
+                action,
+                AuditLogger.TargetTypes.CINEMA,
+                cinema.getId(),
+                (action.equals(AuditLogger.Actions.CREATE) ? "Tạo mới rạp" : "Cập nhật rạp") + ": " + cinema.getName(),
+                oldCinema,
+                cinema
+        );
+
         viewModel.addOrUpdateCinema(cinema);
         showSuccess("Lưu rạp thành công!");
         dismiss();

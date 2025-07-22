@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vn.fpt.core.models.ScreeningRoom;
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.ui.adapter.ManagerRoomAdapter;
 import vn.fpt.feature_manager.viewmodel.ManagerRoomViewModel;
@@ -65,8 +66,23 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
         fabAddRoom.setOnClickListener(v -> {
             Intent intent = new Intent(ManagerRoomManagementActivity.this, ManagerAddEditRoomActivity.class);
             intent.putExtra("cinemaId", cinemaId);
+
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.VIEW,
+                    AuditLogger.TargetTypes.CINEMA,
+                    "Manager truy cập thêm phòng chiếu mới",
+                    true
+            );
+
             startActivity(intent);
         });
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.CINEMA,
+                "Manager truy cập quản lý phòng chiếu",
+                true
+        );
     }
 
     private void initViews() {
@@ -116,6 +132,12 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
         roomViewModel.getErrorMessage().observe(this, errorMessage -> {
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + errorMessage, Toast.LENGTH_LONG).show();
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.CINEMA,
+                        "Lỗi khi tải danh sách phòng chiếu cho manager",
+                        errorMessage
+                );
             }
         });
 
@@ -152,6 +174,14 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
         intent.putExtra("roomType", room.getType());
         intent.putExtra("rows", room.getRows());
         intent.putExtra("columns", room.getColumns());
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.CINEMA,
+                "Manager truy cập sửa phòng chiếu: " + room.getName(),
+                true
+        );
+
         startActivity(intent);
     }
 
@@ -160,7 +190,16 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận xóa phòng chiếu")
                 .setMessage("Bạn có chắc chắn muốn xóa phòng chiếu '" + room.getName() + "' không?")
-                .setPositiveButton("Xóa", (dialog, which) -> roomViewModel.deleteScreeningRoom(room.getId()))
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    AuditLogger.getInstance().log(
+                            AuditLogger.Actions.DELETE,
+                            AuditLogger.TargetTypes.CINEMA,
+                            "Manager xóa phòng chiếu: " + room.getName(),
+                            true
+                    );
+
+                    roomViewModel.deleteScreeningRoom(room.getId());
+                })
                 .setNegativeButton("Hủy", null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
@@ -174,6 +213,14 @@ public class ManagerRoomManagementActivity extends AppCompatActivity implements 
         intent.putExtra("roomName", room.getName());
         intent.putExtra("rows", room.getRows());
         intent.putExtra("columns", room.getColumns());
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.CINEMA,
+                "Manager xem sơ đồ ghế cho phòng: " + room.getName(),
+                true
+        );
+
         startActivity(intent);
     }
 }

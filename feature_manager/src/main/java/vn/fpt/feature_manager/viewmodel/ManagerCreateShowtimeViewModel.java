@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel;
 import java.util.Date;
 import java.util.List;
 
-import vn.fpt.core.models.*;
+import vn.fpt.core.models.Film;
+import vn.fpt.core.models.ScreeningRoom;
+import vn.fpt.core.models.Showtime;
 import vn.fpt.feature_manager.data.repositories.ManagerFilmRepository;
 import vn.fpt.feature_manager.data.repositories.ManagerRoomRepository;
 import vn.fpt.feature_manager.data.repositories.ManagerShowtimeRepository;
@@ -48,7 +50,7 @@ public class ManagerCreateShowtimeViewModel extends ViewModel {
         showtimeRepository = new ManagerShowtimeRepository();
         roomRepository = new ManagerRoomRepository(cinemaId);
 
-        // Lấy thông tin phim
+
         filmRepository.getFilmById(filmId).observeForever(film -> {
             if (film != null) {
                 _selectedFilm.postValue(film);
@@ -56,10 +58,10 @@ public class ManagerCreateShowtimeViewModel extends ViewModel {
             } else {
                 _error.postValue("Lỗi lấy thông tin phim: Không tìm thấy phim.");
             }
-            // Không set isLoading=false ở đây vì còn chờ rooms
+
         });
 
-        // Lấy danh sách phòng chiếu
+
         roomRepository.getScreeningRooms().observeForever(result -> {
             if (result.rooms != null) {
                 _screeningRooms.postValue(result.rooms);
@@ -67,12 +69,12 @@ public class ManagerCreateShowtimeViewModel extends ViewModel {
             } else {
                 _error.postValue("Lỗi lấy danh sách phòng: " + result.error);
             }
-            _isLoading.postValue(false); // Set isLoading=false sau khi cả 2 task hoàn thành
+            _isLoading.postValue(false);
         });
     }
 
     public void fetchSchedule(String roomId, Date date) {
-        _dailySchedule.setValue(new java.util.ArrayList<>()); // Xóa lịch cũ trước khi tải mới
+        _dailySchedule.setValue(new java.util.ArrayList<>());
         _isLoading.setValue(true);
         showtimeRepository.getShowtimesForRoomOnDate(roomId, date).observeForever(result -> {
             if (result.showtimes != null) {

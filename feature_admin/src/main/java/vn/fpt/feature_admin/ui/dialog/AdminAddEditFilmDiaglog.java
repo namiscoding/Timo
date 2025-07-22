@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.R;
 import vn.fpt.core.models.Film;
 import vn.fpt.feature_admin.viewmodel.AdminManageFilmsViewModel;
@@ -287,6 +288,72 @@ public class AdminAddEditFilmDiaglog extends DialogFragment {
         dialog.show();
     }
 
+    private void saveFilm() {
+        if (!validateFields()) {
+            AuditLogger.getInstance().logError(
+                    AuditLogger.Actions.CREATE, // Hoặc UPDATE nếu film != null
+                    AuditLogger.TargetTypes.MOVIE,
+                    "Thất bại khi lưu phim: " + etTitle.getText().toString().trim(),
+                    "Dữ liệu không hợp lệ"
+            );
+            return;
+        }
 
+        Film oldFilm = (film.getId() != null) ? new Film(film) : null;
+
+        film.setTitle(etTitle.getText().toString().trim());
+        film.setDirector(etDirector.getText().toString().trim());
+        film.setDescription(etDescription.getText().toString().trim());
+        film.setPosterImageUrl(etPosterUrl.getText().toString().trim());
+        film.setTrailerUrl(etTrailerUrl.getText().toString().trim());
+
+        try {
+            film.setDurationMinutes(Long.parseLong(etDuration.getText().toString().trim()));
+        } catch (Exception e) {
+            AuditLogger.getInstance().logError(
+                    AuditLogger.Actions.CREATE, // Hoặc UPDATE
+                    AuditLogger.TargetTypes.MOVIE,
+                    "Thất bại khi lưu phim: " + etTitle.getText().toString().trim(),
+                    "Thời lượng không hợp lệ: " + e.getMessage()
+            );
+            showWarning("Thời lượng không hợp lệ");
+            return;
+        }
+
+        try {
+            String dateStr = etReleaseDate.getText().toString().trim();
+            Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dateStr);
+            film.setReleaseDate(new Timestamp(date));
+        } catch (Exception e) {
+            AuditLogger.getInstance().logError(
+                    AuditLogger.Actions.CREATE, // Hoặc UPDATE
+                    AuditLogger.TargetTypes.MOVIE,
+                    "Thất bại khi lưu phim: " + etTitle.getText().toString().trim(),
+                    "Ngày phát hành không hợp lệ: " + e.getMessage()
+            );
+            showWarning("Ngày phát hành không hợp lệ. Định dạng đúng là yyyy-MM-dd");
+            return;
+        }
+
+        film.setActors(Arrays.asList(etActors.getText().toString().split("\\s*,\\s*")));
+        film.setAgeRating(etAgeRating.getText().toString().trim());
+        film.setStatus(actStatus.getText().toString().trim());
+        film.setGenres(Arrays.asList(actvGenres.getText().toString().split("\\s*,\\s*")));
+
+        // Ghi log
+        String action = (film.getId() == null) ? AuditLogger.Actions.CREATE : AuditLogger.Actions.UPDATE;
+        AuditLogger.getInstance().logDataChange(
+                action,
+                AuditLogger.TargetTypes.MOVIE,
+                film.getId(),
+                (action.equals(AuditLogger.Actions.CREATE) ? "Tạo mới phim" : "Cập nhật phim") + ": " + film.getTitle(),
+                oldFilm,
+                film
+        );
+
+        viewModel.addOrUpdateFilm(film);
+        showSuccess("Lưu thành công!");
+        dismiss();
+    }
 
 }

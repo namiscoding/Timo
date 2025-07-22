@@ -3,14 +3,23 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application>
+
         <activity
             android:name=".ui.activity.CustomerViewTicket"
             android:exported="false" />
         <activity
             android:name=".ui.activity.CustomerWriteReviewActivity"
             android:exported="false" />
+
+        <receiver
+            android:name=".services.ReminderBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
     </application>
 
 </manifest>
