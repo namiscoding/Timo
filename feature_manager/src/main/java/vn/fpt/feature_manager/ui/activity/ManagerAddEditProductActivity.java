@@ -105,7 +105,7 @@ public class ManagerAddEditProductActivity extends AppCompatActivity {
         productViewModel.getOperationSuccess().observe(this, isSuccess -> {
             if (isSuccess) {
                 Toast.makeText(this,
-                        productIdToEdit != null ? "Cập nhật dịch vụ thành công!" : "Thêm dịch vụ thành công!",
+                        productIdToEdit != null ? "Cập nhật thành công dịch vụ!" : "Thêm dịch vụ thành công!",
                         Toast.LENGTH_SHORT).show();
                 productViewModel.onOperationSuccessHandled(); // Đặt lại trạng thái thành công
                 finish(); // Đóng Activity sau khi lưu thành công

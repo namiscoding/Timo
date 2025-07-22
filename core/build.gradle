@@ -51,3 +51,4 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.15.0')
     implementation libs.firebase.firestore
     implementation 'com.google.firebase:firebase-auth'
+}
