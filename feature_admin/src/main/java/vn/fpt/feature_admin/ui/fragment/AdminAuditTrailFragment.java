@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +29,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import vn.fpt.core.models.AuditLog;
+import vn.fpt.core.models.Cinema;
 import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.R;
+import vn.fpt.feature_admin.data.repositories.AdminManageCinemaRepository;
 import vn.fpt.feature_admin.ui.adapter.AdminAuditLogAdapter;
 import vn.fpt.feature_admin.utils.ExportUtils;
 import vn.fpt.feature_admin.viewmodel.AdminAuditTrailViewModel;
@@ -52,6 +56,8 @@ public class AdminAuditTrailFragment extends Fragment {
     private String searchQuery = "";
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+    private Map<String, String> cinemaIdToName = new HashMap<>();
 
     @Nullable
     @Override
@@ -71,7 +77,10 @@ public class AdminAuditTrailFragment extends Fragment {
         setupFilters(view);
         setupObservers();
 
-        // Load initial data (last 7 days)
+        // Load cinema map for displaying names in logs
+        loadCinemaMap();
+
+        // Load initial data (last 7 days for easier testing; adjust if needed)
         setDateRange(7);
         loadAuditLogs();
 
@@ -126,7 +135,7 @@ public class AdminAuditTrailFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.rvAuditLogs);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        adapter = new AdminAuditLogAdapter(new ArrayList<>());
+        adapter = new AdminAuditLogAdapter(new ArrayList<>(), cinemaIdToName);
         recyclerView.setAdapter(adapter);
     }
 
@@ -196,6 +205,7 @@ public class AdminAuditTrailFragment extends Fragment {
 
     private void setupObservers() {
         viewModel.getAuditLogs().observe(getViewLifecycleOwner(), logs -> {
+            Log.d("AuditTrail", "Received " + (logs != null ? logs.size() : 0) + " logs from ViewModel");
             allLogs.clear();
             if (logs != null) {
                 allLogs.addAll(logs);
@@ -224,7 +234,7 @@ public class AdminAuditTrailFragment extends Fragment {
 
         for (AuditLog log : allLogs) {
             // Log dữ liệu đang xét
-            android.util.Log.d("FILTER_DEBUG", "Xét log: " +
+            Log.d("FILTER_DEBUG", "Xét log: " +
                     "\n  userName = " + log.getUserName() +
                     "\n  userRole = " + log.getUserRole() +
                     "\n  action = " + log.getAction() +
@@ -240,7 +250,7 @@ public class AdminAuditTrailFragment extends Fragment {
             boolean matchesAction = selectedActionType.equals("ALL") ||
                     (log.getAction() != null && log.getAction().equalsIgnoreCase(selectedActionType));
 
-            android.util.Log.d("FILTER_DEBUG", "→ matchesSearch=" + matchesSearch +
+            Log.d("FILTER_DEBUG", "→ matchesSearch=" + matchesSearch +
                     ", matchesRole=" + matchesRole + ", matchesAction=" + matchesAction);
 
             if (matchesSearch && matchesRole && matchesAction) {
@@ -248,7 +258,7 @@ public class AdminAuditTrailFragment extends Fragment {
             }
         }
 
-        android.util.Log.d("FILTER_DEBUG", "Kết quả: " + filteredLogs.size() + " logs được hiển thị");
+        Log.d("FILTER_DEBUG", "Kết quả: " + filteredLogs.size() + " logs được hiển thị");
 
         adapter.updateData(filteredLogs);
     }
@@ -292,5 +302,16 @@ public class AdminAuditTrailFragment extends Fragment {
 
         // Export to CSV
         ExportUtils.exportAuditLogsToCSV(requireContext(), filteredLogs);
+    }
+
+    private void loadCinemaMap() {
+        AdminManageCinemaRepository cinemaRepo = new AdminManageCinemaRepository();
+        cinemaRepo.getAllCinemas(cinemas -> {
+            cinemaIdToName.clear();
+            for (Cinema cinema : cinemas) {
+                cinemaIdToName.put(cinema.getId(), cinema.getName());
+            }
+            // Không cần notify adapter vì map là reference
+        });
     }
 }

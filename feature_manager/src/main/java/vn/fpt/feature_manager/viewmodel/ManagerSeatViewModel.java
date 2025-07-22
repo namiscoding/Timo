@@ -2,7 +2,6 @@ package vn.fpt.feature_manager.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer; // Import Observer
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -179,7 +178,7 @@ public class ManagerSeatViewModel extends ViewModel {
 
     public void toggleSeatSelection(String seatId) {
         Set<String> currentSelection = _selectedSeats.getValue();
-        Set<String> newSelection = (currentSelection != null) ? new HashSet<>(currentSelection) : new HashSet<>();
+        Set<String> newSelection = (currentSelection != null)? new HashSet<>(currentSelection) : new HashSet<>();
 
         if (newSelection.contains(seatId)) {
             newSelection.remove(seatId);

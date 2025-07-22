@@ -15,7 +15,6 @@ public class ManagerRoomRepository {
     private final ManagerRoomService roomService;
     private final CollectionReference roomsCollection;
 
-    // Định nghĩa các lớp Result bao gồm dữ liệu và/hoặc lỗi
     public static class RoomListResult {
         public List<ScreeningRoom> rooms;
         public String error;

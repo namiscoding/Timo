@@ -292,20 +292,42 @@ public class AdminAddEditUserDialog extends DialogFragment {
         String selectedRole = spnRole.getSelectedItem().toString();
         user.setRole(selectedRole);
 
+        String oldCinemaName = null;
+        String newCinemaName = null;
         if ("Manager".equals(selectedRole) && spnCinema.getSelectedItemPosition() > 0) {
             Cinema selectedCinema = cinemaList.get(spnCinema.getSelectedItemPosition() - 1);
             user.setAssignedCinemaId(selectedCinema.getId());
+            newCinemaName = selectedCinema.getName();
         } else {
             user.setAssignedCinemaId(null);
         }
+        if (oldUser != null && oldUser.getAssignedCinemaId() != null) {
+            for (Cinema c : cinemaList) {
+                if (c.getId().equals(oldUser.getAssignedCinemaId())) {
+                    oldCinemaName = c.getName();
+                    break;
+                }
+            }
+        }
 
-        // Ghi log
+        // Nếu là cập nhật và có thay đổi rạp, log rõ ràng tên rạp
         String action = (user.getId() == null) ? AuditLogger.Actions.CREATE : AuditLogger.Actions.UPDATE;
+        StringBuilder desc = new StringBuilder();
+        desc.append((action.equals(AuditLogger.Actions.CREATE) ? "Tạo mới tài khoản" : "Cập nhật tài khoản"))
+            .append(": ").append(user.getEmail());
+        if ("Manager".equals(selectedRole)) {
+            if (oldCinemaName != null || newCinemaName != null) {
+                desc.append(" | Chuyển rạp: ")
+                    .append(oldCinemaName != null ? oldCinemaName : "(Không có)")
+                    .append(" -> ")
+                    .append(newCinemaName != null ? newCinemaName : "(Không có)");
+            }
+        }
         AuditLogger.getInstance().logDataChange(
                 action,
                 AuditLogger.TargetTypes.USER,
                 user.getId(),
-                (action.equals(AuditLogger.Actions.CREATE) ? "Tạo mới tài khoản" : "Cập nhật tài khoản") + ": " + user.getEmail(),
+                desc.toString(),
                 oldUser,
                 user
         );

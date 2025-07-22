@@ -334,6 +334,15 @@ public class AllLoginGGActivity extends AppCompatActivity {
                 intent = new Intent(AllLoginGGActivity.this, AdminDashboardActivity.class);
                 break;
             case "Manager":
+                // Set manager info for logging
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                if (currentUser != null) {
+                    vn.fpt.core.models.service.AuditLogger.setManagerInfo(
+                        currentUser.getUid(),
+                        currentUser.getDisplayName() != null ? currentUser.getDisplayName() : currentUser.getEmail(),
+                        "Manager"
+                    );
+                }
                 intent = new Intent(AllLoginGGActivity.this, ManagerHomePageActivity.class);
                 break;
             case "Customer":

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import vn.fpt.core.models.Seat;
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.ui.adapter.ManagerSeatAdapter;
 import vn.fpt.feature_manager.viewmodel.ManagerSeatViewModel;
@@ -53,6 +54,13 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
         setupRecyclerView();
         setupListeners();
         setupObservers();
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.CINEMA,
+                "Manager truy cập sơ đồ ghế cho phòng " + roomName,
+                true
+        );
     }
 
     private void initViews() {
@@ -93,10 +101,24 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
         // Sự kiện click ghế đã được xử lý trong Adapter và gọi về hàm onSeatClick() bên dưới
 
         btnLockSeats.setOnClickListener(v -> {
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.UPDATE,
+                    AuditLogger.TargetTypes.CINEMA,
+                    "Manager khóa ghế trong phòng " + roomName,
+                    true
+            );
+
             viewModel.updateSelectedSeatsStatus(false); // false = không active (khóa)
         });
 
         btnUnlockSeats.setOnClickListener(v -> {
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.UPDATE,
+                    AuditLogger.TargetTypes.CINEMA,
+                    "Manager mở khóa ghế trong phòng " + roomName,
+                    true
+            );
+
             viewModel.updateSelectedSeatsStatus(true); // true = active (mở khóa)
         });
     }
@@ -109,6 +131,12 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
         viewModel.getErrorMessage().observe(this, error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.CINEMA,
+                        "Lỗi khi tải sơ đồ ghế cho manager",
+                        error
+                );
             }
         });
 

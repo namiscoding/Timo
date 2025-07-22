@@ -10,15 +10,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import vn.fpt.core.models.AuditLog;
+import vn.fpt.core.models.User;
 import vn.fpt.feature_admin.R;
 
 public class AdminAuditLogAdapter extends RecyclerView.Adapter<AdminAuditLogAdapter.AuditLogViewHolder> {
@@ -26,9 +28,11 @@ public class AdminAuditLogAdapter extends RecyclerView.Adapter<AdminAuditLogAdap
     private final List<AuditLog> logs;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Map<String, String> cinemaMap;
 
-    public AdminAuditLogAdapter(List<AuditLog> logs) {
+    public AdminAuditLogAdapter(List<AuditLog> logs, Map<String, String> cinemaMap) {
         this.logs = logs;
+        this.cinemaMap = cinemaMap;
     }
 
     @NonNull
@@ -92,18 +96,45 @@ public class AdminAuditLogAdapter extends RecyclerView.Adapter<AdminAuditLogAdap
                 }
 
                 if (log.getOldData() != null) {
-                    details.append("\n--- Dữ liệu trước khi chỉnh sửa ---\n")
-                            .append(gson.toJson(log.getOldData())).append("\n");
+                    details.append("\n--- Dữ liệu trước khi chỉnh sửa ---\n");
+                    if ("USER".equals(log.getTargetType()) && log.getOldData() instanceof User) {
+                        details.append(getUserJsonWithCinemaName((User) log.getOldData()));
+                    } else {
+                        details.append(gson.toJson(log.getOldData()));
+                    }
+                    details.append("\n");
                 }
 
                 if (log.getNewData() != null) {
-                    details.append("--- Dữ liệu sau khi chỉnh sửa ---\n")
-                            .append(gson.toJson(log.getNewData())).append("\n");
+                    details.append("--- Dữ liệu sau khi chỉnh sửa ---\n");
+                    if ("USER".equals(log.getTargetType()) && log.getNewData() instanceof User) {
+                        details.append(getUserJsonWithCinemaName((User) log.getNewData()));
+                    } else {
+                        details.append(gson.toJson(log.getNewData()));
+                    }
+                    details.append("\n");
                 }
 
                 holder.tvDetailedInfo.setText(details.toString());
             }
         });
+    }
+
+    private String getUserJsonWithCinemaName(User user) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("id", user.getId());
+        userMap.put("email", user.getEmail());
+        userMap.put("displayName", user.getDisplayName());
+        userMap.put("role", user.getRole());
+        userMap.put("active", user.isActive());
+        userMap.put("photoUrl", user.getPhotoUrl());
+        userMap.put("createdAt", user.getCreatedAt() != null ? dateFormat.format(user.getCreatedAt().toDate()) : null);
+
+        String cinemaId = user.getAssignedCinemaId();
+        String cinemaName = cinemaMap.get(cinemaId);
+        userMap.put("assignedCinemaName", cinemaName != null ? cinemaName : cinemaId);
+
+        return gson.toJson(userMap);
     }
 
     @Override
