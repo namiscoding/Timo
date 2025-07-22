@@ -3,6 +3,7 @@ package vn.fpt.feature_admin.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +11,9 @@ import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.R;
 
 public class AdminDashboardActivity extends AppCompatActivity {
+
+    private ImageView backButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +28,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         Button btnManageCinemas = findViewById(R.id.btnManageCinemas);
         Button btnReport = findViewById(R.id.btnReport);
         Button btnAuditTrail = findViewById(R.id.btnAuditTrail);
+        backButton = findViewById(R.id.backButton);
 
         // Log khi admin vào dashboard
         AuditLogger.getInstance().log(
@@ -32,6 +37,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 "Admin đã truy cập Dashboard",
                 true
         );
+
+        // Thiết lập sự kiện click cho nút Back
+        backButton.setOnClickListener(v -> finish());
 
         btnManageAccounts.setOnClickListener(v -> {
             AuditLogger.getInstance().log(

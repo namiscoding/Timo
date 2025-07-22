@@ -3,6 +3,7 @@ package vn.fpt.feature_manager.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,9 @@ public class ManagerHomePageActivity extends AppCompatActivity {
     private CardView cardManageShowtimes;
     private CardView cardManageServices;
     private CardView cardManageIncome;
+
+    private ImageView backButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +44,11 @@ public class ManagerHomePageActivity extends AppCompatActivity {
         cardManageShowtimes = findViewById(R.id.cardManageShowtimes);
         cardManageServices = findViewById(R.id.cardManageServices);
         cardManageIncome = findViewById(R.id.cardManageIncome);
+
+        backButton = findViewById(R.id.backButton);
+        // Thiết lập sự kiện click cho nút Back
+        backButton.setOnClickListener(v -> finish());
+
 
         cardManageRooms.setOnClickListener(new View.OnClickListener() {
             @Override

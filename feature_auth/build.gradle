@@ -9,7 +9,6 @@ android {
 
     defaultConfig {
         minSdk 26
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -20,6 +19,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -32,14 +32,17 @@ dependencies {
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
-    // libs.firebase.auth đã được khai báo trong libs.versions.toml hoặc tương tự
+
     implementation libs.firebase.auth
     implementation libs.credentials
     implementation libs.credentials.play.services.auth
     implementation libs.googleid
     implementation libs.firebase.firestore
+
     implementation project(':feature_admin')
     implementation project(':feature_manager')
+    // Giữ lại phần này từ nhánh feature/admin-manage-audit-log
+    // KHÔNG thêm feature_customer, KHÔNG thêm firebase.storage
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
@@ -49,19 +52,22 @@ dependencies {
     implementation libs.androidx.lifecycle.livedata.ktx
     implementation libs.androidx.lifecycle.viewmodel.ktx
 
-    // Sử dụng Firebase BOM để quản lý phiên bản của tất cả các thư viện Firebase
-    // Điều này giúp tránh xung đột phiên bản và đảm bảo tương thích
+    // Firebase BOM để đồng bộ phiên bản
     implementation platform('com.google.firebase:firebase-bom:33.15.0')
 
-    // GLIDE - Sửa lỗi chính ở đây
+    // Glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+
     // Firebase Authentication
-    implementation 'com.google.firebase:firebase-auth:22.0.0' //TruongLan add
+    implementation 'com.google.firebase:firebase-auth:22.0.0' // TruongLan add
 
     // Google Sign-In
-    implementation 'com.google.android.gms:play-services-auth:20.7.0' //TruongLan add
+    implementation 'com.google.android.gms:play-services-auth:20.7.0' // TruongLan add
 
-    // Material Components (nếu bạn dùng MaterialButton)
-    implementation 'com.google.android.material:material:1.12.0' //TruongLan add
+    // Material Components (MaterialButton v.v.)
+    implementation 'com.google.android.material:material:1.12.0' // TruongLan add
+
+    // CircleImageView
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }
