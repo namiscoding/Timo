@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import vn.fpt.core.models.Seat;
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.ui.adapter.ManagerSeatAdapter;
 import vn.fpt.feature_manager.viewmodel.ManagerSeatViewModel;
@@ -35,16 +36,15 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_seat_map_manager); // Sử dụng layout của bạn
+        setContentView(R.layout.activity_seat_map_manager);
 
-        // Lấy dữ liệu được truyền từ RoomManagementActivity
         cinemaId = getIntent().getStringExtra("cinemaId");
         roomId = getIntent().getStringExtra("roomId");
         roomName = getIntent().getStringExtra("roomName");
-        columns = getIntent().getIntExtra("columns", 10); // Lấy số cột, mặc định 10 nếu không có
-        int rows = getIntent().getIntExtra("rows", 10); // Lấy số hàng
+        columns = getIntent().getIntExtra("columns", 10);
+        int rows = getIntent().getIntExtra("rows", 10);
 
-        // Khởi tạo ViewModel và bắt đầu tải dữ liệu
+
         viewModel = new ViewModelProvider(this).get(ManagerSeatViewModel.class);
         viewModel.init(cinemaId, roomId, rows, columns);
 
@@ -53,11 +53,17 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
         setupRecyclerView();
         setupListeners();
         setupObservers();
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.CINEMA,
+                "Manager truy cập sơ đồ ghế cho phòng " + roomName,
+                true
+        );
     }
 
     private void initViews() {
         toolbar = findViewById(R.id.toolbar);
-        // Dùng đúng ID từ layout của bạn
         rvSeats = findViewById(R.id.recyclerViewSeats);
         progressBar = findViewById(R.id.progressBarSeats);
         tvNoSeats = findViewById(R.id.tvNoSeats);
@@ -76,7 +82,6 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
     }
 
     private void setupRecyclerView() {
-        // Khởi tạo Adapter và truyền vào this (Activity) vì nó đã implement OnSeatActionListener
         adapter = new ManagerSeatAdapter(this, this);
 
         // QUAN TRỌNG: Dùng GridLayoutManager với số cột lấy từ Intent
@@ -93,10 +98,24 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
         // Sự kiện click ghế đã được xử lý trong Adapter và gọi về hàm onSeatClick() bên dưới
 
         btnLockSeats.setOnClickListener(v -> {
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.UPDATE,
+                    AuditLogger.TargetTypes.CINEMA,
+                    "Manager khóa ghế trong phòng " + roomName,
+                    true
+            );
+
             viewModel.updateSelectedSeatsStatus(false); // false = không active (khóa)
         });
 
         btnUnlockSeats.setOnClickListener(v -> {
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.UPDATE,
+                    AuditLogger.TargetTypes.CINEMA,
+                    "Manager mở khóa ghế trong phòng " + roomName,
+                    true
+            );
+
             viewModel.updateSelectedSeatsStatus(true); // true = active (mở khóa)
         });
     }
@@ -109,6 +128,12 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
         viewModel.getErrorMessage().observe(this, error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.CINEMA,
+                        "Lỗi khi tải sơ đồ ghế cho manager",
+                        error
+                );
             }
         });
 

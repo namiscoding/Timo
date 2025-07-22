@@ -1,7 +1,5 @@
 package vn.fpt.feature_manager.ui.activity;
 
-import vn.fpt.feature_manager.R;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,15 +7,12 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.ui.adapter.ManagerFilmSelectionAdapter;
 import vn.fpt.feature_manager.viewmodel.ManagerFilmSelectionViewModel;
@@ -45,6 +40,13 @@ public class ManagerFilmSelectionActivity extends AppCompatActivity {
         setupObservers();
 
         viewModel.loadAllFilms();
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.MOVIE,
+                "Manager truy cập danh sách phim để tạo suất chiếu",
+                true
+        );
     }
 
     private void initViews() {
@@ -72,11 +74,27 @@ public class ManagerFilmSelectionActivity extends AppCompatActivity {
             Intent intent = new Intent(ManagerFilmSelectionActivity.this, ManagerCreateShowtimeActivity.class);
             intent.putExtra("FILM_ID", film.getId());
             intent.putExtra("CINEMA_ID", "SnB2yfpm9rQ1lupv2xGz"); // Sử dụng cinemaId hardcode
+
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.VIEW,
+                    AuditLogger.TargetTypes.MOVIE,
+                    "Manager chọn phim " + film.getTitle() + " để tạo suất chiếu",
+                    true
+            );
+
             startActivity(intent);
         });
 
         btnViewSchedule.setOnClickListener(v -> {
             Intent intent = new Intent(this, ManagerScheduleViewActivity.class);
+
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.VIEW,
+                    AuditLogger.TargetTypes.SHOWTIME,
+                    "Manager xem lịch chiếu",
+                    true
+            );
+
             startActivity(intent);
         });
     }
@@ -93,8 +111,14 @@ public class ManagerFilmSelectionActivity extends AppCompatActivity {
         });
 
         viewModel.error.observe(this, error -> {
-            if (error != null && !error.isEmpty()) {
+            if(error != null && !error.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_LONG).show();
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.MOVIE,
+                        "Lỗi khi tải danh sách phim cho manager",
+                        error
+                );
             }
         });
     }

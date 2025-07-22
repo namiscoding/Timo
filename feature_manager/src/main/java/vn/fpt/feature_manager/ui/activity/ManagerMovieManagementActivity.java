@@ -1,16 +1,15 @@
 package vn.fpt.feature_manager.ui.activity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.ui.adapter.ManagerMovieManagementAdapter;
 import vn.fpt.feature_manager.viewmodel.ManagerMovieManagementViewModel;
@@ -50,6 +50,13 @@ public class ManagerMovieManagementActivity extends AppCompatActivity {
         setupGenreChips();
         setupStatusChips();
         setupObservers();
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.MOVIE,
+                "Manager truy cập quản lý phim",
+                true
+        );
     }
 
     private void initViews() {
@@ -82,7 +89,16 @@ public class ManagerMovieManagementActivity extends AppCompatActivity {
             Chip chip = (Chip) getLayoutInflater().inflate(R.layout.item_genre_chip_manager, chipGroupGenres, false);
             chip.setText(genre);
             chip.setId(View.generateViewId());
-            chip.setOnClickListener(v -> viewModel.setGenreFilter(genre));
+            chip.setOnClickListener(v -> {
+                viewModel.setGenreFilter(genre);
+
+                AuditLogger.getInstance().log(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.SYSTEM,
+                        "Manager lọc phim theo thể loại: " + genre,
+                        true
+                );
+            });
             chipGroupGenres.addView(chip);
         }
         if(chipGroupGenres.getChildCount() > 0) {
@@ -101,7 +117,16 @@ public class ManagerMovieManagementActivity extends AppCompatActivity {
             Chip chip = (Chip) getLayoutInflater().inflate(R.layout.item_genre_chip_manager, chipGroupStatus, false);
             chip.setText(entry.getKey());
             chip.setId(View.generateViewId());
-            chip.setOnClickListener(v -> viewModel.setStatusFilter(entry.getValue()));
+            chip.setOnClickListener(v -> {
+                viewModel.setStatusFilter(entry.getValue());
+
+                AuditLogger.getInstance().log(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.SYSTEM,
+                        "Manager lọc phim theo trạng thái: " + entry.getKey(),
+                        true
+                );
+            });
             chipGroupStatus.addView(chip);
         }
         if(chipGroupStatus.getChildCount() > 0) {
@@ -121,6 +146,12 @@ public class ManagerMovieManagementActivity extends AppCompatActivity {
         viewModel.error.observe(this, error -> {
             if(error != null && !error.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + error, Toast.LENGTH_LONG).show();
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.MOVIE,
+                        "Lỗi khi tải danh sách phim cho manager",
+                        error
+                );
             }
         });
     }

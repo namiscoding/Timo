@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.ui.adapter.ManagerFilmScheduleAdapter;
 import vn.fpt.feature_manager.viewmodel.ManagerScheduleViewModel;
@@ -51,6 +52,13 @@ public class ManagerScheduleViewActivity extends AppCompatActivity {
         setupRecyclerView();
         setupDateButtons();
         setupObservers();
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.SHOWTIME,
+                "Manager truy cập xem lịch chiếu",
+                true
+        );
     }
 
     private void initViews() {
@@ -80,6 +88,12 @@ public class ManagerScheduleViewActivity extends AppCompatActivity {
 
         viewModel.error.observe(this, error -> {
             if (error != null) Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            AuditLogger.getInstance().logError(
+                    AuditLogger.Actions.VIEW,
+                    AuditLogger.TargetTypes.SHOWTIME,
+                    "Lỗi khi tải lịch chiếu cho manager",
+                    error
+            );
         });
 
         viewModel.schedules.observe(this, filmSchedules -> {
@@ -119,6 +133,14 @@ public class ManagerScheduleViewActivity extends AppCompatActivity {
                 }
                 v.setSelected(true);
                 lastSelectedButton = (Button) v;
+
+                AuditLogger.getInstance().log(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.SHOWTIME,
+                        "Manager xem lịch chiếu ngày " + buttonFormat.format((Date) v.getTag()),
+                        true
+                );
+
                 viewModel.loadScheduleForDate((Date) v.getTag());
             });
 

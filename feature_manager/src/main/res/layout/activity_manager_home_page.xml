@@ -8,6 +8,18 @@
     android:background="#000000"
     tools:context="vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity">
 
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Back"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="24dp"
+        app:tint="@color/white" />
+
     <!-- Logo Container -->
     <LinearLayout
         android:id="@+id/logoContainer"

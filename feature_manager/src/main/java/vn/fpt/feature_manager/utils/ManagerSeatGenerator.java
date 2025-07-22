@@ -27,7 +27,7 @@ public class ManagerSeatGenerator {
             seat.setId(seatId);
             seat.setRow(row);
             seat.setCol(currentColumn);
-            seat.setSeatType("regular");
+            seat.setSeatType("Standard");
             seat.setActive(true);
 
             seats.add(seat);

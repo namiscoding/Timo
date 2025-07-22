@@ -33,4 +33,8 @@ public class Review {
     public void setUserDisplayName(String userDisplayName) { this.userDisplayName = userDisplayName; }
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+
+    public void setUserId(String userId) {
+
+    }
 }

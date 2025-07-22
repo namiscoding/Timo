@@ -39,5 +39,18 @@ public class Cinema {
     public void setDistance(double distance) { this.distance = distance; }
 //    public List<TimeSlotAdapter.DisplayTimeSlot> getTimeSlots() { return timeSlots; }
 //    public void setTimeSlots(List<TimeSlotAdapter.DisplayTimeSlot> timeSlots) { this.timeSlots = timeSlots; }
+    public Cinema(Cinema other) {
+        if (other == null) return;
 
+        this.id = other.id;
+        this.name = other.name;
+        this.address = other.address;
+        this.city = other.city;
+        this.location = other.location != null
+                ? new GeoPoint(other.location.getLatitude(), other.location.getLongitude())
+                : null;
+        this.isActive = other.isActive;
+        this.distance = other.distance;
+        this.isExpanded = other.isExpanded;
+    }
 }

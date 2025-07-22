@@ -9,6 +9,17 @@
     <color name="orange">#d14706</color>
     <!-- Màu nền màn hình -->
     <color name="screen_background">#37474F</color>
+
+    <!-- TruongNLan add -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="primary_red_orange">#FE3323</color>
+    <color name="darker_gray">#A9A9A9</color>
+
+    <color name="red_accent">#FE3323</color>
+    <color name="input_background_secondary">#FF2A2A2A</color>
+    <color name="input_background_neutral">#FF1F1F1F</color>
     <!-- Dark Theme Colors -->
     <color name="card_background">#2d2d2d</color>
     <color name="input_background">#3a3a3a</color>

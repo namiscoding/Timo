@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.R;
 import vn.fpt.core.models.User;
 import vn.fpt.core.models.Cinema;
@@ -75,8 +76,16 @@ public class AdminManageUsersFragment extends Fragment {
 
             @Override
             public void onToggleActive(User user) {
-                // Toggle trạng thái active/deactive
+                User oldUser = new User(user);
                 user.setActive(!user.isActive());
+                AuditLogger.getInstance().logDataChange(
+                        AuditLogger.Actions.UPDATE,
+                        AuditLogger.TargetTypes.USER,
+                        user.getId(),
+                        (user.isActive() ? "Kích hoạt tài khoản" : "Tạm khóa tài khoản") + ": " + user.getEmail(),
+                        oldUser,
+                        user
+                );
                 viewModel.updateUser(user);
             }
         });
