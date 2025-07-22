@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -86,6 +87,10 @@ public class AdminManageCinemasFragment extends Fragment {
                 filterCinemas(s.toString());
             }
         });
+
+        // Thêm onClick cho btnBack để quay lại
+        ImageButton btnBack = view.findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> requireActivity().finish());
 
         viewModel.loadCinemas();
     }

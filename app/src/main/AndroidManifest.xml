@@ -34,6 +34,8 @@
         </activity>
         <activity android:name="vn.fpt.feature_customer.ui.activity.SeatListActivity"
             android:exported="true" />
+        <activity android:name="vn.fpt.feature_customer.ui.activity.ChooseFoodActivity"
+            android:exported="true" />
         <activity
             android:name="vn.fpt.feature_customer.ui.activity.CustomerFilmDetailActivity"
             android:exported="true">
@@ -44,6 +46,10 @@
         </activity>
         <activity
             android:name="vn.fpt.feature_customer.ui.activity.CustomerChooseCinemaActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="vn.fpt.feature_auth.ui.activity.AllLoginActivity"
             android:exported="true">
         </activity>
     </application>

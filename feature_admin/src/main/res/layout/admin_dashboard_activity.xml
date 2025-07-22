@@ -46,11 +46,13 @@
         app:layout_constraintTop_toBottomOf="@id/tvAdminPanelTitle"
         android:layout_marginTop="8dp" />
 
-    <LinearLayout
-        android:id="@+id/llCardContainer"
+
+
+
+    <!-- Card Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="@drawable/card_background"
         android:padding="24dp"
         android:elevation="4dp"
@@ -62,13 +64,12 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnManageAccounts"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:text="Quản lý tài khoản"
             android:textSize="16sp"
             android:textColor="#FFFFFF"
             android:backgroundTint="#FC3323"
-            android:layout_marginBottom="16dp"
             android:fontFamily="sans-serif-medium"
             android:drawableLeft="@drawable/ic_account_circle"
             android:drawablePadding="12dp"
@@ -76,17 +77,19 @@
             android:paddingEnd="20dp"
             app:cornerRadius="8dp"
             app:rippleColor="#FFFFFF33"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             style="@style/Widget.MaterialComponents.Button" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnManageFilms"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:text="Quản lý phim"
             android:textSize="16sp"
             android:textColor="#FFFFFF"
             android:backgroundTint="#FC3323"
-            android:layout_marginBottom="16dp"
             android:fontFamily="sans-serif-medium"
             android:drawableLeft="@drawable/ic_movie"
             android:drawablePadding="12dp"
@@ -94,12 +97,16 @@
             android:paddingEnd="20dp"
             app:cornerRadius="8dp"
             app:rippleColor="#FFFFFF33"
+            app:layout_constraintTop_toBottomOf="@id/btnManageAccounts"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
             style="@style/Widget.MaterialComponents.Button" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnManageCinemas"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:text="Quản lý rạp chiếu"
             android:textSize="16sp"
             android:textColor="#FFFFFF"
@@ -111,9 +118,35 @@
             android:paddingEnd="20dp"
             app:cornerRadius="8dp"
             app:rippleColor="#FFFFFF33"
+            app:layout_constraintTop_toBottomOf="@id/btnManageFilms"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
             style="@style/Widget.MaterialComponents.Button" />
 
-    </LinearLayout>
+        <!-- Statistic Report Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReport"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Báo cáo thống kê"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FC3323"
+            android:fontFamily="sans-serif-medium"
+            android:drawableLeft="@drawable/ic_report"
+            android:drawablePadding="12dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            app:cornerRadius="8dp"
+            app:rippleColor="#FFFFFF33"
+            app:layout_constraintTop_toBottomOf="@id/btnManageCinemas"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            style="@style/Widget.MaterialComponents.Button" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/tvFooterText"
@@ -123,7 +156,6 @@
         android:textSize="12sp"
         android:textColor="#999999"
         android:fontFamily="sans-serif"
-        app:layout_constraintTop_toBottomOf="@id/llCardContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp"
