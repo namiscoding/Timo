@@ -1,43 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="32dp"
-    android:gravity="center"
     android:background="#181A20"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+    android:padding="32dp">
+
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Back"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="0dp"
+        app:tint="@color/white" />
 
     <TextView
+        android:id="@+id/tvAdminPanelTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Admin Panel"
         android:textSize="28sp"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="sans-serif-medium" />
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/backButton"
+        android:layout_marginTop="24dp" />
 
     <TextView
+        android:id="@+id/tvManagementDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Quản lý hệ thống"
         android:textSize="16sp"
         android:textColor="#FFFFFF"
-        android:layout_marginBottom="48dp"
-        android:fontFamily="sans-serif" />
+        android:fontFamily="sans-serif"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAdminPanelTitle"
+        android:layout_marginTop="8dp" />
 
-    <!-- Card Container -->
     <LinearLayout
+        android:id="@+id/llCardContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/card_background"
         android:padding="24dp"
-        android:elevation="4dp">
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/tvManagementDescription"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="48dp"
+        app:layout_constraintVertical_bias="0.2">
 
-        <!-- Manage Accounts Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnManageAccounts"
             android:layout_width="match_parent"
@@ -56,7 +78,6 @@
             app:rippleColor="#FFFFFF33"
             style="@style/Widget.MaterialComponents.Button" />
 
-        <!-- Manage Films Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnManageFilms"
             android:layout_width="match_parent"
@@ -75,7 +96,6 @@
             app:rippleColor="#FFFFFF33"
             style="@style/Widget.MaterialComponents.Button" />
 
-        <!-- Manage Cinemas Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnManageCinemas"
             android:layout_width="match_parent"
@@ -95,14 +115,19 @@
 
     </LinearLayout>
 
-    <!-- Footer Text -->
     <TextView
+        android:id="@+id/tvFooterText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Timo Management System v1.0"
         android:textSize="12sp"
         android:textColor="#999999"
+        android:fontFamily="sans-serif"
+        app:layout_constraintTop_toBottomOf="@id/llCardContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp"
-        android:fontFamily="sans-serif" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.9" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

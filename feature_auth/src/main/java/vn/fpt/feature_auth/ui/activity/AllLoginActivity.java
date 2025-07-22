@@ -14,8 +14,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseUser;
 
+import vn.fpt.feature_admin.ui.activity.AdminDashboardActivity;
 import vn.fpt.feature_auth.R;
-import vn.fpt.feature_auth.viewmodel.AuthenticationViewModel;;
+import vn.fpt.feature_auth.viewmodel.AuthenticationViewModel;
+import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
+import vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity;;
+
 
 
 
@@ -60,7 +64,7 @@ public class AllLoginActivity extends AppCompatActivity {
         tvForgotPassword.setOnClickListener(v -> {
             String email = edtLoginEmail.getText().toString().trim();
             if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Please enter your email to reset password.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vui lòng nhập email của bạn để đặt lại mật khẩu.", Toast.LENGTH_SHORT).show();
             } else {
                 authViewModel.sendPasswordResetEmail(email);
             }
