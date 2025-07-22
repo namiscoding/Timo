@@ -178,7 +178,7 @@ public class CustomerFilmDetailActivity extends AppCompatActivity {
                             } else {
                                 castAdapter.updateList(new ArrayList<>());
                             }
-                            if (film.getStatus().equalsIgnoreCase("coming_soon")) {
+                            if (film.getStatus().equalsIgnoreCase("Sắp chiếu")) {
 
                                 buyTicketBtn.setVisibility(View.GONE);
                             }

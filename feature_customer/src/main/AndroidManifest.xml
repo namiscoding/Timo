@@ -6,6 +6,9 @@
 
     <application>
         <activity
+            android:name=".ui.activity.CustomerViewTicket"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.CustomerWriteReviewActivity"
             android:exported="false" />
     </application>

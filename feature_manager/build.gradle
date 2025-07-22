@@ -32,7 +32,8 @@ dependencies {
     implementation libs.appcompat // OK
     implementation libs.material // OK
     implementation libs.activity // OK
-    implementation libs.constraintlayout // OK
+    implementation libs.constraintlayout
+    implementation libs.firebase.firestore// OK
     testImplementation libs.junit // OK
     androidTestImplementation libs.ext.junit // OK
     androidTestImplementation libs.espresso.core // OK
