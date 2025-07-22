@@ -344,10 +344,19 @@ public class AllLoginGGActivity extends AppCompatActivity {
         Intent intent;
         switch (role) {
             case "Admin":
-                intent = new Intent(AllLoginGGActivity.this, TestAdminActivity.class);
+                intent = new Intent(AllLoginGGActivity.this, AdminDashboardActivity.class);
                 break;
             case "Manager":
-                intent = new Intent(AllLoginGGActivity.this, TestManagerActivity.class);
+                // Set manager info for logging
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                if (currentUser != null) {
+                    vn.fpt.core.models.service.AuditLogger.setManagerInfo(
+                        currentUser.getUid(),
+                        currentUser.getDisplayName() != null ? currentUser.getDisplayName() : currentUser.getEmail(),
+                        "Manager"
+                    );
+                }
+                intent = new Intent(AllLoginGGActivity.this, ManagerHomePageActivity.class);
                 break;
             case "Customer":
             default: // Mặc định nếu không có role hoặc role không xác định

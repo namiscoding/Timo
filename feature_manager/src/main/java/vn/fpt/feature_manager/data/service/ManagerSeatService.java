@@ -1,6 +1,7 @@
 package vn.fpt.feature_manager.data.service;
 
 import android.util.Log;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -8,7 +9,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.WriteBatch;
 import java.util.List;
 
+import vn.fpt.core.models.Film;
 import vn.fpt.core.models.Seat;
+import vn.fpt.feature_manager.data.repositories.ManagerFilmRepository;
 import vn.fpt.feature_manager.data.repositories.ManagerSeatRepository;
 public class ManagerSeatService {
     private static final String TAG = "SeatService";

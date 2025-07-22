@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public class ManagerShowtimeRepository {
         return result;
     }
 
-    // Thay đổi trả về LiveData<ShowtimeActionResult>
+    // Thay đổi trả về LiveData cho Task QuerySnapshot
     public LiveData<ShowtimeActionResult> createShowtime(Showtime newShowtime) {
         MutableLiveData<ShowtimeActionResult> result = new MutableLiveData<>();
         showtimeService.createShowtime(showtimeCollection, newShowtime, new ManagerShowtimeService.ShowtimeCallback() {

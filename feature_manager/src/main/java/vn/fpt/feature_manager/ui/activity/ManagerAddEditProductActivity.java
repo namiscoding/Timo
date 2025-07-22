@@ -1,6 +1,7 @@
 package vn.fpt.feature_manager.ui.activity;
 
 import android.os.Bundle;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +16,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import vn.fpt.core.models.Product;
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.viewmodel.ManagerProductViewModel;
 
@@ -46,7 +48,7 @@ public class ManagerAddEditProductActivity extends AppCompatActivity {
         }
 
         productViewModel = new ViewModelProvider(this).get(ManagerProductViewModel.class);
-        productViewModel.init(cinemaId);
+        productViewModel.init(cinemaId); // Khởi tạo ViewModel với cinemaId
 
         initViews();
         setupToolbar();
@@ -91,6 +93,12 @@ public class ManagerAddEditProductActivity extends AppCompatActivity {
         productViewModel.getErrorMessage().observe(this, errorMessage -> {
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + errorMessage, Toast.LENGTH_LONG).show();
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.UPDATE,
+                        AuditLogger.TargetTypes.SYSTEM,
+                        "Lỗi khi " + (productIdToEdit != null ? "cập nhật" : "thêm") + " dịch vụ",
+                        errorMessage
+                );
             }
         });
 
@@ -150,10 +158,30 @@ public class ManagerAddEditProductActivity extends AppCompatActivity {
         product.setImageUrl(imageUrl);
         product.setAvailable(isAvailable);
 
+        String action = (productIdToEdit != null) ? AuditLogger.Actions.UPDATE : AuditLogger.Actions.CREATE;
+        String description = (productIdToEdit != null ? "Cập nhật dịch vụ: " : "Thêm dịch vụ mới: ") + name;
+
         if (productIdToEdit != null && !productIdToEdit.isEmpty()) {
             product.setId(productIdToEdit); // Giữ nguyên ID khi cập nhật
-            productViewModel.updateProduct(product);
+            // Lấy dữ liệu cũ trước khi cập nhật và log
+            productViewModel.getProductById(productIdToEdit).observe(this, oldProduct -> {
+                AuditLogger.getInstance().logDataChange(
+                    AuditLogger.Actions.UPDATE,
+                    AuditLogger.TargetTypes.SYSTEM,
+                    productIdToEdit,
+                    description,
+                    oldProduct,
+                    product
+                );
+                productViewModel.updateProduct(product);
+            });
         } else {
+            AuditLogger.getInstance().log(
+                action,
+                AuditLogger.TargetTypes.SYSTEM,
+                description,
+                true
+            );
             productViewModel.addProduct(product);
         }
     }

@@ -45,4 +45,17 @@ public class User {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
+    public User(User other) {
+        this.id = other.id;
+        this.email = other.email;
+        this.displayName = other.displayName;
+        this.photoUrl = other.photoUrl;
+        this.role = other.role;
+        this.loyaltyPoints = other.loyaltyPoints;
+        this.assignedCinemaId = other.assignedCinemaId;
+        this.isActive = other.isActive;
+        this.password = other.password;
+        this.createdAt = other.createdAt;
+    }
+
 }
