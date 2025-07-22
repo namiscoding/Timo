@@ -220,11 +220,27 @@ public class ManagerAddEditRoomActivity extends AppCompatActivity {
             // Lấy dữ liệu cũ trước khi cập nhật và log
             roomViewModel.getRoomById(roomIdToEdit).observe(this, result -> {
                 ScreeningRoom oldRoom = result.room;
+                // So sánh và tạo mô tả chi tiết thay đổi
+                StringBuilder detail = new StringBuilder("Cập nhật phòng chiếu: " + name);
+                if (oldRoom != null) {
+                    if (!oldRoom.getName().equals(room.getName())) {
+                        detail.append(" | Tên: ").append(oldRoom.getName()).append(" -> ").append(room.getName());
+                    }
+                    if (!oldRoom.getType().equals(room.getType())) {
+                        detail.append(" | Loại: ").append(oldRoom.getType()).append(" -> ").append(room.getType());
+                    }
+                    if (oldRoom.getRows() != room.getRows()) {
+                        detail.append(" | Số hàng: ").append(oldRoom.getRows()).append(" -> ").append(room.getRows());
+                    }
+                    if (oldRoom.getColumns() != room.getColumns()) {
+                        detail.append(" | Số cột: ").append(oldRoom.getColumns()).append(" -> ").append(room.getColumns());
+                    }
+                }
                 AuditLogger.getInstance().logDataChange(
                     AuditLogger.Actions.UPDATE,
                     AuditLogger.TargetTypes.CINEMA,
                     roomIdToEdit,
-                    description,
+                    detail.toString(),
                     oldRoom,
                     room
                 );

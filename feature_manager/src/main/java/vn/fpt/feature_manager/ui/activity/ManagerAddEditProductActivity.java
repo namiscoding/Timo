@@ -165,11 +165,27 @@ public class ManagerAddEditProductActivity extends AppCompatActivity {
             product.setId(productIdToEdit); // Giữ nguyên ID khi cập nhật
             // Lấy dữ liệu cũ trước khi cập nhật và log
             productViewModel.getProductById(productIdToEdit).observe(this, oldProduct -> {
+                // So sánh và tạo mô tả chi tiết thay đổi
+                StringBuilder detail = new StringBuilder("Cập nhật dịch vụ: " + name);
+                if (oldProduct != null) {
+                    if (!oldProduct.getName().equals(product.getName())) {
+                        detail.append(" | Tên: ").append(oldProduct.getName()).append(" -> ").append(product.getName());
+                    }
+                    if (oldProduct.getPrice() != product.getPrice()) {
+                        detail.append(" | Giá: ").append(oldProduct.getPrice()).append(" -> ").append(product.getPrice());
+                    }
+                    if (oldProduct.getImageUrl() != null && !oldProduct.getImageUrl().equals(product.getImageUrl())) {
+                        detail.append(" | Ảnh: ").append(oldProduct.getImageUrl()).append(" -> ").append(product.getImageUrl());
+                    }
+                    if (oldProduct.isAvailable() != product.isAvailable()) {
+                        detail.append(" | Trạng thái: ").append(oldProduct.isAvailable() ? "CÓ SẴN" : "HẾT HÀNG").append(" -> ").append(product.isAvailable() ? "CÓ SẴN" : "HẾT HÀNG");
+                    }
+                }
                 AuditLogger.getInstance().logDataChange(
                     AuditLogger.Actions.UPDATE,
                     AuditLogger.TargetTypes.SYSTEM,
                     productIdToEdit,
-                    description,
+                    detail.toString(),
                     oldProduct,
                     product
                 );
