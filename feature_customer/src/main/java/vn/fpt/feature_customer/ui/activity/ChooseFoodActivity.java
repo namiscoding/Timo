@@ -35,8 +35,17 @@ import vn.fpt.feature_customer.R;
 import vn.fpt.feature_customer.data.firestore_services.CustomerBookingService;
 import vn.fpt.feature_customer.data.firestore_services.CustomerProductService;
 import vn.fpt.feature_customer.data.firestore_services.CustomerShowtimeService;
+import vn.fpt.feature_customer.services.ReminderBroadcastReceiver;
 import vn.fpt.feature_customer.ui.adapter.FoodAdapter;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import com.google.firebase.Timestamp; // Sử dụng Timestamp của Firebase
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 public class ChooseFoodActivity extends AppCompatActivity {
     private ImageView backButton, filmPoster;
     private TextView selectedSeatsInfo, filmTitle, showtimeCinemaName, showtimeDateTime;
@@ -83,17 +92,14 @@ public class ChooseFoodActivity extends AppCompatActivity {
             purchasedProduct.setName(product.getName());
             purchasedProduct.setPriceAtPurchase(product.getPrice());
             selectedProductItems.add(purchasedProduct);
-
         }
 
         ShowtimeInfo showtimeInfo = new ShowtimeInfo();
         showtimeInfo.setCinemaName(currentShowtime.getCinemaName());
         showtimeInfo.setFilmTitle(currentShowtime.getFilmTitle());
         showtimeInfo.setScreeningRoomName(currentShowtime.getScreeningRoomName());
-        LocalDateTime localDateTime = LocalDate.now().atStartOfDay();
-        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        Timestamp timestamp = new Timestamp(date);
-        showtimeInfo.setShowTime(timestamp);
+        showtimeInfo.setShowTime(currentShowtime.getShowTime()); // Lấy thời gian đúng từ currentShowtime
+
         List<Ticket> ticketList = new ArrayList<>();
         for (Seat seat : selectedSeats) {
             Ticket ticket = new Ticket();
@@ -103,7 +109,32 @@ public class ChooseFoodActivity extends AppCompatActivity {
             ticket.setPrice(currentShowtime.getPricePerSeat());
             ticketList.add(ticket);
         }
-        CustomerBookingService.insertBooking(selectedProductItems,ticketList,showtimeInfo,currentShowtime);
+
+        // Gọi hàm insertBooking và xử lý kết quả trả về
+        CustomerBookingService.insertBooking(selectedProductItems, ticketList, showtimeInfo, currentShowtime)
+                .thenAccept(newBookingId -> {
+                    // Chỉ khi booking thành công và nhận được ID, chúng ta mới đặt lịch
+                    Log.d("PROCESS", "Booking successful with ID: " + newBookingId);
+
+                    // Bây giờ bạn đã có newBookingId thực sự
+                    String filmTitle = currentShowtime.getFilmTitle();
+                    Timestamp showTime = currentShowtime.getShowTime();
+
+                    // Chạy trên Main Thread nếu có tương tác UI
+                    runOnUiThread(() -> {
+                        scheduleReminder(getApplicationContext(), newBookingId, filmTitle, showTime);
+                        Toast.makeText(this, "Đặt vé thành công!", Toast.LENGTH_SHORT).show();
+                        // Chuyển sang màn hình khác hoặc cập nhật UI
+                    });
+                })
+                .exceptionally(e -> {
+                    // Xử lý khi có lỗi xảy ra
+                    runOnUiThread(() -> {
+                        Log.e("PROCESS", "Booking failed", e);
+                        Toast.makeText(this, "Đặt vé thất bại, vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                    });
+                    return null;
+                });
     }
 
     private void mapViews() {
@@ -210,5 +241,37 @@ public class ChooseFoodActivity extends AppCompatActivity {
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm - dd/MM/yyyy");
         sdf.setTimeZone(java.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         return sdf.format(timestamp.toDate());
+    }
+
+    public static void scheduleReminder(Context context, String bookingId, String filmTitle, Timestamp showTime) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
+        intent.putExtra(ReminderBroadcastReceiver.EXTRA_FILM_TITLE, filmTitle);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        intent.putExtra(ReminderBroadcastReceiver.EXTRA_SHOW_TIME, sdf.format(showTime.toDate()));
+
+        int notificationId = bookingId.hashCode();
+        intent.putExtra(ReminderBroadcastReceiver.EXTRA_NOTIFICATION_ID, notificationId);
+
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context,
+                notificationId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(showTime.toDate());
+        calendar.add(Calendar.MINUTE, -60); // Nhắc trước 60 phút
+        //long reminderTimeInMillis = calendar.getTimeInMillis();
+        long reminderTimeInMillis = System.currentTimeMillis() + 5000;
+
+
+        if (alarmManager != null) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderTimeInMillis, pendingIntent);
+        }
     }
 }
