@@ -124,13 +124,16 @@ public class CustomerFilmService {
         CompletableFuture<List<Review>> future = new CompletableFuture<>();
         // Truy cập filmsRef là biến thành viên đã được khởi tạo
         filmsRef.document(filmId).collection("reviews")
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<Review> reviews = new ArrayList<>();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Review review = document.toObject(Review.class);
+                            review.setId(document.getId());
+                            review.setComment(document.getString("comment"));
+                            review.setStars(document.getDouble("stars"));
+                            review.setUserDisplayName(document.getString("userDisplayName"));
                             reviews.add(review);
                         }
                         future.complete(reviews);
