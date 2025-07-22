@@ -35,16 +35,15 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_seat_map_manager); // Sử dụng layout của bạn
+        setContentView(R.layout.activity_seat_map_manager);
 
-        // Lấy dữ liệu được truyền từ RoomManagementActivity
         cinemaId = getIntent().getStringExtra("cinemaId");
         roomId = getIntent().getStringExtra("roomId");
         roomName = getIntent().getStringExtra("roomName");
-        columns = getIntent().getIntExtra("columns", 10); // Lấy số cột, mặc định 10 nếu không có
-        int rows = getIntent().getIntExtra("rows", 10); // Lấy số hàng
+        columns = getIntent().getIntExtra("columns", 10);
+        int rows = getIntent().getIntExtra("rows", 10);
 
-        // Khởi tạo ViewModel và bắt đầu tải dữ liệu
+
         viewModel = new ViewModelProvider(this).get(ManagerSeatViewModel.class);
         viewModel.init(cinemaId, roomId, rows, columns);
 
@@ -57,7 +56,6 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
 
     private void initViews() {
         toolbar = findViewById(R.id.toolbar);
-        // Dùng đúng ID từ layout của bạn
         rvSeats = findViewById(R.id.recyclerViewSeats);
         progressBar = findViewById(R.id.progressBarSeats);
         tvNoSeats = findViewById(R.id.tvNoSeats);
@@ -76,7 +74,6 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
     }
 
     private void setupRecyclerView() {
-        // Khởi tạo Adapter và truyền vào this (Activity) vì nó đã implement OnSeatActionListener
         adapter = new ManagerSeatAdapter(this, this);
 
         // QUAN TRỌNG: Dùng GridLayoutManager với số cột lấy từ Intent
