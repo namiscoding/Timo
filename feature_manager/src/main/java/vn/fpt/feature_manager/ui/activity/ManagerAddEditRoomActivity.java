@@ -19,8 +19,9 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Arrays;
 import java.util.List;
 
-import vn.fpt.feature_manager.R;
 import vn.fpt.core.models.ScreeningRoom;
+import vn.fpt.core.models.service.AuditLogger;
+import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.viewmodel.ManagerRoomViewModel;
 
 public class ManagerAddEditRoomActivity extends AppCompatActivity {
@@ -125,6 +126,12 @@ public class ManagerAddEditRoomActivity extends AppCompatActivity {
         roomViewModel.getErrorMessage().observe(this, errorMessage -> {
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + errorMessage, Toast.LENGTH_LONG).show();
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.UPDATE,
+                        AuditLogger.TargetTypes.CINEMA,
+                        "Lỗi khi " + (roomIdToEdit != null ? "cập nhật" : "thêm") + " phòng chiếu",
+                        errorMessage
+                );
             }
         });
 
@@ -199,17 +206,53 @@ public class ManagerAddEditRoomActivity extends AppCompatActivity {
             return;
         }
 
-
         ScreeningRoom room = new ScreeningRoom();
         room.setName(name);
         room.setType(type);
         room.setRows(rows);
         room.setColumns(columns);
 
+        String action = (roomIdToEdit != null) ? AuditLogger.Actions.UPDATE : AuditLogger.Actions.CREATE;
+        String description = (roomIdToEdit != null ? "Cập nhật phòng chiếu: " : "Thêm phòng chiếu mới: ") + name;
+
         if (roomIdToEdit != null && !roomIdToEdit.isEmpty()) {
             room.setId(roomIdToEdit);
-            roomViewModel.updateScreeningRoom(room);
+            // Lấy dữ liệu cũ trước khi cập nhật và log
+            roomViewModel.getRoomById(roomIdToEdit).observe(this, result -> {
+                ScreeningRoom oldRoom = result.room;
+                // So sánh và tạo mô tả chi tiết thay đổi
+                StringBuilder detail = new StringBuilder("Cập nhật phòng chiếu: " + name);
+                if (oldRoom != null) {
+                    if (!oldRoom.getName().equals(room.getName())) {
+                        detail.append(" | Tên: ").append(oldRoom.getName()).append(" -> ").append(room.getName());
+                    }
+                    if (!oldRoom.getType().equals(room.getType())) {
+                        detail.append(" | Loại: ").append(oldRoom.getType()).append(" -> ").append(room.getType());
+                    }
+                    if (oldRoom.getRows() != room.getRows()) {
+                        detail.append(" | Số hàng: ").append(oldRoom.getRows()).append(" -> ").append(room.getRows());
+                    }
+                    if (oldRoom.getColumns() != room.getColumns()) {
+                        detail.append(" | Số cột: ").append(oldRoom.getColumns()).append(" -> ").append(room.getColumns());
+                    }
+                }
+                AuditLogger.getInstance().logDataChange(
+                    AuditLogger.Actions.UPDATE,
+                    AuditLogger.TargetTypes.CINEMA,
+                    roomIdToEdit,
+                    detail.toString(),
+                    oldRoom,
+                    room
+                );
+                roomViewModel.updateScreeningRoom(room);
+            });
         } else {
+            AuditLogger.getInstance().log(
+                action,
+                AuditLogger.TargetTypes.CINEMA,
+                description,
+                true
+            );
             roomViewModel.addScreeningRoom(room);
         }
     }

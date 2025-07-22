@@ -3,18 +3,11 @@ package vn.fpt.timo;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import com.google.firebase.appcheck.interop.BuildConfig;
 
 import vn.fpt.feature_admin.ui.activity.AdminDashboardActivity;
-import vn.fpt.feature_auth.ui.activity.AllLoginActivity;
+import vn.fpt.feature_auth.ui.activity.AllLoginGGActivity;
 import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
-import vn.fpt.feature_manager.TestActivity;
 import vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,10 +22,10 @@ public class MainActivity extends AppCompatActivity {
     private void handleModuleActivities() {
         Intent intent = null;
         //anh em chỉnh module ở đây
-        String module = "customer";
+        String module = "auth";
         switch (module) {
             case "auth":
-                intent = new Intent(this, AllLoginActivity.class);
+                intent = new Intent(this, AllLoginGGActivity.class);
                 break;
             case "admin":
                 intent = new Intent(this, AdminDashboardActivity.class);

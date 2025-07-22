@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import vn.fpt.core.models.*;
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.viewmodel.ManagerCreateShowtimeViewModel;
 import vn.fpt.feature_manager.ui.adapter.ManagerDailyScheduleAdapter;
@@ -74,6 +75,13 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
         if (filmId != null && cinemaId != null) {
             viewModel.loadInitialData(filmId, cinemaId);
         }
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.SHOWTIME,
+                "Manager truy cập tạo suất chiếu cho phim " + filmId,
+                true
+        );
     }
 
     private void initViews() {
@@ -100,6 +108,12 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
         viewModel.error.observe(this, error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.SHOWTIME,
+                        "Lỗi khi tải dữ liệu tạo suất chiếu",
+                        error
+                );
             }
         });
 
@@ -192,6 +206,13 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
     private void fetchScheduleForSelectedDate() {
         if (selectedRoom != null) {
             viewModel.fetchSchedule(selectedRoom.getId(), selectedDateTime.getTime());
+
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.VIEW,
+                    AuditLogger.TargetTypes.SHOWTIME,
+                    "Manager xem lịch chiếu ngày " + dateFormat.format(selectedDateTime.getTime()) + " cho phòng " + selectedRoom.getName(),
+                    true
+            );
         } else {
             // Không có phòng được chọn, không tải lịch
             scheduleAdapter.setShowtimes(new ArrayList<>());
@@ -290,6 +311,13 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
         newShowtime.setPricePerSeat(price);
         newShowtime.setStatus("open_for_booking"); // Trạng thái mặc định
         newShowtime.setSeatsAvailable(selectedRoom.getTotalSeats()); // Tổng số ghế của phòng
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.CREATE,
+                AuditLogger.TargetTypes.SHOWTIME,
+                "Manager tạo suất chiếu mới cho phim " + selectedFilm.getTitle() + " lúc " + timeFormat.format(selectedDateTime.getTime()),
+                true
+        );
 
         viewModel.saveShowtime(newShowtime);
     }

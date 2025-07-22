@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vn.fpt.core.models.Product;
+import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_manager.R;
 import vn.fpt.feature_manager.ui.adapter.ManagerProductAdapter;
 import vn.fpt.feature_manager.viewmodel.ManagerProductViewModel;
@@ -68,8 +69,23 @@ public class ManagerProductManagementActivity extends AppCompatActivity implemen
         fabAddProduct.setOnClickListener(v -> {
             Intent intent = new Intent(ManagerProductManagementActivity.this, ManagerAddEditProductActivity.class);
             intent.putExtra("cinemaId", cinemaId); // Truyền cinemaId khi thêm sản phẩm mới
+
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.VIEW,
+                    AuditLogger.TargetTypes.SYSTEM,
+                    "Manager truy cập thêm dịch vụ mới",
+                    true
+            );
+
             startActivity(intent);
         });
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.SYSTEM,
+                "Manager truy cập quản lý dịch vụ",
+                true
+        );
     }
 
     private void initViews() {
@@ -119,6 +135,12 @@ public class ManagerProductManagementActivity extends AppCompatActivity implemen
         productViewModel.getErrorMessage().observe(this, errorMessage -> {
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 Toast.makeText(this, "Lỗi: " + errorMessage, Toast.LENGTH_LONG).show();
+                AuditLogger.getInstance().logError(
+                        AuditLogger.Actions.VIEW,
+                        AuditLogger.TargetTypes.SYSTEM,
+                        "Lỗi khi tải danh sách dịch vụ cho manager",
+                        errorMessage
+                );
             }
         });
 
@@ -157,6 +179,14 @@ public class ManagerProductManagementActivity extends AppCompatActivity implemen
         intent.putExtra("productPrice", product.getPrice());
         intent.putExtra("productImageUrl", product.getImageUrl());
         intent.putExtra("productIsAvailable", product.isAvailable());
+
+        AuditLogger.getInstance().log(
+                AuditLogger.Actions.VIEW,
+                AuditLogger.TargetTypes.SYSTEM,
+                "Managertruy cập sửa dịch vụ: " + product.getName(),
+                true
+        );
+
         startActivity(intent);
     }
 
@@ -165,7 +195,16 @@ public class ManagerProductManagementActivity extends AppCompatActivity implemen
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận xóa dịch vụ")
                 .setMessage("Bạn có chắc chắn muốn xóa dịch vụ '" + product.getName() + "' không?")
-                .setPositiveButton("Xóa", (dialog, which) -> productViewModel.deleteProduct(product.getId()))
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    AuditLogger.getInstance().log(
+                            AuditLogger.Actions.DELETE,
+                            AuditLogger.TargetTypes.SYSTEM,
+                            "Manager xóa dịch vụ: " + product.getName(),
+                            true
+                    );
+
+                    productViewModel.deleteProduct(product.getId());
+                })
                 .setNegativeButton("Hủy", null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
