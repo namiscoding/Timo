@@ -39,6 +39,7 @@ dependencies {
     implementation libs.firebase.firestore
     implementation project(':feature_admin')
     implementation project(':feature_manager')
+    implementation libs.google.firebase.storage
     // Giữ lại phần này từ nhánh feature/admin-manage-audit-log
     // KHÔNG thêm feature_customer, KHÔNG thêm firebase.storage
     testImplementation libs.junit

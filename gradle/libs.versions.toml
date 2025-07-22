@@ -19,7 +19,8 @@ googleid = "1.1.1"
 
 androidxAnnotation = "1.7.1" # TruongLan add
 lifecycle = "2.8.3"
-firebaseStorage = "21.0.2" # TruongLan add
+firebaseStorage = "21.0.2"
+firebaseStorageVersion = "22.0.0" # TruongLan add
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -41,7 +42,8 @@ googleid = { group = "com.google.android.libraries.identity.googleid", name = "g
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidxAnnotation" } #TruongLan add
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" } #TruongLan add
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" } #TruongLan add
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+google-firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorageVersion" } #TruongLan add
 
 
 [plugins]
