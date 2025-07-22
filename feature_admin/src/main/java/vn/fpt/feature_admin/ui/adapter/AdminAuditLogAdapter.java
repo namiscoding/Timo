@@ -132,7 +132,8 @@ public class AdminAuditLogAdapter extends RecyclerView.Adapter<AdminAuditLogAdap
 
         String cinemaId = user.getAssignedCinemaId();
         String cinemaName = cinemaMap.get(cinemaId);
-        userMap.put("assignedCinemaName", cinemaName != null ? cinemaName : cinemaId);
+        userMap.put("assignedCinema", cinemaName != null ? cinemaName : "(Không có)");
+        // Không show assignedCinemaId nữa!
 
         return gson.toJson(userMap);
     }
