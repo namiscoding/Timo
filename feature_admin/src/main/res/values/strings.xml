@@ -5,4 +5,26 @@
         <item>Ngừng chiếu</item>
         <item>Sắp chiếu</item>
     </string-array>
+
+<!--TruongNLan add-->
+    <item name="progressBar" type="id" />
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+
+
+    <string name="dive_in_description">Let\'s dive in into your account!</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="sign_in_with_password">Sign in with password</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="sign_up_link">Sign up</string>
+
+    <string name="default_web_client_id" translatable="false">578858925245-ji29tijtvdktgesfb7n9ivl6qu8lp2st.apps.googleusercontent.com</string>
+    <string name="title_activity_auth_options">AllLoginGGActivity</string>
 </resources>

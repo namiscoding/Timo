@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp; // Now only used for conversion from/to Date
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -260,5 +261,72 @@ public class CustomerShowtimeService {
 
         return futureShowtimes;
     }
+    public CompletableFuture<Showtime> getShowtimeWithId(String showtimeId) {
+        CompletableFuture<Showtime> future = new CompletableFuture<>();
 
+        if (showtimeId == null || showtimeId.isEmpty()) {
+            Log.e(TAG, "Invalid showtimeId: " + showtimeId);
+            future.complete(null);
+            return future;
+        }
+
+        db.collection("showtimes")
+                .document(showtimeId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        if (documentSnapshot != null && documentSnapshot.exists()) {
+                            try {
+                                Showtime showtime = documentSnapshot.toObject(Showtime.class);
+                                if (showtime != null) {
+                                    showtime.setId(documentSnapshot.getId());
+
+                                    // Explicitly map fields to ensure consistency
+                                    showtime.setCinemaId(Objects.requireNonNullElse(documentSnapshot.getString("cinemaId"), ""));
+                                    showtime.setCinemaName(Objects.requireNonNullElse(documentSnapshot.getString("cinemaName"), ""));
+                                    showtime.setFilmId(Objects.requireNonNullElse(documentSnapshot.getString("filmId"), ""));
+                                    showtime.setFilmPosterUrl(Objects.requireNonNullElse(documentSnapshot.getString("filmPosterUrl"), ""));
+                                    showtime.setFilmTitle(Objects.requireNonNullElse(documentSnapshot.getString("filmTitle"), ""));
+                                    showtime.setScreeningRoomName(Objects.requireNonNullElse(documentSnapshot.getString("screeningRoomName"), ""));
+                                    showtime.setScreeningRoomId(Objects.requireNonNullElse(documentSnapshot.getString("screeningRoomId"), ""));
+                                    showtime.setStatus(Objects.requireNonNullElse(documentSnapshot.getString("status"), ""));
+                                    showtime.setSeatsAvailable(Objects.requireNonNullElse(documentSnapshot.getLong("seatsAvailable"), 0L));
+
+                                    // Price per seat handling
+                                    if (documentSnapshot.contains("pricePerSeat")) {
+                                        Object priceObj = documentSnapshot.get("pricePerSeat");
+                                        if (priceObj instanceof Long) {
+                                            showtime.setPricePerSeat(((Long) priceObj).doubleValue());
+                                        } else if (priceObj instanceof Double) {
+                                            showtime.setPricePerSeat((Double) priceObj);
+                                        } else {
+                                            showtime.setPricePerSeat(0.0);
+                                        }
+                                    } else {
+                                        showtime.setPricePerSeat(0.0);
+                                    }
+
+                                    future.complete(showtime);
+                                    Log.d(TAG, "Successfully fetched showtime with ID: " + showtimeId);
+                                } else {
+                                    Log.e(TAG, "Showtime object is null for ID: " + showtimeId);
+                                    future.complete(null);
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error mapping showtime document to Showtime for ID: " + showtimeId, e);
+                                future.complete(null);
+                            }
+                        } else {
+                            Log.d(TAG, "No showtime found with ID: " + showtimeId);
+                            future.complete(null);
+                        }
+                    } else {
+                        Log.e(TAG, "Error fetching showtime with ID: " + showtimeId, task.getException());
+                        future.completeExceptionally(task.getException());
+                    }
+                });
+
+        return future;
+    }
 }

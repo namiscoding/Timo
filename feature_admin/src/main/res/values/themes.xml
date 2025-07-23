@@ -4,6 +4,33 @@
     <style name="Base.Theme.Timo" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/background_dark</item>
         <!-- Add more base styles as needed -->
+
+        <!-- TruongNLan add -->
+        <item name="colorPrimary">@color/primary_red_orange</item>
+        <item name="colorPrimaryVariant">@color/primary_red_orange</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/red_accent</item>
+        <item name="colorSecondaryVariant">@color/red_accent</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/darker_gray</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="CustomAlertDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:background">@color/input_background_neutral</item>
+        <item name="android:textColorAlertDialogListItem">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="buttonBarPositiveButtonStyle">@style/CustomAlertDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/CustomAlertDialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/CustomAlertDialogButton</item>
+        <item name="android:textColorHint">@color/darker_gray</item>
+        <item name="editTextColor">@color/white</item>
+    </style>
+
+    <style name="CustomAlertDialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/primary_red_orange</item>
     </style>
 
     <!-- Default App Theme -->
@@ -11,4 +38,5 @@
         <!-- Customize your default theme here -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+
 </resources>

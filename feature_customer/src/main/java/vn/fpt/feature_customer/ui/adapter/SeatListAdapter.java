@@ -44,24 +44,39 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatVi
 
         // Cập nhật giao diện theo trạng thái ghế
         if (seat.isActive()) {
-            holder.tvSeat.setEnabled(false); // Không cho chọn khi active là true
-            holder.tvSeat.setBackgroundResource(R.drawable.seat_selected); // Màu xám cho ghế không khả dụng
+            holder.tvSeat.setEnabled(false);
+            holder.tvSeat.setBackgroundResource(R.drawable.seat_selected); // Ghế đã đặt
             holder.tvSeat.setTextColor(android.graphics.Color.GRAY);
         } else if (selectedSeats.contains(seat)) {
-            holder.tvSeat.setEnabled(true); // Cho phép tương tác khi active là false và đã chọn
-            holder.tvSeat.setSelected(true); // Ghế đã chọn
-            holder.tvSeat.setBackgroundResource(R.drawable.seat_unavailable); // Màu xanh lá cho ghế đã chọn
+            holder.tvSeat.setEnabled(true);
+            holder.tvSeat.setSelected(true);
+            holder.tvSeat.setBackgroundResource(R.drawable.ic_seat_selected); // Ghế đang chọn
             holder.tvSeat.setTextColor(android.graphics.Color.WHITE);
         } else {
-            holder.tvSeat.setEnabled(true); // Cho phép chọn khi active là false
-            holder.tvSeat.setSelected(false); // Ghế khả dụng
-            holder.tvSeat.setBackgroundResource(R.drawable.seat_available); // Màu trắng cho ghế khả dụng
+            holder.tvSeat.setEnabled(true);
+            holder.tvSeat.setSelected(false);
+            holder.tvSeat.setBackgroundResource(R.drawable.seat_available); // Ghế khả dụng
             holder.tvSeat.setTextColor(android.graphics.Color.BLACK);
         }
 
-        // Xử lý click vào ghế (chỉ cho phép khi isActive là false)
+        // Xử lý khi click vào ghế
         holder.tvSeat.setOnClickListener(v -> {
             if (!seat.isActive()) {
+                if (selectedSeats.contains(seat)) {
+                    // Bỏ chọn ghế
+                    selectedSeats.remove(seat);
+                    holder.tvSeat.setSelected(false);
+                    holder.tvSeat.setBackgroundResource(R.drawable.seat_available);
+                    holder.tvSeat.setTextColor(android.graphics.Color.BLACK);
+                } else {
+                    // Chọn ghế
+                    selectedSeats.add(seat);
+                    holder.tvSeat.setSelected(true);
+                    holder.tvSeat.setBackgroundResource(R.drawable.ic_seat_selected);
+                    holder.tvSeat.setTextColor(android.graphics.Color.WHITE);
+                }
+
+                // Gọi callback nếu cần xử lý logic khác
                 listener.onSeatClick(seat, position);
             }
         });

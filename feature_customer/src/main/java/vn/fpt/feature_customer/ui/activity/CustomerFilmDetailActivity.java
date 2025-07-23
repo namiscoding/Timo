@@ -12,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -27,6 +29,7 @@ import java.util.Locale;
 
 import vn.fpt.feature_customer.R;
 import vn.fpt.feature_customer.data.firestore_services.CustomerFilmService;
+import vn.fpt.feature_customer.ui.adapter.CustomerReviewAdapter;
 import vn.fpt.feature_customer.ui.adapter.StringListAdapter;
 
 public class CustomerFilmDetailActivity extends AppCompatActivity {
@@ -45,7 +48,10 @@ public class CustomerFilmDetailActivity extends AppCompatActivity {
     private NestedScrollView scrollView;
     private CustomerFilmService filmService;
     private ProgressBar progressBarDetail; // Corrected name to match XML
-
+    private Button btn_write_review;
+    private RecyclerView rv_reviews;
+    private CustomerReviewAdapter reviewAdapter;
+    private ActivityResultLauncher<Intent> writeReviewLauncher;
     private static final String TAG = "FilmDetailActivity";
 
     @Override
@@ -101,10 +107,33 @@ public class CustomerFilmDetailActivity extends AppCompatActivity {
         // Retrieve filmId directly from the Intent
         filmId = getIntent().getStringExtra("filmId");
 
+        btn_write_review = findViewById(R.id.btn_write_review);
+        rv_reviews = findViewById(R.id.rv_reviews);
+
+        // Setup RecyclerView cho reviews
+        rv_reviews.setLayoutManager(new LinearLayoutManager(this));
+        reviewAdapter = new CustomerReviewAdapter(new ArrayList<>());
+        rv_reviews.setAdapter(reviewAdapter);
+
+        // Launcher để xử lý kết quả trả về từ WriteReviewActivity
+        writeReviewLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        // Nếu người dùng gửi review thành công, tải lại danh sách review
+                        loadReviews();
+                    }
+                });
+
+        btn_write_review.setOnClickListener(v -> {
+            Intent intent = new Intent(CustomerFilmDetailActivity.this, CustomerWriteReviewActivity.class);
+            intent.putExtra("filmId", filmId);
+            writeReviewLauncher.launch(intent);
+        });
         // Check if filmId is available and load details
         if (filmId != null) {
             loadFilmDetails(filmId);
-
+            checkUserStatusAndLoadReviews();
         } else {
             Toast.makeText(this, "Không có ID phim được cung cấp!", Toast.LENGTH_SHORT).show();
             finish();
@@ -149,7 +178,7 @@ public class CustomerFilmDetailActivity extends AppCompatActivity {
                             } else {
                                 castAdapter.updateList(new ArrayList<>());
                             }
-                            if (film.getStatus().equalsIgnoreCase("coming_soon")) {
+                            if (film.getStatus().equalsIgnoreCase("Sắp chiếu")) {
 
                                 buyTicketBtn.setVisibility(View.GONE);
                             }
@@ -211,6 +240,49 @@ public class CustomerFilmDetailActivity extends AppCompatActivity {
         intenTextview6.putExtra("filmId", filmId); // Truyền filmId sang Activity mới
 
         startActivity(intenTextview6); // Khởi chạy Activity
+    }
+    private void checkUserStatusAndLoadReviews() {
+//        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+//        if (currentUser != null) {
+//
+//            filmService.checkIfUserHasBookedFilm(currentUser.getUid(), filmId)
+//                    .thenAccept(hasBooked -> {
+//                        runOnUiThread(() -> {
+//                            if (hasBooked) {
+//                                btn_write_review.setVisibility(View.VISIBLE);
+//                            } else {
+//                                btn_write_review.setVisibility(View.GONE);
+//                            }
+//                        });
+//                    });
+//        }
+        //FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        //if (currentUser != null) {
+
+            filmService.checkIfUserHasBookedFilm("2LVE2K6W66vj5IFU5DGM", filmId)
+                    .thenAccept(hasBooked -> {
+                        runOnUiThread(() -> {
+                            if (hasBooked) {
+                                btn_write_review.setVisibility(View.VISIBLE);
+                            } else {
+                                btn_write_review.setVisibility(View.GONE);
+                            }
+                        });
+                    });
+        //}
+        loadReviews();
+    }
+
+    private void loadReviews() {
+        filmService.getReviewsForFilm(filmId).thenAccept(reviews -> {
+            runOnUiThread(() -> {
+                reviewAdapter.updateReviews(reviews);
+
+            });
+        }).exceptionally(e -> {
+            // Xử lý lỗi
+            return null;
+        });
     }
 
 }

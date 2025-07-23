@@ -2,10 +2,12 @@ package vn.fpt.core.models;
 
 import com.google.firebase.firestore.DocumentId;
 
+import java.io.Serializable;
+
 /**
  * Model cho sub-collection: /cinemas/{cinemaId}/screening_rooms/{roomId}/seats
  */
-public class Seat {
+public class Seat implements Serializable {
     @DocumentId
     private String id;
 

@@ -76,7 +76,7 @@ public class CustomerFindAllActivity extends AppCompatActivity {
                         hideLoadingState();
                         // Filter for "Screening" status to get "Now Playing" films
                         List<Film> nowPlayingFilms = films.stream()
-                                .filter(film -> "Screening".equalsIgnoreCase(film.getStatus()))
+                                .filter(film -> "Đang chiếu".equalsIgnoreCase(film.getStatus()))
                                 .collect(Collectors.toList());
 
                         filmAdapter.updateMovies(nowPlayingFilms);

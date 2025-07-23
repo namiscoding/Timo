@@ -3,13 +3,7 @@ package vn.fpt.timo;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import com.google.firebase.appcheck.interop.BuildConfig;
 
 import vn.fpt.feature_admin.ui.activity.AdminDashboardActivity;
 import vn.fpt.feature_auth.ui.activity.AllLoginGGActivity;

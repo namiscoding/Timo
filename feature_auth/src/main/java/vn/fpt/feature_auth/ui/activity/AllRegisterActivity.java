@@ -31,7 +31,7 @@ public class AllRegisterActivity extends AppCompatActivity {
 
     private AuthenticationViewModel authViewModel;
 
-    private static final String MSG_EMAIL_VERIFIED_AND_REGISTERED = "An account with this email is already registered and verified. Please login.";
+    private static final String MSG_EMAIL_VERIFIED_AND_REGISTERED = "Tài khoản với email này đã được đăng ký và xác minh. Vui lòng đăng nhập.";
 
 
     @Override
@@ -74,7 +74,7 @@ public class AllRegisterActivity extends AppCompatActivity {
             String confirmPassword = edtConfirmPassword.getText().toString().trim();
 
             if (!cbTerms.isChecked()) {
-                Toast.makeText(AllRegisterActivity.this, "Please agree to the Terms & Conditions", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AllRegisterActivity.this, "Vui lòng đồng ý với các Điều khoản & Điều kiện", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -119,11 +119,8 @@ public class AllRegisterActivity extends AppCompatActivity {
         authViewModel.getEmailVerificationSentLiveData().observe(this, emailSent -> {
         });
 
-
         authViewModel.getEmailVerifiedSuccessfullyLiveData().observe(this, verified -> {
-
         });
-
 
         authViewModel.getFirebaseUserLiveData().observe(this, firebaseUser -> {
             if (firebaseUser != null && firebaseUser.isEmailVerified()) {
@@ -132,8 +129,6 @@ public class AllRegisterActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
     @Override
     protected void onResume() {

@@ -2,8 +2,10 @@ package vn.fpt.feature_customer.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Parcelable;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,7 +16,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;
 
@@ -22,12 +23,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import vn.fpt.core.models.ScreeningRoom;
 import vn.fpt.core.models.Showtime;
 import vn.fpt.core.models.Seat;
 import vn.fpt.feature_customer.R;
@@ -59,8 +58,8 @@ public class SeatListActivity extends AppCompatActivity {
     private SeatListAdapter seatAdapter;
 
     private Date selectedDate;
-    private Showtime selectedTime;
-    private List<Seat> selectedSeats;
+    private Showtime selectedTime = new Showtime();
+    private ArrayList<Seat> selectedSeats = new ArrayList<>(); // Changed to ArrayList<Seat>
 
     private CustomerShowtimeService customerShowtimeService;
     private CustomerSeatService customerSeatService;
@@ -68,7 +67,7 @@ public class SeatListActivity extends AppCompatActivity {
 
     private double currentTotalPrice = 0.0;
     private int currentSelectedSeatsCount = 0;
-    private int currentColumns = 10; // Giá trị mặc định nếu không lấy được ScreeningRoom
+    private int currentColumns = 10;
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @Override
@@ -91,9 +90,7 @@ public class SeatListActivity extends AppCompatActivity {
         selectedSeats = new ArrayList<>();
 
         setupSeatRecyclerView();
-
         getIntentExtra();
-
         backBtn.setOnClickListener(v -> finish());
         setupDateRecyclerView();
         setupTimeRecyclerView();
@@ -174,28 +171,30 @@ public class SeatListActivity extends AppCompatActivity {
 
     private void setupDownloadTicketButton() {
         downloadTicketButton.setOnClickListener(v -> {
+            // Kiểm tra điều kiện đầu vào
             if (selectedDate == null) {
-                Toast.makeText(this, "Vui lòng chọn ngày chiếu.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Vui lòng chọn ngày chiếu.", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             if (selectedTime == null) {
-                Toast.makeText(this, "Vui lòng chọn suất chiếu.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Vui lòng chọn suất chiếu.", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (selectedSeats.isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn ít nhất một ghế.", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            StringBuilder selectedSeatsText = new StringBuilder();
-            for (Seat seat : selectedSeats) {
-                selectedSeatsText.append(seat.getRow()).append(seat.getCol()).append(", ");
-            }
-            selectedSeatsText.setLength(selectedSeatsText.length() - 2);
-
-            Toast.makeText(this, "Đã chọn ghế: " + selectedSeatsText.toString(), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, ChooseFoodActivity.class);
+            intent.putExtra("filmId", filmId);
+            intent.putExtra("cinemaId", cinemaId);
+            intent.putExtra("selectedShowtime",selectedTime.getId());
+            Log.d(TAG, "selectedTime before putExtra: " + (selectedTime != null ? selectedTime.getFilmTitle() : "NULL"));
+            intent.putExtra("selectedSeats", selectedSeats);
+            startActivity(intent);
         });
     }
+
 
     private void fetchShowtimesForSelectedDate() {
         if (selectedDate == null || filmId == null || cinemaId == null) {
