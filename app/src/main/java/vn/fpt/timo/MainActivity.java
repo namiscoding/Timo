@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private void handleModuleActivities() {
         Intent intent = null;
         //anh em chỉnh module ở đây
-        String module = "auth";
+        String module = "customer";
         switch (module) {
             case "auth":
                 intent = new Intent(this, AllLoginGGActivity.class);

@@ -17,8 +17,8 @@ import vn.fpt.core.models.service.AuditLogger;
 import vn.fpt.feature_admin.ui.activity.AdminDashboardActivity;
 import vn.fpt.feature_auth.R;
 import vn.fpt.feature_auth.viewmodel.AuthenticationViewModel;
-import vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity;;
-import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
+import vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity;
+//import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
 
 public class AllLoginActivity extends AppCompatActivity {
 

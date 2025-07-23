@@ -25,6 +25,7 @@ import android.widget.PopupWindow; // Có thể xóa nếu không dùng popup n�
 import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
 import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
+//import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
 
 import android.Manifest;
 import android.app.Activity;

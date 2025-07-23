@@ -153,9 +153,9 @@ public class CustomerHomeScreenActivity extends AppCompatActivity {
                     Intent intent = new Intent(CustomerHomeScreenActivity.this, CustomerViewTicket.class);
                     startActivity(intent);
                     return true;
-                } else if (id == R.id.profile) {
-                    Toast.makeText(CustomerHomeScreenActivity.this, "Profile Selected", Toast.LENGTH_SHORT).show();
-                    return true;
+                } else if (id == R.id.support) {
+                    Intent intent = new Intent(CustomerHomeScreenActivity.this, SupportActivity.class);
+                    startActivity(intent);
                 }
                 return false;
             }

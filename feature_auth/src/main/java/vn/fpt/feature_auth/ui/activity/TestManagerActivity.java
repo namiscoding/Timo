@@ -25,7 +25,7 @@ import android.view.LayoutInflater;
 import android.widget.PopupWindow; // Có thể xóa nếu không dùng popup nữa, nhưng giữ lại để tránh lỗi compile nếu có tham chiếu ẩn.
 import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
-import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
+//import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
 import vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity;
 
 import android.Manifest;

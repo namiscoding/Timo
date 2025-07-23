@@ -6,7 +6,7 @@
         <item>Sắp chiếu</item>
     </string-array>
 
-<!--TruongNLan add-->
+    <!--TruongNLan add-->
     <item name="progressBar" type="id" />
     <string name="title_activity_home">HomeActivity</string>
     <string name="prompt_email">Email</string>

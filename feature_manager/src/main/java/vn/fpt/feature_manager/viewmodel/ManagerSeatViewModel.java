@@ -52,9 +52,7 @@ public class ManagerSeatViewModel extends ViewModel {
             this.rows = rows;
             this.columns = columns;
             seatRepository = new ManagerSeatRepository(cinemaId, roomId);
-            // Khởi tạo roomRepository ở đây để nó có thể được sử dụng trong loadRoomAndSeats
             roomRepository = new ManagerRoomRepository(cinemaId);
-            loadSeats(); // Tải ghế ngay khi khởi tạo
         }
     }
 
@@ -155,22 +153,19 @@ public class ManagerSeatViewModel extends ViewModel {
         });
     }
 
-    // Phương thức này có thể được gọi để tải lại thông tin phòng nếu cần
-    // Tuy nhiên, init() đã thiết lập rows và columns, nên không thực sự cần gọi lại
-    // Trừ khi thông tin phòng thay đổi sau khi activity được tạo
     public void loadRoomInfo() {
         if (roomRepository == null || roomId == null) {
             _errorMessage.setValue("Room Repository hoặc Room ID chưa được thiết lập.");
             return;
         }
-        // Quan sát LiveData từ Repository để lấy thông tin phòng
+
         roomRepository.getRoomById(roomId).observeForever(result -> { // Sử dụng observeForever hoặc cung cấp LifecycleOwner
             if (result.room != null) {
                 _roomInfo.setValue(result.room);
                 _errorMessage.setValue(null);
             } else {
                 _errorMessage.setValue(result.error);
-                _roomInfo.setValue(null); // Đặt null nếu không tìm thấy phòng hoặc có lỗi
+                _roomInfo.setValue(null);
             }
         });
     }

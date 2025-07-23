@@ -84,18 +84,17 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
     private void setupRecyclerView() {
         adapter = new ManagerSeatAdapter(this, this);
 
-        // QUAN TRỌNG: Dùng GridLayoutManager với số cột lấy từ Intent
-        // Điều này sẽ tự động tạo ra lưới ghế đúng với kích thước phòng
+
         GridLayoutManager layoutManager = new GridLayoutManager(this, columns);
         rvSeats.setLayoutManager(layoutManager);
         rvSeats.setAdapter(adapter);
 
-        // Vô hiệu hóa cuộn của RecyclerView để HorizontalScrollView bên ngoài xử lý
+
         rvSeats.setNestedScrollingEnabled(false);
     }
 
     private void setupListeners() {
-        // Sự kiện click ghế đã được xử lý trong Adapter và gọi về hàm onSeatClick() bên dưới
+
 
         btnLockSeats.setOnClickListener(v -> {
             AuditLogger.getInstance().log(
@@ -116,7 +115,7 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
                     true
             );
 
-            viewModel.updateSelectedSeatsStatus(true); // true = active (mở khóa)
+            viewModel.updateSelectedSeatsStatus(true);
         });
     }
 
@@ -144,13 +143,13 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
                 tvNoSeats.setVisibility(View.GONE);
                 adapter.submitData(seats, viewModel.getSelectedSeats().getValue());
             } else if (viewModel.getIsLoading().getValue() != null && !viewModel.getIsLoading().getValue()) {
-                // Chỉ hiển thị "Không có ghế" sau khi đã tải xong
+
                 rvSeats.setVisibility(View.GONE);
                 tvNoSeats.setVisibility(View.VISIBLE);
             }
         });
 
-        // Khi danh sách ghế ĐƯỢC CHỌN thay đổi, cũng cập nhật adapter để vẽ lại viền highlight
+
         viewModel.getSelectedSeats().observe(this, selectedSeats -> {
             if (viewModel.getSeats().getValue() != null) {
                 adapter.submitData(viewModel.getSeats().getValue(), selectedSeats);
@@ -158,10 +157,8 @@ public class ManagerSeatMapActivity extends AppCompatActivity implements Manager
         });
     }
 
-    // Implement phương thức của interface OnSeatActionListener
     @Override
     public void onSeatClick(Seat seat) {
-        // Khi một ghế được nhấn, gọi viewModel để xử lý việc chọn/bỏ chọn
         viewModel.toggleSeatSelection(seat.getId());
     }
 }

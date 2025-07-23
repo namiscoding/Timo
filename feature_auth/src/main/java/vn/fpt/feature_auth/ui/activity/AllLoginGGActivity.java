@@ -31,7 +31,7 @@ import com.google.firebase.firestore.SetOptions;
 import vn.fpt.core.models.User;
 import vn.fpt.feature_admin.ui.activity.AdminDashboardActivity;
 import vn.fpt.feature_auth.R;
-import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
+//import vn.fpt.feature_customer.ui.activity.CustomerIntroActivity;
 import vn.fpt.feature_manager.ui.activity.ManagerHomePageActivity;
 
 

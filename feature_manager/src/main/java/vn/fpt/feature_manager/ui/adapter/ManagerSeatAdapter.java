@@ -86,48 +86,44 @@ public class ManagerSeatAdapter extends RecyclerView.Adapter<ManagerSeatAdapter.
             int selectedBorderColor = ContextCompat.getColor(context, R.color.seat_selected_border_color); //
             int defaultBorderColor = ContextCompat.getColor(context, R.color.cinemax_dark_gray); //
 
-            // Cập nhật màu nền và icon dựa trên trạng thái active và loại ghế
             int seatBackgroundColor;
             int iconDrawable;
-            int iconTint = Color.WHITE; // Mặc định icon màu trắng
+            int iconTint = Color.WHITE;
 
-            if (!seat.isActive()) { //
-                seatBackgroundColor = inactiveColor; //
-                iconDrawable = R.drawable.ic_seat_inactive_manager; //
+            if (!seat.isActive()) {
+                seatBackgroundColor = inactiveColor;
+                iconDrawable = R.drawable.ic_seat_inactive_manager;
             } else {
-                switch (seat.getSeatType().toLowerCase()) { //
-                    case "vip": //
-                        seatBackgroundColor = vipColor; //
-                        iconDrawable = R.drawable.ic_seat_vip_manager; //
+                switch (seat.getSeatType().toLowerCase()) {
+                    case "vip":
+                        seatBackgroundColor = vipColor;
+                        iconDrawable = R.drawable.ic_seat_vip_manager;
                         break;
-                    case "couple": //
-                        seatBackgroundColor = coupleColor; //
-                        iconDrawable = R.drawable.ic_seat_couple_manager; //
+                    case "couple":
+                        seatBackgroundColor = coupleColor;
+                        iconDrawable = R.drawable.ic_seat_couple_manager;
                         break;
-                    case "wheelchair": //
-                        seatBackgroundColor = wheelchairColor; //
-                        iconDrawable = R.drawable.ic_seat_wheelchair_manager; //
+                    case "wheelchair":
+                        seatBackgroundColor = wheelchairColor;
+                        iconDrawable = R.drawable.ic_seat_wheelchair_manager;
                         break;
-                    default: // regular //
-                        seatBackgroundColor = regularColor; //
-                        iconDrawable = R.drawable.ic_seat_regular_manager; //
+                    default:
+                        seatBackgroundColor = regularColor;
+                        iconDrawable = R.drawable.ic_seat_regular_manager;
                         break;
                 }
             }
 
-            // Áp dụng màu nền cho MaterialCardView
-            cardSeat.setCardBackgroundColor(seatBackgroundColor); //
-            // Áp dụng icon và màu sắc cho icon
-            imgSeatIcon.setImageResource(iconDrawable); //
-            imgSeatIcon.setColorFilter(iconTint); // // Áp dụng tint cho icon
+            cardSeat.setCardBackgroundColor(seatBackgroundColor);
+            imgSeatIcon.setImageResource(iconDrawable);
+            imgSeatIcon.setColorFilter(iconTint);
 
-            // Cập nhật viền nếu ghế được chọn
             if (selectedSeats.contains(seat.getId())) { //
-                cardSeat.setStrokeWidth(4); // Độ dày viền
-                cardSeat.setStrokeColor(selectedBorderColor); // Màu viền khi chọn
+                cardSeat.setStrokeWidth(4);
+                cardSeat.setStrokeColor(selectedBorderColor);
             } else {
-                cardSeat.setStrokeWidth(0); // Không có viền khi không chọn
-                cardSeat.setStrokeColor(defaultBorderColor); // Màu mặc định cho viền (có thể là trong suốt hoặc màu nền)
+                cardSeat.setStrokeWidth(0);
+                cardSeat.setStrokeColor(defaultBorderColor);
             }
 
             itemView.setOnClickListener(v -> { //

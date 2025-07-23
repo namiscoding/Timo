@@ -298,7 +298,7 @@ public class ManagerCreateShowtimeActivity extends AppCompatActivity {
         newShowtime.setScreeningRoomId(selectedRoom.getId());
         newShowtime.setFilmTitle(selectedFilm.getTitle());
         newShowtime.setFilmPosterUrl(selectedFilm.getPosterImageUrl());
-        newShowtime.setCinemaName("Tên rạp ABC"); // Bạn có thể lấy tên rạp từ nguồn khác
+        newShowtime.setCinemaName("Aeon Mall Hà Đông, Dương Nội, Hà Đông"); // Bạn có thể lấy tên rạp từ nguồn khác
         newShowtime.setScreeningRoomName(selectedRoom.getName());
 
         Timestamp showTime = new Timestamp(selectedDateTime.getTime());

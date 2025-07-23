@@ -7,7 +7,9 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application>
-
+        <activity
+            android:name=".ui.activity.SupportActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.activity.CustomerViewTicket"
             android:exported="false" />
@@ -19,7 +21,6 @@
             android:name=".services.ReminderBroadcastReceiver"
             android:enabled="true"
             android:exported="false" />
-
     </application>
 
 </manifest>
