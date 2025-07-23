@@ -1,0 +1,109 @@
+package vn.fpt.feature_manager.ui.adapter;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+
+import java.util.List;
+
+import vn.fpt.core.models.Product;
+import vn.fpt.feature_manager.R;
+
+public class ManagerProductAdapter extends RecyclerView.Adapter<ManagerProductAdapter.ProductViewHolder> {
+
+    private final Context context;
+    private final List<Product> productList;
+    private final OnProductActionListener listener;
+
+    public interface OnProductActionListener {
+        void onEditProduct(Product product);
+        void onDeleteProduct(Product product);
+    }
+
+    public ManagerProductAdapter(Context context, List<Product> productList, OnProductActionListener listener) {
+        this.context = context;
+        this.productList = productList;
+        this.listener = listener;
+    }
+
+    @NonNull
+    @Override
+    public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_manager, parent, false);
+        return new ProductViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
+        Product product = productList.get(position);
+        holder.tvProductName.setText(product.getName());
+        holder.tvProductPrice.setText(String.format("Giá: %.0f VNĐ", product.getPrice()));
+
+        // Tải ảnh sử dụng Glide
+        if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(product.getImageUrl())
+                    .placeholder(R.drawable.ic_services_manager) // Placeholder ảnh dịch vụ mặc định
+                    .error(R.drawable.ic_services_manager) // Ảnh lỗi
+                    .into(holder.ivProductImage);
+        } else {
+            holder.ivProductImage.setImageResource(R.drawable.ic_services_manager); // Đặt ảnh mặc định nếu không có URL
+        }
+
+        // Hiển thị trạng thái
+        if (product.isAvailable()) {
+            holder.tvProductStatus.setText("CÓ SẴN");
+            holder.tvProductStatus.setBackgroundResource(R.drawable.bg_status_tag_manager); // Màu xanh lá
+        } else {
+            holder.tvProductStatus.setText("HẾT HÀNG");
+            // Có thể tạo một drawable mới cho trạng thái hết hàng (ví dụ: màu xám hoặc đỏ nhạt)
+            holder.tvProductStatus.setBackgroundColor(context.getResources().getColor(R.color.seat_inactive_color)); // Màu xám
+        }
+
+
+        holder.btnEditProduct.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onEditProduct(product);
+            }
+        });
+
+        holder.btnDeleteProduct.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDeleteProduct(product);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return productList.size();
+    }
+
+    public static class ProductViewHolder extends RecyclerView.ViewHolder {
+        ImageView ivProductImage;
+        TextView tvProductName;
+        TextView tvProductPrice;
+        TextView tvProductStatus;
+        Button btnEditProduct;
+        Button btnDeleteProduct;
+
+        public ProductViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ivProductImage = itemView.findViewById(R.id.ivProductImage);
+            tvProductName = itemView.findViewById(R.id.tvProductName);
+            tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
+            tvProductStatus = itemView.findViewById(R.id.tvProductStatus);
+            btnEditProduct = itemView.findViewById(R.id.btnEditProduct);
+            btnDeleteProduct = itemView.findViewById(R.id.btnDeleteProduct);
+        }
+    }
+}
