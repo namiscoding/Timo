@@ -15,9 +15,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_dashboard_activity);
 
-        // Set admin info cho AuditLogger
-        // Bạn có thể lấy thông tin này từ SharedPreferences hoặc Intent
-        AuditLogger.setAdminInfo("admin_001", "System Admin", "ADMIN");
+        // Lấy thông tin admin từ Intent
+        Intent intent = getIntent();
+        String adminId = intent.getStringExtra("admin_id");
+        String adminName = intent.getStringExtra("admin_name");
+        String adminRole = intent.getStringExtra("admin_role");
+
+        // Gọi setAdminInfo với dữ liệu thực tế
+        AuditLogger.setAdminInfo(adminId, adminName, adminRole);
 
         Button btnManageAccounts = findViewById(R.id.btnManageAccounts);
         Button btnManageFilms = findViewById(R.id.btnManageFilms);

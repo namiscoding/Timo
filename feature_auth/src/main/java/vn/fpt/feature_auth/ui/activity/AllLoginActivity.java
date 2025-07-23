@@ -114,18 +114,19 @@ public class AllLoginActivity extends AppCompatActivity {
         // Set info dựa trên role
         if (currentUser != null) {
             if ("Admin".equals(role)) {
-                AuditLogger.setAdminInfo(
-                        currentUser.getUid(),
-                        currentUser.getDisplayName() != null ? currentUser.getDisplayName() : currentUser.getEmail(),
-                        "Admin"
-                );
+                // Truyền thông tin admin qua Intent
+                intent = new Intent(AllLoginActivity.this, AdminDashboardActivity.class);
+                intent.putExtra("admin_id", currentUser.getUid());
+                intent.putExtra("admin_name", currentUser.getDisplayName() != null ? currentUser.getDisplayName() : currentUser.getEmail());
+                intent.putExtra("admin_role", "Admin");
             } else if ("Manager".equals(role)) {
-                AuditLogger.setManagerInfo(  // Fix: Dùng setManagerInfo thay vì setAdminInfo
-                        currentUser.getUid(),
-                        currentUser.getDisplayName() != null ? currentUser.getDisplayName() : currentUser.getEmail(),
-                        "Manager"
-                );
+                intent = new Intent(AllLoginActivity.this, ManagerHomePageActivity.class);
+            } else {
+                intent = new Intent(AllLoginActivity.this, TestUserActivity.class);
             }
+        } else {
+            // Nếu không có user, về màn hình login
+            intent = new Intent(AllLoginActivity.this, AllLoginActivity.class);
         }
 
         // Log login action (đã có sẵn, sẽ dùng info vừa set)
@@ -136,19 +137,6 @@ public class AllLoginActivity extends AppCompatActivity {
                 true
         );
 
-        // Phần điều hướng (giữ nguyên)
-        switch (role) {
-            case "Admin":
-                intent = new Intent(AllLoginActivity.this, AdminDashboardActivity.class);
-                break;
-            case "Manager":
-                intent = new Intent(AllLoginActivity.this, ManagerHomePageActivity.class);
-                break;
-            case "Customer":
-            default: // Mặc định nếu không có role hoặc role không xác định
-                intent = new Intent(AllLoginActivity.this, TestUserActivity.class);
-                break;
-        }
         startActivity(intent);
         finish(); // Đóng AllLoginActivity sau khi điều hướng
     }
