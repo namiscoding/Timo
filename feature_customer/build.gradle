@@ -29,6 +29,7 @@ dependencies {
     implementation project(':core')
     implementation libs.appcompat
     implementation libs.material
+    implementation libs.google.firebase.auth
     testImplementation libs.junit
     implementation libs.activity
     implementation libs.constraintlayout
@@ -40,4 +41,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation ('com.google.android.gms:play-services-location:21.0.1')
     implementation ('com.google.android.exoplayer:exoplayer:2.19.1')
+    def lifecycle_version = "2.7.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
 }

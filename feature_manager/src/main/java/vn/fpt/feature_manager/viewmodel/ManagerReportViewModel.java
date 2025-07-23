@@ -84,7 +84,7 @@ public class ManagerReportViewModel extends ViewModel {
         _isLoading.setValue(true);
         _errorMessage.setValue(null);
         _reportSummary.setValue(new ArrayList<>());
-        _chartData.setValue(new ArrayList<>()); // Xóa dữ liệu biểu đồ cũ
+        _chartData.setValue(new ArrayList<>());
 
         reportRepository.getReportData(startDate, endDate, selectedFilmId).observeForever(result -> {
             executor.execute(() -> {

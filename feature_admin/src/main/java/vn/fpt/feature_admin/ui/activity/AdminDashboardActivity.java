@@ -20,13 +20,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
         setContentView(R.layout.admin_dashboard_activity);
 
         // Set admin info cho AuditLogger
-        // Bạn có thể lấy thông tin này từ SharedPreferences hoặc Intent
         AuditLogger.setAdminInfo("admin_001", "System Admin", "ADMIN");
 
+        // Khởi tạo các View
         Button btnManageAccounts = findViewById(R.id.btnManageAccounts);
         Button btnManageFilms = findViewById(R.id.btnManageFilms);
         Button btnManageCinemas = findViewById(R.id.btnManageCinemas);
         Button btnReport = findViewById(R.id.btnReport);
+        Button btnManageSupport = findViewById(R.id.btnManageSupport); // KHAI BÁO NÚT MỚI
         Button btnAuditTrail = findViewById(R.id.btnAuditTrail);
         backButton = findViewById(R.id.backButton);
 
@@ -79,6 +80,18 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     true
             );
             startActivity(new Intent(this, AdminStatisticActivity.class));
+        });
+
+        // XỬ LÝ SỰ KIỆN CHO NÚT MỚI
+        btnManageSupport.setOnClickListener(v -> {
+            AuditLogger.getInstance().log(
+                    AuditLogger.Actions.VIEW,
+                    AuditLogger.TargetTypes.SYSTEM,
+                    "Admin truy cập quản lý hỗ trợ",
+                    true
+            );
+            // Thay AdminSupportListActivity.class bằng tên Activity danh sách chat của bạn
+            startActivity(new Intent(this, AdminSupportListActivity.class));
         });
 
         btnAuditTrail.setOnClickListener(v -> {
