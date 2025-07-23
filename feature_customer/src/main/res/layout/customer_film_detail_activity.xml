@@ -211,7 +211,7 @@
                     android:layout_marginTop="32dp"
                     android:background="@drawable/solid_red_button_bg"
                     android:onClick="onStartButtonClick2"
-                    android:text="Buy Ticket"
+                    android:text="Mua vé"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold" />
