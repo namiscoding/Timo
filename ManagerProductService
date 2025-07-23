@@ -1,0 +1,91 @@
+package vn.fpt.feature_manager.data.service;
+
+import android.util.Log;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.WriteBatch;
+
+import java.util.List;
+
+import vn.fpt.core.models.Product;
+import vn.fpt.feature_manager.data.repositories.ManagerProductRepository;
+
+public class ManagerProductService {
+
+    private static final String TAG = "ManagerProductService";
+    private final FirebaseFirestore db;
+
+    public ManagerProductService() {
+        this.db = FirebaseFirestore.getInstance();
+    }
+
+    public void getProducts(CollectionReference productsRef, ManagerProductRepository.ProductLoadCallback callback) {
+        productsRef.orderBy("name", Query.Direction.ASCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots != null) {
+                        List<Product> products = queryDocumentSnapshots.toObjects(Product.class);
+                        callback.onSuccess(products);
+                    } else {
+                        callback.onSuccess(new java.util.ArrayList<>());
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error getting products: ", e);
+                    callback.onFailure("Không thể tải danh sách dịch vụ: " + e.getMessage());
+                });
+    }
+
+    public void addProduct(CollectionReference productsRef, Product product, ManagerProductRepository.ProductActionCallback callback) {
+        // Firestore sẽ tự tạo ID nếu không cung cấp
+        DocumentReference newProductRef = productsRef.document();
+        product.setId(newProductRef.getId()); // Gán ID được tạo tự động cho đối tượng Product
+
+        newProductRef.set(product)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error adding product: ", e);
+                    callback.onFailure("Lỗi khi thêm dịch vụ: " + e.getMessage());
+                });
+    }
+
+    public void updateProduct(CollectionReference productsRef, Product product, ManagerProductRepository.ProductActionCallback callback) {
+        if (product.getId() == null || product.getId().isEmpty()) {
+            callback.onFailure("ID dịch vụ không hợp lệ để cập nhật.");
+            return;
+        }
+        productsRef.document(product.getId()).set(product) // Dùng set để ghi đè toàn bộ (hoặc update nếu chỉ muốn sửa một phần)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error updating product: ", e);
+                    callback.onFailure("Lỗi khi cập nhật dịch vụ: " + e.getMessage());
+                });
+    }
+
+    public void deleteProduct(CollectionReference productsRef, String productId, ManagerProductRepository.ProductActionCallback callback) {
+        productsRef.document(productId).delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error deleting product: ", e);
+                    callback.onFailure("Lỗi khi xóa dịch vụ: " + e.getMessage());
+                });
+    }
+
+    public void getProductById(CollectionReference productsRef, String productId, ManagerProductRepository.SingleProductLoadCallback callback) {
+        productsRef.document(productId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        callback.onSuccess(documentSnapshot.toObject(Product.class));
+                    } else {
+                        callback.onFailure("Không tìm thấy dịch vụ.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error getting product by ID: ", e);
+                    callback.onFailure("Lỗi khi tải thông tin dịch vụ: " + e.getMessage());
+                });
+    }
+}
